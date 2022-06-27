@@ -1,7 +1,6 @@
 **/__pycache__/
 **/.cache/
 **/*.pkl
-**/*.png
 **/.DS*
 *.pt
 *.mlpackage
