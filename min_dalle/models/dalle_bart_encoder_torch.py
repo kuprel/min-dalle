@@ -26,12 +26,11 @@ class AttentionTorch(nn.Module):
         super().__init__()
         self.head_count = head_count
         self.embed_count = embed_count
-        self.head_dim = embed_count // head_count
 
-        self.k_proj = nn.Conv2d(embed_count, embed_count, 1, bias=False)
-        self.v_proj = nn.Conv2d(embed_count, embed_count, 1, bias=False)
-        self.q_proj = nn.Conv2d(embed_count, embed_count, 1, bias=False)
-        self.out_proj = nn.Conv2d(embed_count, embed_count, 1, bias=False)
+        self.k_proj = nn.Linear(embed_count, embed_count, bias=False)
+        self.v_proj = nn.Linear(embed_count, embed_count, bias=False)
+        self.q_proj = nn.Linear(embed_count, embed_count, bias=False)
+        self.out_proj = nn.Linear(embed_count, embed_count, bias=False)
     
     def forward(self,
         keys: FloatTensor,
@@ -39,47 +38,27 @@ class AttentionTorch(nn.Module):
         queries: FloatTensor,
         attention_mask: BoolTensor
     ) -> FloatTensor:
-        batch_count = keys.shape[0]
-
-        # b(hc)1q -> bqhc
-        # print(keys.shape, "keys", values.shape, "values", queries.shape, "queries")
-        keys = keys.transpose(1, 3)
-        keys = keys.reshape(keys.shape[:2] + (self.head_count, -1))
-
-        # b(hc)1q -> bchq
-        shape = (batch_count, self.head_count, self.head_dim, -1)
-        values = values.reshape(shape)
-        values = values.transpose(1, 2)
-        queries = queries.reshape(shape)
-        queries = queries.transpose(1, 2)
-
-        # print(keys.shape, "keys", values.shape, "values", queries.shape, "queries")
-
         attention_bias = torch.where(
             attention_mask,
-            torch.zeros([1, 1]),
-            torch.ones([1, 1]) * (-torch.inf),
+            torch.full(attention_mask.shape, 0.0),
+            torch.full(attention_mask.shape, -torch.inf),
         )
         attention_weights: FloatTensor = torch.einsum(
-            'bchq,bkhc->bkhq',
-            queries / self.head_dim ** 0.5, 
+            'bqhc,bkhc->bhqk',
+            queries, 
             keys
         )
-        attention_weights += attention_bias[:, :, None, None]
-        attention_weights = torch.softmax(attention_weights, 1)
-        # print(attention_weights.shape, "attention_weights")
-        hidden_state: FloatTensor = torch.einsum(
-            "bkhq,bchk->bchq",
+        attention_weights += attention_bias[:, None, None, :]
+        attention_weights = torch.softmax(attention_weights, -1)
+        attention_output: FloatTensor = torch.einsum(
+            "bhqk,bkhc->bqhc",
             attention_weights, 
             values
         )
-        # bchq -> b(hc)1q
-        # print(hidden_state.shape, "hidden_state")
-        hidden_state = hidden_state.transpose(1, 2)
-        hidden_state = hidden_state.reshape(batch_count, self.embed_count, 1, -1)
-        hidden_state = self.out_proj.forward(hidden_state)
-        # print(hidden_state.shape, "hidden_state")
-        return hidden_state
+        shape = attention_output.shape[:2] + (self.embed_count,)
+        attention_output = attention_output.reshape(shape)
+        attention_output = self.out_proj.forward(attention_output)
+        return attention_output
 
 
 class EncoderSelfAttentionTorch(AttentionTorch):
@@ -88,11 +67,11 @@ class EncoderSelfAttentionTorch(AttentionTorch):
         encoder_state: FloatTensor,
         attention_mask: BoolTensor
     ) -> FloatTensor:
-        encoder_state = encoder_state.transpose(1, 2).unsqueeze(2)
-        # print(encoder_state.shape, "encoder_state")
-        keys = self.k_proj.forward(encoder_state)
-        values = self.v_proj.forward(encoder_state)
-        queries = self.q_proj.forward(encoder_state)
+        shape_split = encoder_state.shape[:2] + (self.head_count, -1)
+        keys = self.k_proj.forward(encoder_state).reshape(shape_split)
+        values = self.v_proj.forward(encoder_state).reshape(shape_split)
+        queries = self.q_proj.forward(encoder_state).reshape(shape_split)
+        queries /= queries.shape[-1] ** 0.5
         return super().forward(keys, values, queries, attention_mask)
 
 
@@ -112,7 +91,6 @@ class EncoderLayerTorch(nn.Module):
         residual = encoder_state
         encoder_state = self.pre_self_attn_layer_norm.forward(encoder_state)
         encoder_state = self.self_attn.forward(encoder_state, attention_mask)
-        encoder_state = encoder_state.transpose(1, 3).squeeze(2)
         encoder_state = self.self_attn_layer_norm.forward(encoder_state)
         encoder_state = residual + encoder_state
         residual = encoder_state
