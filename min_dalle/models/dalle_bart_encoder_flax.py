@@ -23,6 +23,7 @@ class GLUFlax(nn.Module):
         z = self.fc2(z)
         return z
 
+
 class AttentionFlax(nn.Module):
     head_count: int
     embed_count: int
@@ -61,6 +62,7 @@ class AttentionFlax(nn.Module):
         attention_output = self.out_proj(attention_output)
         return attention_output
 
+
 class EncoderSelfAttentionFlax(AttentionFlax):
     def __call__(
         self,
@@ -73,6 +75,7 @@ class EncoderSelfAttentionFlax(AttentionFlax):
         queries = self.q_proj(encoder_state).reshape(shape_split)
         queries /= queries.shape[-1] ** 0.5
         return self.forward(keys, values, queries, attention_mask)
+
 
 class DalleBartEncoderLayerFlax(nn.Module):
     attention_head_count: int
@@ -102,6 +105,7 @@ class DalleBartEncoderLayerFlax(nn.Module):
         encoder_state = self.glu(encoder_state)
         encoder_state = residual + encoder_state
         return encoder_state, None
+
 
 class DalleBartEncoderFlax(nn.Module):
     attention_head_count: int

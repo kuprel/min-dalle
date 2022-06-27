@@ -1,6 +1,7 @@
 from math import inf
 from typing import List, Tuple
 
+
 class TextTokenizer:
     def __init__(self, vocab: dict, merges: List[str]):
         self.token_from_subword = vocab
