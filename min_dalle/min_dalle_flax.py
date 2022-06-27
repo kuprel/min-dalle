@@ -1,50 +1,9 @@
 import jax
 from jax import numpy as jnp
 import numpy
-import argparse
 
-from load_params import load_dalle_bart_flax_params
-from image_from_text import (
-    load_dalle_bart_metadata, 
-    tokenize, 
-    detokenize_torch,
-    save_image, 
-    ascii_from_image
-)
-from models.dalle_bart_encoder_flax import DalleBartEncoderFlax
-from models.dalle_bart_decoder_flax import DalleBartDecoderFlax
-
-
-parser = argparse.ArgumentParser()
-parser.add_argument(
-    '--text',
-    help='text to generate image from',
-    type=str
-)
-parser.add_argument(
-    '--seed',
-    help='random seed',
-    type=int,
-    default=0
-)
-parser.add_argument(
-    '--image_path',
-    help='generated image path',
-    type=str,
-    default='generated.png'
-)
-parser.add_argument(
-    '--dalle_bart_path',
-    help='pretraied dalle bart path',
-    type=str,
-    default='./pretrained/dalle_bart_mini'
-)
-parser.add_argument(
-    '--vqgan_path',
-    help='pretraied vqgan path',
-    type=str,
-    default='./pretrained/vqgan'
-)
+from .models.dalle_bart_encoder_flax import DalleBartEncoderFlax
+from .models.dalle_bart_decoder_flax import DalleBartDecoderFlax
 
 
 def encode_flax(
@@ -66,6 +25,7 @@ def encode_flax(
     encoder_state = encoder(text_tokens)
     del encoder
     return encoder_state
+
 
 def decode_flax(
     text_tokens: jnp.ndarray,
@@ -95,32 +55,25 @@ def decode_flax(
     del decoder
     return image_tokens
 
+
 def generate_image_tokens_flax(
-    text: str,
-    seed: int, 
-    dalle_bart_path: str
+    text_tokens: numpy.ndarray,
+    seed: int,
+    config: dict,
+    params: dict
 ) -> numpy.ndarray:
-    config, vocab, merges = load_dalle_bart_metadata(dalle_bart_path)
-    text_tokens = tokenize(text, config, vocab, merges)
-    params_dalle_bart = load_dalle_bart_flax_params(dalle_bart_path)
-    encoder_state = encode_flax(text_tokens, config, params_dalle_bart)
+    encoder_state = encode_flax(
+        text_tokens, 
+        config, 
+        params
+    )
     image_tokens = decode_flax(
         text_tokens, 
         encoder_state, 
-        config, seed, 
-        params_dalle_bart
+        config, 
+        seed, 
+        params
     )
-    return numpy.array(image_tokens)
-
-if __name__ == '__main__':
-    args = parser.parse_args()
-
-    image_tokens = generate_image_tokens_flax(
-        args.text, 
-        args.seed, 
-        args.dalle_bart_path
-    )
+    image_tokens = numpy.array(image_tokens)
     print("image tokens", list(image_tokens))
-    image = detokenize_torch(image_tokens, args.vqgan_path)
-    image = save_image(image, args.image_path)
-    print(ascii_from_image(image, size=128))
+    return image_tokens

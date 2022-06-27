@@ -1,4 +1,4 @@
-# min DALL·E
+# min(DALL·E)
 
 This is a minimal implementation of [DALL·E Mini](https://github.com/borisdayma/dalle-mini) in both Flax and PyTorch
 
@@ -11,21 +11,19 @@ Run `sh setup.sh` to install dependencies and download pretrained models.  The o
 Here are some examples
 
 ```
-python3 image_from_text_flax.py \
-  --dalle_bart_path='./pretrained/dalle_bart_mega' \
-  --vqgan_path='./pretrained/vqgan' \
-  --image_path='./generated/avacado_armchair_flax.png' \
-  --seed=4 \
+python3 image_from_text.py --text='alien life' --seed=7
+```
+![Alien](examples/alien.png)
+
+```
+python3 image_from_text.py --mega --seed=4 \
   --text='a comfy chair that looks like an avocado'
 ```
 ![Avocado Armchair](examples/avocado_armchair.png)
 
 
 ```
-python3 image_from_text_flax.py \
-  --dalle_path='./pretrained/dalle-mega' \
-  --seed=100 \
-  --image_path='./generated/godzilla_trial.png' \
+python3 image_from_text.py --mega --seed=100 \
   --text='court sketch of godzilla on trial'
 ```
 
