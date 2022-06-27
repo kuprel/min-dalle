@@ -1,5 +1,14 @@
-# min-dalle
+# min DALL·E
 
+This is a minimal implementation of [DALL·E Mini](https://github.com/borisdayma/dalle-mini) in both Flax and PyTorch
+
+## Setup
+
+Run `sh setup.sh` to install dependencies and download pretrained models.  The only required dependencies are Flax and Torch.  In the ash script, GitHub LFS is used to download VQGan detokenizer and the Weight and Biases python package is used to download the DALL·E Mini and DALL·E Mega transformer models.  You can also download those files manually by visting the links in the bash script.
+
+## Run
+
+Here are some examples
 
 ```
 python3 image_from_text_flax.py \
