@@ -5,9 +5,9 @@ import torch
 from PIL import Image
 from typing import Tuple, List
 
-from text_tokenizer import TextTokenizer
-from models.vqgan_detokenizer import VQGanDetokenizer
-from load_params import load_vqgan_torch_params
+from .text_tokenizer import TextTokenizer
+from .models.vqgan_detokenizer import VQGanDetokenizer
+from .load_params import load_vqgan_torch_params
 
 
 def load_dalle_bart_metadata(path: str) -> Tuple[dict, dict, List[str]]:

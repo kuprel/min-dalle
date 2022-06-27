@@ -4,17 +4,17 @@ from torch import Tensor
 import argparse
 from typing import Dict
 
-from image_from_text import (
+from min_dalle.image_from_text import (
     load_dalle_bart_metadata, 
     tokenize,
     detokenize_torch,
     save_image, 
     ascii_from_image
 )
-from models.dalle_bart_encoder_torch import DalleBartEncoderTorch
-from models.dalle_bart_decoder_torch import DalleBartDecoderTorch
+from min_dalle.models.dalle_bart_encoder_torch import DalleBartEncoderTorch
+from min_dalle.models.dalle_bart_decoder_torch import DalleBartDecoderTorch
 
-from load_params import (
+from min_dalle.load_params import (
     load_dalle_bart_flax_params, 
     convert_dalle_bart_torch_from_flax_params
 )

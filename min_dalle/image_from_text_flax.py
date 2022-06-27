@@ -3,16 +3,16 @@ from jax import numpy as jnp
 import numpy
 import argparse
 
-from min_dalle.load_params import load_dalle_bart_flax_params
-from min_dalle.image_from_text import (
+from load_params import load_dalle_bart_flax_params
+from image_from_text import (
     load_dalle_bart_metadata, 
     tokenize, 
     detokenize_torch,
     save_image, 
     ascii_from_image
 )
-from min_dalle.models.dalle_bart_encoder_flax import DalleBartEncoderFlax
-from min_dalle.models.dalle_bart_decoder_flax import DalleBartDecoderFlax
+from models.dalle_bart_encoder_flax import DalleBartEncoderFlax
+from models.dalle_bart_decoder_flax import DalleBartDecoderFlax
 
 
 parser = argparse.ArgumentParser()
