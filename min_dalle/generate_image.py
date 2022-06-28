@@ -1,6 +1,7 @@
 import os
 import json
 import numpy
+import sys
 from PIL import Image
 from typing import Tuple, List
 
@@ -48,7 +49,9 @@ def generate_image_from_text(
     image_token_count: int = 256
 ) -> Image.Image:
     model_name = 'mega' if is_mega else 'mini'
-    model_path = './pretrained/dalle_bart_{}'.format(model_name)
+    in_colab = 'google.colab' in sys.modules
+    base_path = './content' if in_colab else '.'
+    model_path = f'{base_path}/pretrained/dalle_bart_{model_name}'
     config, vocab, merges = load_dalle_bart_metadata(model_path)
     text_tokens = tokenize_text(text, config, vocab, merges)
     params_dalle_bart = load_dalle_bart_flax_params(model_path)

@@ -1,3 +1,4 @@
+import sys
 import numpy
 import torch
 from torch import Tensor
@@ -103,7 +104,9 @@ def generate_image_tokens_torch(
 
 def detokenize_torch(image_tokens: numpy.ndarray) -> numpy.ndarray:
     print("detokenizing image")
-    model_path = './pretrained/vqgan'
+    in_colab = 'google.colab' in sys.modules
+    base_path = './content' if in_colab else '.'
+    model_path = f'{base_path}/pretrained/vqgan'
     params = load_vqgan_torch_params(model_path)
     detokenizer = VQGanDetokenizer()
     detokenizer.load_state_dict(params)
