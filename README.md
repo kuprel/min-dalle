@@ -16,19 +16,19 @@ Run `sh setup.sh` to install dependencies and download pretrained models.  In th
 Use the command line python script `image_from_text.py` to generate images. Here are some examples:
 
 ```
-python image_from_text.py --seed=7 --text='alien life'
+python image_from_text.py --text='alien life' --seed=7
 ```
 ![Alien](examples/alien.png)
 
 
 ```
-python image_from_text.py --mega --seed=4 --text='a comfy chair that looks like an avocado'
+python image_from_text.py --text='a comfy chair that looks like an avocado' --mega --seed=4
 ```
 ![Avocado Armchair](examples/avocado_armchair.png)
 
 
 ```
-python image_from_text.py --mega --seed=100 --text='court sketch of godzilla on trial'
+python image_from_text.py --text='court sketch of godzilla on trial' --mega --seed=100
 ```
 
 ![Godzilla Trial](examples/godzilla_trial.png)
