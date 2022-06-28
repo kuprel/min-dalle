@@ -11,4 +11,3 @@
 **/pretrained
 **/*.msgpack
 env/
-.envrc
