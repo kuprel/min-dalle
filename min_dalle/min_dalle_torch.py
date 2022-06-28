@@ -1,7 +1,8 @@
 import numpy
+from typing import Dict
 import torch
 from torch import Tensor
-from typing import Dict
+torch.no_grad()
 
 from .models.vqgan_detokenizer import VQGanDetokenizer
 from .models.dalle_bart_encoder_torch import DalleBartEncoderTorch

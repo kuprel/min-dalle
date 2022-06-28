@@ -1,6 +1,7 @@
 import torch
 from torch import Tensor
 from torch.nn import Module, ModuleList, GroupNorm, Conv2d, Embedding
+torch.no_grad()
 
 BATCH_COUNT: int = 1
 
