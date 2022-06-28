@@ -1,7 +1,6 @@
 #!/bin/bash
 
 _pip=$(command -v pip pip3)
-
 $_pip install -r requirements.txt
 
 mkdir -p pretrained
