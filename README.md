@@ -4,7 +4,7 @@
 
 This is a minimal implementation of [DALL·E Mini](https://github.com/borisdayma/dalle-mini).  It has been stripped to the bare essentials necessary for doing inference, and converted to PyTorch.  The only third party dependencies are numpy, torch, and flax (and optionally wandb to download the models).  
 
-DALL·E Mega inference with PyTorch takes 7.3 seconds in Colab to generate an avocado armchair
+It currently takes **7.3 seconds** to generate an avocado armchair with DALL·E Mega in PyTorch on Colab
 
 ### Setup
 
