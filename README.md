@@ -13,9 +13,9 @@ Run `sh setup.sh` to install dependencies and download pretrained models.  The `
 
 ### Usage
 
-Use the python script `image_from_text.py` to generate images from the command line. Note: the command line script loads the models and parameters each time.  The colab notebook demonstrates how to load a model once and run it multiple times.
+Use the python script `image_from_text.py` to generate images from the command line.  Note: the command line script loads the models and parameters each time.  To load a model once and generate multiple times, initialize either `MinDalleTorch` or `MinDalleFlax` with `is_mega=True` or `is_mega=False`.  Then call `generate_image` with some `text` and a `seed`.  See the colab for an example.
 
-Here are some examples:
+### Examples
 
 ```
 python3 image_from_text.py --text='artificial intelligence' --torch
