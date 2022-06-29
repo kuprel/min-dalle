@@ -2,8 +2,8 @@ import argparse
 import os
 from PIL import Image
 
-from min_dalle.generate_image import generate_image_from_text
-
+from min_dalle.min_dalle_torch import MinDalleTorch
+from min_dalle.min_dalle_flax import MinDalleFlax
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--mega', action='store_true')
@@ -12,10 +12,10 @@ parser.set_defaults(mega=False)
 parser.add_argument('--torch', action='store_true')
 parser.add_argument('--no-torch', dest='torch', action='store_false')
 parser.set_defaults(torch=False)
-parser.add_argument('--text', type=str)
-parser.add_argument('--seed', type=int, default=0)
+parser.add_argument('--text', type=str, default='alien life')
+parser.add_argument('--seed', type=int, default=7)
 parser.add_argument('--image_path', type=str, default='generated')
-parser.add_argument('--image_token_count', type=int, default=256) # for debugging
+parser.add_argument('--sample_token_count', type=int, default=256) # for debugging
 
 
 def ascii_from_image(image: Image.Image, size: int) -> str:
@@ -36,19 +36,40 @@ def save_image(image: Image.Image, path: str):
     return image
 
 
+def generate_image(
+    is_torch: bool,
+    is_mega: bool,
+    text: str,
+    seed: int,
+    image_path: str,
+    sample_token_count: int
+):
+    if is_torch:
+        image_generator = MinDalleTorch(is_mega, sample_token_count)
+        image_tokens = image_generator.generate_image_tokens(text, seed)
+
+        if sample_token_count < image_generator.config['image_length']:
+            print('image tokens', list(image_tokens.to('cpu').detach().numpy()))
+            return
+        else:
+            image = image_generator.generate_image(text, seed)
+
+    else:
+        image_generator = MinDalleFlax(is_mega)
+        image = image_generator.generate_image(text, seed)
+
+    save_image(image, image_path)
+    print(ascii_from_image(image, size=128))
+
+
 if __name__ == '__main__':
     args = parser.parse_args()
-
     print(args)
-
-    image = generate_image_from_text(
-        text = args.text,
-        is_mega = args.mega,
-        is_torch = args.torch,
-        seed = args.seed,
-        image_token_count = args.image_token_count
+    generate_image(
+        is_torch=args.torch,
+        is_mega=args.mega,
+        text=args.text,
+        seed=args.seed,
+        image_path=args.image_path,
+        sample_token_count=args.sample_token_count
     )
-    
-    if image != None:
-        save_image(image, args.image_path)
-        print(ascii_from_image(image, size=128))

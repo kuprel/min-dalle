@@ -37,12 +37,18 @@ class AttentionTorch(nn.Module):
         self.one = torch.ones((1, 1))
         if torch.cuda.is_available(): self.one = self.one.cuda()
     
-    def forward(self,
+    def forward(
+        self,
         keys: FloatTensor,
         values: FloatTensor,
         queries: FloatTensor,
         attention_mask: BoolTensor
     ) -> FloatTensor:
+        keys = keys.reshape(keys.shape[:2] + (self.head_count, -1))
+        values = values.reshape(values.shape[:2] + (self.head_count, -1))
+        queries = queries.reshape(queries.shape[:2] + (self.head_count, -1))
+        queries /= queries.shape[-1] ** 0.5
+
         attention_bias = torch.where(
             attention_mask,
             self.one * 0,
@@ -72,11 +78,9 @@ class EncoderSelfAttentionTorch(AttentionTorch):
         encoder_state: FloatTensor,
         attention_mask: BoolTensor
     ) -> FloatTensor:
-        shape_split = encoder_state.shape[:2] + (self.head_count, -1)
-        keys = self.k_proj.forward(encoder_state).reshape(shape_split)
-        values = self.v_proj.forward(encoder_state).reshape(shape_split)
-        queries = self.q_proj.forward(encoder_state).reshape(shape_split)
-        queries /= queries.shape[-1] ** 0.5
+        keys = self.k_proj.forward(encoder_state)
+        values = self.v_proj.forward(encoder_state)
+        queries = self.q_proj.forward(encoder_state)
         return super().forward(keys, values, queries, attention_mask)
 
 
@@ -105,7 +109,8 @@ class EncoderLayerTorch(nn.Module):
 
 
 class DalleBartEncoderTorch(nn.Module):
-    def __init__(self,
+    def __init__(
+        self,
         layer_count: int,
         embed_count: int,
         attention_head_count: int,
