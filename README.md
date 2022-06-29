@@ -2,7 +2,7 @@
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/kuprel/min-dalle/blob/main/min_dalle.ipynb)
 
-This is a minimal implementation of [DALL·E Mini](https://github.com/borisdayma/dalle-mini).  It has been stripped to the bare essentials necessary for doing inference, and converted to PyTorch.  The only third party dependencies are `numpy`, `torch`, and `flax`.  PyTorch inference with DALL·E Mega takes about 10 seconds in colab.
+This is a minimal implementation of [DALL·E Mini](https://github.com/borisdayma/dalle-mini).  It has been stripped to the bare essentials necessary for doing inference, and converted to PyTorch.  The only third party dependencies are numpy, torch, and flax (and optionally wandb to download the models).  DALL·E Mega inference with pytorch takes about 10 seconds in colab.
 
 ### Setup
 
@@ -13,7 +13,7 @@ Run `sh setup.sh` to install dependencies and download pretrained models.  The `
 
 ### Usage
 
-Use the python script `image_from_text.py` to generate images from the command line.  Note: the command line script loads the models and parameters each time.  To load a model once and generate multiple times, initialize either `MinDalleTorch` or `MinDalleFlax` with `is_mega=True` or `is_mega=False`.  Then call `generate_image` with some `text` and a `seed`.  See the colab for an example.
+Use the python script `image_from_text.py` to generate images from the command line.  Note: the command line script loads the models and parameters each time.  To load a model once and generate multiple times, initialize either `MinDalleTorch` or `MinDalleFlax`, then call `generate_image` with some text and a seed.  See the colab for an example.
 
 ### Examples
 
