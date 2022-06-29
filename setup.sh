@@ -5,9 +5,6 @@ pip install -r requirements.txt
 mkdir -p pretrained/vqgan
 
 # download vqgan
-git lfs install
-git clone https://huggingface.co/dalle-mini/vqgan_imagenet_f16_16384 ./pretrained/vqgan
-# download the flax model
 curl https://huggingface.co/dalle-mini/vqgan_imagenet_f16_16384/resolve/main/flax_model.msgpack -L --output ./pretrained/vqgan/flax_model.msgpack
 
 # download dalle-mini and dalle mega
