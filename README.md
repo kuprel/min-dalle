@@ -13,22 +13,22 @@ Run `sh setup.sh` to install dependencies and download pretrained models.  The m
 
 ### Usage
 
-Use the command line python script `image_from_text.py` to generate images. Here are some examples:
+Use the command line python script `main.py` to generate images. Here are some examples:
 
 ```
-python image_from_text.py --text='alien life' --seed=7
+python main.py --text='alien life' --seed=7
 ```
 ![Alien](examples/alien.png)
 
 
 ```
-python image_from_text.py --text='a comfy chair that looks like an avocado' --mega --seed=4
+python main.py --text='a comfy chair that looks like an avocado' --mega --seed=4
 ```
 ![Avocado Armchair](examples/avocado_armchair.png)
 
 
 ```
-python image_from_text.py --text='court sketch of godzilla on trial' --mega --seed=100
+python main.py --text='court sketch of godzilla on trial' --mega --seed=100
 ```
 
 ![Godzilla Trial](examples/godzilla_trial.png)
