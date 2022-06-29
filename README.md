@@ -2,7 +2,7 @@
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/kuprel/min-dalle/blob/main/min_dalle.ipynb)
 
-This is a minimal implementation of [DALL·E Mini](https://github.com/borisdayma/dalle-mini).  It has been stripped to the bare essentials necessary for doing inference, and converted to PyTorch.  The only third party dependencies are numpy, torch, and flax (and optionally wandb to download the models).  DALL·E Mega inference with pytorch takes about 10 seconds in colab.
+This is a minimal implementation of [DALL·E Mini](https://github.com/borisdayma/dalle-mini).  It has been stripped to the bare essentials necessary for doing inference, and converted to PyTorch.  The only third party dependencies are numpy, torch, and flax (and optionally wandb to download the models).  DALL·E Mega inference with PyTorch takes about 10 seconds in Colab.
 
 ### Setup
 
@@ -18,7 +18,7 @@ Use the python script `image_from_text.py` to generate images from the command l
 ### Examples
 
 ```
-python3 image_from_text.py --text='artificial intelligence' --torch
+python image_from_text.py --text='artificial intelligence' --torch
 ```
 ![Alien](examples/artificial_intelligence.png)
 

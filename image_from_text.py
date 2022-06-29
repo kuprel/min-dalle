@@ -12,8 +12,8 @@ parser.set_defaults(mega=False)
 parser.add_argument('--torch', action='store_true')
 parser.add_argument('--no-torch', dest='torch', action='store_false')
 parser.set_defaults(torch=False)
-parser.add_argument('--text', type=str)
-parser.add_argument('--seed', type=int, default=0)
+parser.add_argument('--text', type=str, default='alien life')
+parser.add_argument('--seed', type=int, default=7)
 parser.add_argument('--image_path', type=str, default='generated')
 parser.add_argument('--sample_token_count', type=int, default=256) # for debugging
 
