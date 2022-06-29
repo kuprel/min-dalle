@@ -6,9 +6,7 @@ build:
     - "libgl1-mesa-glx"
     - "libglib2.0-0"
   python_packages:
-    - "ipython==7.21.0"
     - "torch==1.10.1"
     - "flax==0.4.2"
-    - "wandb==0.12.16"
 
 predict: "predict.py:Predictor"
