@@ -2,7 +2,7 @@
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/kuprel/min-dalle/blob/main/min_dalle.ipynb)
 
-This is a minimal implementation of [DALL·E Mini](https://github.com/borisdayma/dalle-mini).  It has been stripped to the bare essentials necessary for doing inference, and converted to PyTorch.  The only third party dependencies are `numpy`, `torch`, and `flax`.
+This is a minimal implementation of [DALL·E Mini](https://github.com/borisdayma/dalle-mini).  It has been stripped to the bare essentials necessary for doing inference, and converted to PyTorch.  The only third party dependencies are `numpy`, `torch`, and `flax`.  PyTorch inference with DALL·E Mega takes about 10 seconds in colab.
 
 ### Setup
 
@@ -16,13 +16,13 @@ Run `sh setup.sh` to install dependencies and download pretrained models.  The `
 The simplest way to get started is the command line python script `image_from_text.py` provided.  Here are some examples runs:
 
 ```
-python image_from_text.py --text='alien life' --seed=7
+python3 image_from_text.py --text='artificial intelligence' --torch
 ```
-![Alien](examples/alien.png)
+![Alien](examples/artificial_intelligence.png)
 
 
 ```
-python image_from_text.py --text='a comfy chair that looks like an avocado' --mega --seed=4
+python image_from_text.py --text='a comfy chair that looks like an avocado' --torch --mega --seed=10
 ```
 ![Avocado Armchair](examples/avocado_armchair.png)
 
