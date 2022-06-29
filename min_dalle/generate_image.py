@@ -63,7 +63,7 @@ def generate_image_from_text(
             image_token_count = image_token_count
         )
         if image_token_count == config['image_length']:
-            image = detokenize_torch(image_tokens)
+            image = detokenize_torch(image_tokens, is_torch=True)
             return Image.fromarray(image)
         else:
             print(list(image_tokens.to('cpu').detach().numpy()))
@@ -74,5 +74,5 @@ def generate_image_from_text(
             config = config,
             params = params_dalle_bart,
         )
-        image = detokenize_torch(torch.tensor(image_tokens))
+        image = detokenize_torch(torch.tensor(image_tokens), is_torch=False)
         return Image.fromarray(image)
