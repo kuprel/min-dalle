@@ -2,7 +2,7 @@ import numpy
 from typing import Dict
 from torch import LongTensor, FloatTensor
 import torch
-torch.no_grad()
+torch.set_grad_enabled(False)
 
 from .models.vqgan_detokenizer import VQGanDetokenizer
 from .models.dalle_bart_encoder_torch import DalleBartEncoderTorch
