@@ -1,7 +1,8 @@
 import numpy
-import torch
-from torch import Tensor
 from typing import Dict
+from torch import LongTensor, FloatTensor
+import torch
+torch.no_grad()
 
 from .models.vqgan_detokenizer import VQGanDetokenizer
 from .models.dalle_bart_encoder_torch import DalleBartEncoderTorch
@@ -14,10 +15,10 @@ from .load_params import (
 
 
 def encode_torch(
-    text_tokens: numpy.ndarray,
+    text_tokens: LongTensor,
     config: dict, 
     params: dict
-) -> Tensor:
+) -> FloatTensor:
     print("loading torch encoder")
     encoder = DalleBartEncoderTorch(
         layer_count = config['encoder_layers'],
@@ -36,20 +37,19 @@ def encode_torch(
     del encoder_params
 
     print("encoding text tokens")
-    text_tokens = torch.tensor(text_tokens).to(torch.long)
     encoder_state = encoder(text_tokens)
     del encoder
     return encoder_state
 
 
 def decode_torch(
-    text_tokens: Tensor,
-    encoder_state: Tensor, 
+    text_tokens: LongTensor,
+    encoder_state: FloatTensor, 
     config: dict,
     seed: int,
     params: dict,
     image_token_count: int
-) -> Tensor:
+) -> LongTensor:
     print("loading torch decoder")
     decoder = DalleBartDecoderTorch(
         image_vocab_size = config['image_vocab_size'],
@@ -73,7 +73,6 @@ def decode_torch(
 
     print("sampling image tokens")
     torch.manual_seed(seed)
-    text_tokens = torch.tensor(text_tokens).to(torch.long)
     image_tokens = decoder.forward(text_tokens, encoder_state)
     return image_tokens
 
@@ -84,7 +83,9 @@ def generate_image_tokens_torch(
     config: dict,
     params: dict,
     image_token_count: int
-) -> numpy.ndarray:
+) -> LongTensor:
+    text_tokens = torch.tensor(text_tokens).to(torch.long)
+    # if torch.cuda.is_available(): text_tokens = text_tokens.cuda()
     encoder_state = encode_torch(
         text_tokens, 
         config, 
@@ -98,16 +99,15 @@ def generate_image_tokens_torch(
         params,
         image_token_count
     )
-    return image_tokens.detach().numpy()
+    return image_tokens
 
 
-def detokenize_torch(image_tokens: numpy.ndarray) -> numpy.ndarray:
+def detokenize_torch(image_tokens: LongTensor) -> numpy.ndarray:
     print("detokenizing image")
     model_path = './pretrained/vqgan'
     params = load_vqgan_torch_params(model_path)
     detokenizer = VQGanDetokenizer()
     detokenizer.load_state_dict(params)
-    image_tokens = torch.tensor(image_tokens).to(torch.long)
     image = detokenizer.forward(image_tokens).to(torch.uint8)
     return image.detach().numpy()
     

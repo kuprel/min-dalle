@@ -1,6 +1,7 @@
 from typing import List
 import torch
 from torch import nn, BoolTensor, FloatTensor, LongTensor
+torch.no_grad()
 
 
 class GLUTorch(nn.Module):

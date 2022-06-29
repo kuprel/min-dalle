@@ -1,6 +1,7 @@
+from typing import List, Tuple
 import torch
 from torch import LongTensor, nn, FloatTensor, BoolTensor
-from typing import List, Tuple
+torch.no_grad()
 
 from .dalle_bart_encoder_torch import GLUTorch, AttentionTorch
 
@@ -126,6 +127,10 @@ class DalleBartDecoderTorch(nn.Module):
         self.start_token = torch.tensor([start_token]).to(torch.long)
         self.pad_token = torch.tensor([1]).to(torch.long)
         self.condition_factor = torch.tensor([10]).to(torch.float)
+        # if torch.cuda.is_available(): 
+        #     self.start_token = self.start_token.cuda()
+        #     self.pad_token = self.pad_token.cuda()
+        #     self.condition_factor = self.condition_factor.cuda()
         self.image_token_count = image_token_count
         self.embed_tokens = nn.Embedding(image_vocab_size + 1, embed_count)
         self.embed_positions = nn.Embedding(image_token_count, embed_count)
@@ -199,6 +204,7 @@ class DalleBartDecoderTorch(nn.Module):
 
         for i in range(self.sample_token_count):
             token_index = torch.tensor([i]).to(torch.long)
+            # if torch.cuda.is_available(): token_index = token_index.cuda()
             probs, keys_values_state = self.decode_step(
                 text_tokens = text_tokens,
                 encoder_state = encoder_state,
