@@ -110,7 +110,7 @@ def detokenize_torch(image_tokens: LongTensor) -> numpy.ndarray:
     params = load_vqgan_torch_params(model_path)
     detokenizer = VQGanDetokenizer()
     detokenizer.load_state_dict(params)
-    if torch.cuda.is_available(): detokenizer = detokenizer.cuda()
+    # if torch.cuda.is_available(): detokenizer = detokenizer.cuda()
     image = detokenizer.forward(image_tokens).to(torch.uint8)
     del detokenizer, params
     return image.to('cpu').detach().numpy()
