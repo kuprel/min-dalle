@@ -6,7 +6,7 @@ This is a minimal implementation of [DALL·E Mini](https://github.com/borisdayma
 
 ### Setup
 
-Run `sh setup.sh` to install dependencies and download pretrained models.  The `wandb` python package is installed to download DALL·E mini and DALL·E mega.  Alternatively, the models can be downloaded manually here: 
+Run `sh setup.sh` to install dependencies and download pretrained models.  The models can also be downloaded manually here: 
 [VQGan](https://huggingface.co/dalle-mini/vqgan_imagenet_f16_16384), 
 [DALL·E Mini](https://wandb.ai/dalle-mini/dalle-mini/artifacts/DalleBart_model/mini-1/v0/files), 
 [DALL·E Mega](https://wandb.ai/dalle-mini/dalle-mini/artifacts/DalleBart_model/mega-1-fp16/v14/files)
