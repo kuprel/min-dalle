@@ -13,7 +13,7 @@ Run `sh setup.sh` to install dependencies and download pretrained models.  The `
 
 ### Usage
 
-The simplest way to get started is the command line python script `image_from_text.py` provided.  Here are some examples runs:
+Use the python script `image_from_text.py` to generate images from the command line.  Here are some examples runs:
 
 ```
 python3 image_from_text.py --text='artificial intelligence' --torch
@@ -33,6 +33,5 @@ python image_from_text.py --text='court sketch of godzilla on trial' --mega --se
 
 ![Godzilla Trial](examples/godzilla_trial.png)
 
-### Load once run multiple times
 
-The command line script loads the models and parameters each time.  The colab notebook demonstrates how to load the models once and run multiple times.
+Note: the command line script loads the models and parameters each time.  The colab notebook demonstrates how to load the models once and run multiple times.
