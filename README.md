@@ -5,7 +5,7 @@
 
 This is a minimal implementation of Boris Dayma's [DALL·E Mini](https://github.com/borisdayma/dalle-mini).  It has been stripped to the bare essentials necessary for doing inference, and converted to PyTorch.  To run the torch model, the only third party dependencies are numpy and torch.  Flax is used to convert the weights (which can be saved with `torch.save` once the model is loaded), and wandb is only used to download the models.
 
-It currently takes about 10 seconds to generate an avocado armchair with DALL·E Mega in PyTorch on Colab (with reusable model and high-RAM runtime)
+It currently takes about 10 seconds to generate an avocado armchair with DALL·E Mega in PyTorch on Colab with a reusable model and high-RAM GPU runtime.
 
 ### Setup
 
