@@ -44,9 +44,9 @@ def generate_image(
     image_path: str,
     token_count: int
 ):
-    is_expendable = True
+    is_reusable = False
     if is_torch:
-        image_generator = MinDalleTorch(is_mega, is_expendable, token_count)
+        image_generator = MinDalleTorch(is_mega, is_reusable, token_count)
 
         if token_count < image_generator.config['image_length']:
             image_tokens = image_generator.generate_image_tokens(text, seed)
@@ -56,7 +56,7 @@ def generate_image(
             image = image_generator.generate_image(text, seed)
 
     else:
-        image_generator = MinDalleFlax(is_mega, is_expendable=True)
+        image_generator = MinDalleFlax(is_mega, is_reusable)
         image = image_generator.generate_image(text, seed)
 
     save_image(image, image_path)

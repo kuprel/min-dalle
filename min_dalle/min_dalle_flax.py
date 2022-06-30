@@ -9,11 +9,11 @@ from .models.dalle_bart_decoder_flax import DalleBartDecoderFlax
 
 
 class MinDalleFlax(MinDalleBase):
-    def __init__(self, is_mega: bool, is_expendable: bool = False):
+    def __init__(self, is_mega: bool, is_reusable: bool = True):
         super().__init__(is_mega)
-        self.is_expendable = is_expendable
+        self.is_reusable = is_reusable
         print("initializing MinDalleFlax")
-        if not is_expendable:
+        if is_reusable:
             self.init_encoder()
             self.init_decoder()
             self.init_detokenizer()
@@ -48,12 +48,12 @@ class MinDalleFlax(MinDalleBase):
     def generate_image(self, text: str, seed: int) -> Image.Image:
         text_tokens = self.tokenize_text(text)
 
-        if self.is_expendable: self.init_encoder()
+        if not self.is_reusable: self.init_encoder()
         print("encoding text tokens")
         encoder_state = self.encoder(text_tokens)
-        if self.is_expendable: del self.encoder
+        if not self.is_reusable: del self.encoder
 
-        if self.is_expendable:
+        if not self.is_reusable:
             self.init_decoder()
             params = self.model_params.pop('decoder')
         else:
@@ -65,13 +65,13 @@ class MinDalleFlax(MinDalleBase):
             jax.random.PRNGKey(seed),
             params
         )
-        if self.is_expendable: del self.decoder
+        if not self.is_reusable: del self.decoder
 
         image_tokens = torch.tensor(numpy.array(image_tokens))
 
-        if self.is_expendable: self.init_detokenizer()
+        if not self.is_reusable: self.init_detokenizer()
         print("detokenizing image")
         image = self.detokenizer.forward(image_tokens).to(torch.uint8)
-        if self.is_expendable: del self.detokenizer
+        if not self.is_reusable: del self.detokenizer
         image = Image.fromarray(image.to('cpu').detach().numpy())
         return image
