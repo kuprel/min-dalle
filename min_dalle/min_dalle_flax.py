@@ -28,7 +28,7 @@ class MinDalleFlax(MinDalleBase):
             text_token_count = self.config['max_text_length'],
             text_vocab_count = self.config['encoder_vocab_size'],
             layer_count = self.config['encoder_layers']
-        ).bind({'params': self.model_params.pop('encoder')})
+        ).bind({'params': self.model_params['encoder']})
 
 
     def init_decoder(self):
@@ -53,17 +53,13 @@ class MinDalleFlax(MinDalleBase):
         encoder_state = self.encoder(text_tokens)
         if self.is_expendable: del self.encoder
 
-        if self.is_expendable:
-            self.init_decoder()
-            params = self.model_params.pop('decoder')
-        else:
-            params = self.model_params['decoder']
+        if self.is_expendable: self.init_decoder()
         print("sampling image tokens")
         image_tokens = self.decoder.sample_image_tokens(
             text_tokens,
             encoder_state,
             jax.random.PRNGKey(seed),
-            params
+            self.model_params['decoder']
         )
         if self.is_expendable: del self.decoder
 
