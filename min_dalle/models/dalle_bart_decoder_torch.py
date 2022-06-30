@@ -160,14 +160,15 @@ class DalleBartDecoderTorch(nn.Module):
         text_tokens: LongTensor,
         encoder_state: FloatTensor,
         attention_state: FloatTensor,
-        prev_token_and_index: LongTensor
+        prev_token: LongTensor,
+        token_index: LongTensor
     ) -> Tuple[LongTensor, FloatTensor]:
         attention_mask = text_tokens.not_equal(1)
         batch_count = encoder_state.shape[0]
-        prev_token = torch.cat([prev_token_and_index[:1]] * batch_count)
-        token_index = torch.cat([prev_token_and_index[1:]] * batch_count)
-        decoder_state = self.embed_tokens.forward(prev_token)
-        decoder_state += self.embed_positions.forward(token_index)
+        prev_token_batched = torch.cat([prev_token] * batch_count)
+        token_index_batched = torch.cat([token_index] * batch_count)
+        decoder_state = self.embed_tokens.forward(prev_token_batched)
+        decoder_state += self.embed_positions.forward(token_index_batched)
         decoder_state = self.layernorm_embedding.forward(decoder_state)
         decoder_state = decoder_state[:, None]
         attention_states_new = []
@@ -177,7 +178,7 @@ class DalleBartDecoderTorch(nn.Module):
                 encoder_state,
                 attention_state[i],
                 attention_mask,
-                token_index[:1]
+                token_index
             )
             attention_states_new.append(attention_state_layer)
         decoder_state = self.final_ln(decoder_state)
@@ -185,7 +186,7 @@ class DalleBartDecoderTorch(nn.Module):
         a = self.condition_factor
         logits: FloatTensor = a * logits[0, -1] + (1 - a) * logits[1, -1]
 
-        top_logits = logits.sort(descending=True)[0][:50]
+        top_logits, _ = logits.topk(50, dim=-1)
         probs = torch.where(
             logits < top_logits[-1],
             self.zero_prob,
@@ -206,12 +207,12 @@ class DalleBartDecoderTorch(nn.Module):
         image_token = self.start_token
 
         for i in range(self.sample_token_count):
-            token_index = self.token_indices[i:i+1]
             probs, attention_state = self.decode_step(
                 text_tokens = text_tokens,
                 encoder_state = encoder_state,
                 attention_state = attention_state,
-                prev_token_and_index = torch.cat([image_token, token_index])
+                prev_token = image_token,
+                token_index = self.token_indices[[i]]
             )
 
             image_token = torch.multinomial(probs, 1)
