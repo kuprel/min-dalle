@@ -124,7 +124,7 @@ class DalleBartEncoderFlax(nn.Module):
         self.embed_positions = nn.Embed(self.text_token_count, self.embed_count)
         self.layers = nn.scan(
             DalleBartEncoderLayerFlax,
-            variable_axes = { "params": 0, "cache": 0 },
+            variable_axes = { "params": 0 },
             split_rngs = { "params": True },
             in_axes = nn.broadcast,
             length = self.layer_count
