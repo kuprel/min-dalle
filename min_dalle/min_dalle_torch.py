@@ -6,7 +6,10 @@ import torch
 torch.set_grad_enabled(False)
 torch.set_num_threads(os.cpu_count())
 
-from .load_params import convert_dalle_bart_torch_from_flax_params
+from .load_params import (
+    convert_and_save_mega_torch_params,
+    load_dalle_bart_flax_params
+)
 from .min_dalle_base import MinDalleBase
 from .models.dalle_bart_encoder_torch import DalleBartEncoderTorch
 from .models.dalle_bart_decoder_torch import DalleBartDecoderTorch
@@ -19,10 +22,22 @@ class MinDalleTorch(MinDalleBase):
         is_reusable: bool = True,
         token_count: int = 256
     ):
+        print("initializing MinDalleTorch")
         super().__init__(is_mega)
         self.is_reusable = is_reusable
         self.token_count = token_count
-        print("initializing MinDalleTorch")
+
+        if not is_mega:
+            self.model_params = load_dalle_bart_flax_params(self.model_path)
+    
+        self.encoder_params_path = os.path.join(self.model_path, 'encoder.pt')
+        self.decoder_params_path = os.path.join(self.model_path, 'decoder.pt')
+
+        is_converted = os.path.exists(self.encoder_params_path)
+        is_converted &= os.path.exists(self.decoder_params_path)
+        if not is_converted:
+            convert_and_save_mega_torch_params(is_mega, self.model_path)
+
         if is_reusable:
             self.init_encoder()
             self.init_decoder()
@@ -39,11 +54,7 @@ class MinDalleTorch(MinDalleBase):
             text_token_count = self.config['max_text_length'],
             glu_embed_count = self.config['encoder_ffn_dim']
         )
-        params = convert_dalle_bart_torch_from_flax_params(
-            self.model_params.pop('encoder'), 
-            layer_count=self.config['encoder_layers'], 
-            is_encoder=True
-        )
+        params = torch.load(self.encoder_params_path)
         self.encoder.load_state_dict(params, strict=False)
         del params
         if torch.cuda.is_available(): self.encoder = self.encoder.cuda()
@@ -63,11 +74,7 @@ class MinDalleTorch(MinDalleBase):
             start_token = self.config['decoder_start_token_id'],
             is_verbose = True
         )
-        params = convert_dalle_bart_torch_from_flax_params(
-            self.model_params.pop('decoder'), 
-            layer_count=self.config['decoder_layers'],
-            is_encoder=False
-        )
+        params = torch.load(self.decoder_params_path)
         self.decoder.load_state_dict(params, strict=False)
         del params
         if torch.cuda.is_available(): self.decoder = self.decoder.cuda()

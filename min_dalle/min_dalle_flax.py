@@ -7,12 +7,15 @@ from .min_dalle_base import MinDalleBase
 from .models.dalle_bart_encoder_flax import DalleBartEncoderFlax
 from .models.dalle_bart_decoder_flax import DalleBartDecoderFlax
 
+from .load_params import load_dalle_bart_flax_params
+
 
 class MinDalleFlax(MinDalleBase):
     def __init__(self, is_mega: bool, is_reusable: bool = True):
         super().__init__(is_mega)
         self.is_reusable = is_reusable
         print("initializing MinDalleFlax")
+        self.model_params = load_dalle_bart_flax_params(self.model_path)
         if is_reusable:
             self.init_encoder()
             self.init_decoder()
