@@ -6,7 +6,7 @@ from .text_tokenizer import TextTokenizer
 from .load_params import load_vqgan_torch_params, load_dalle_bart_flax_params
 from .models.vqgan_detokenizer import VQGanDetokenizer
 
-class MinDalle:
+class MinDalleBase:
     def __init__(self, is_mega: bool):
         self.is_mega = is_mega
         model_name = 'dalle_bart_{}'.format('mega' if is_mega else 'mini')
@@ -25,11 +25,15 @@ class MinDalle:
             merges = f.read().split("\n")[1:-1]
             
         self.model_params = load_dalle_bart_flax_params(model_path)
-
         self.tokenizer = TextTokenizer(vocab, merges)
+
+
+    def init_detokenizer(self):
+        print("initializing VQGanDetokenizer")
+        params = load_vqgan_torch_params('./pretrained/vqgan')
         self.detokenizer = VQGanDetokenizer()
-        vqgan_params = load_vqgan_torch_params('./pretrained/vqgan')
-        self.detokenizer.load_state_dict(vqgan_params)
+        self.detokenizer.load_state_dict(params)
+        del params
 
 
     def tokenize_text(self, text: str) -> numpy.ndarray:

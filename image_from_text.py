@@ -15,7 +15,7 @@ parser.set_defaults(torch=False)
 parser.add_argument('--text', type=str, default='alien life')
 parser.add_argument('--seed', type=int, default=7)
 parser.add_argument('--image_path', type=str, default='generated')
-parser.add_argument('--sample_token_count', type=int, default=256) # for debugging
+parser.add_argument('--token_count', type=int, default=256) # for debugging
 
 
 def ascii_from_image(image: Image.Image, size: int) -> str:
@@ -42,20 +42,21 @@ def generate_image(
     text: str,
     seed: int,
     image_path: str,
-    sample_token_count: int
+    token_count: int
 ):
+    is_expendable = True
     if is_torch:
-        image_generator = MinDalleTorch(is_mega, sample_token_count)
-        image_tokens = image_generator.generate_image_tokens(text, seed)
+        image_generator = MinDalleTorch(is_mega, is_expendable, token_count)
 
-        if sample_token_count < image_generator.config['image_length']:
+        if token_count < image_generator.config['image_length']:
+            image_tokens = image_generator.generate_image_tokens(text, seed)
             print('image tokens', list(image_tokens.to('cpu').detach().numpy()))
             return
         else:
             image = image_generator.generate_image(text, seed)
 
     else:
-        image_generator = MinDalleFlax(is_mega)
+        image_generator = MinDalleFlax(is_mega, is_expendable=True)
         image = image_generator.generate_image(text, seed)
 
     save_image(image, image_path)
@@ -71,5 +72,5 @@ if __name__ == '__main__':
         text=args.text,
         seed=args.seed,
         image_path=args.image_path,
-        sample_token_count=args.sample_token_count
+        token_count=args.token_count
     )
