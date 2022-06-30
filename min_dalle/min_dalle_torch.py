@@ -40,12 +40,13 @@ class MinDalleTorch(MinDalleBase):
             glu_embed_count = self.config['encoder_ffn_dim']
         )
         params = convert_dalle_bart_torch_from_flax_params(
-            self.model_params['encoder'], 
+            self.model_params.pop('encoder'), 
             layer_count=self.config['encoder_layers'], 
             is_encoder=True
         )
         self.encoder.load_state_dict(params, strict=False)
         if torch.cuda.is_available(): self.encoder = self.encoder.cuda()
+        del params
 
 
     def init_decoder(self):
@@ -63,12 +64,13 @@ class MinDalleTorch(MinDalleBase):
             is_verbose = True
         )
         params = convert_dalle_bart_torch_from_flax_params(
-            self.model_params['decoder'], 
+            self.model_params.pop('decoder'), 
             layer_count=self.config['decoder_layers'],
             is_encoder=False
         )
         self.decoder.load_state_dict(params, strict=False)
         if torch.cuda.is_available(): self.decoder = self.decoder.cuda()
+        del params
 
     
     def init_detokenizer(self):

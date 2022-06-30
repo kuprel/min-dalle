@@ -82,11 +82,10 @@ def convert_dalle_bart_torch_from_flax_params(
     layer_count: int,
     is_encoder: bool
 ) -> dict:
-    P = deepcopy(params)
-    P: Dict[str, numpy.ndarray] = flatten_dict(P, sep='.')
+    P: Dict[str, numpy.ndarray] = flatten_dict(params, sep='.')
 
     for i in P:
-        P[i] = torch.tensor(P[i])
+        P[i] = torch.tensor(P[i]).to(torch.float16)
 
     for i in list(P):
         if 'kernel' in i:
