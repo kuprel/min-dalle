@@ -36,7 +36,8 @@ class DecoderSelfAttentionTorch(AttentionTorch):
             attention_state
         )
         batch_count = decoder_state.shape[0]
-        keys, values = attention_state[:batch_count], attention_state[batch_count:]
+        keys = attention_state[:batch_count]
+        values = attention_state[batch_count:]
         decoder_state = super().forward(keys, values, queries, attention_mask)
         return decoder_state, attention_state
 

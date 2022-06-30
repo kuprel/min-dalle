@@ -1,5 +1,3 @@
-from random import sample
-import numpy
 import os
 from PIL import Image
 from typing import Dict
