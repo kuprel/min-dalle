@@ -45,6 +45,7 @@ model = MinDalleTorch(
 image = model.generate_image("a comfy chair that looks like an avocado")
 display(image)
 ```
+![Avocado Armchair](examples/avocado_armchair.png)
 
 ```python
 image = model.generate_image("trail cam footage of gollum eating watermelon", seed=1)
