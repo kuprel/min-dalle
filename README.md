@@ -36,3 +36,9 @@ python image_from_text.py --text='court sketch of godzilla on trial' --mega --se
 ```
 
 ![Godzilla Trial](examples/godzilla_trial.png)
+
+
+```
+python image_from_text.py --text='trail cam footage of gollum eating watermelon' --mega --seed=1
+```
+![Gollum Trailcam](examples/gollum_trailcam.png)
