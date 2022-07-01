@@ -5,9 +5,9 @@
 
 This is a minimal implementation of Boris Dayma's [DALL·E Mini](https://github.com/borisdayma/dalle-mini) in PyTorch.  It has been stripped to the bare essentials necessary for doing inference.  The only third party dependencies are numpy and torch.
 
-It currently takes **7.4 seconds** to generate an image with DALL·E Mega on a standard GPU runtime in Colab
+It currently takes **7.4 seconds** to generate an image with DALL·E Mega on a standard GPU runtime in Colab.
 
-The flax model, and the code for coverting it to torch can be found [here](https://github.com/kuprel/min-dalle-flax).
+The flax model and the code for coverting it to torch can be found [here](https://github.com/kuprel/min-dalle-flax).
 
 ## Install
 
@@ -32,9 +32,10 @@ $ python image_from_text.py --text='court sketch of godzilla on trial' --mega
 ```
 ![Godzilla Trial](examples/godzilla_on_trial.png)
 
+
 ### Python
 
-To load a model once and generate multiple times, first initialize `MinDalleTorch`
+To load a model once and generate multiple times, first initialize `MinDalleTorch`.
 
 ```python
 from min_dalle import MinDalleTorch
@@ -46,19 +47,19 @@ model = MinDalleTorch(
 )
 ```
 
+
 The required models will be downloaded to `models_root` if they are not already there.  After the model has loaded, call `generate_image` with some text and a seed as many times as you want.
 
 ```python
-image = model.generate_image("a comfy chair that looks like an avocado")
+text = "a comfy chair that looks like an avocado"
+image = model.generate_image(text)
 display(image)
 ```
 ![Avocado Armchair](examples/avocado_armchair.png)
 
 ```python
-image = model.generate_image(
-    "trail cam footage of gollum eating watermelon", 
-    seed=1
-)
+text = "trail cam footage of gollum eating watermelon"
+image = model.generate_image(text, seed=1)
 display(image)
 ```
 ![Gollum Trailcam](examples/gollum_trailcam.png)
