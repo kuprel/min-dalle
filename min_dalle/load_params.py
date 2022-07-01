@@ -129,7 +129,7 @@ def convert_and_save_torch_params(is_mega: bool, model_path: str):
         encoder_params[i] = encoder_params[i].to(torch.float16)
 
     detoker_params = load_vqgan_torch_params('./pretrained/vqgan')
-    detoker_path = os.path.join('pretrained', 'vqgan', 'detokenizer.pt')
+    detoker_path = os.path.join('pretrained', 'vqgan', 'detoker.pt')
 
     torch.save(encoder_params, os.path.join(model_path, 'encoder.pt'))
     torch.save(decoder_params, os.path.join(model_path, 'decoder.pt'))

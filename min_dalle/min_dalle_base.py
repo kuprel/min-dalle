@@ -3,7 +3,6 @@ import json
 import numpy
 
 from .text_tokenizer import TextTokenizer
-from .models.vqgan_detokenizer import VQGanDetokenizer
 
 class MinDalleBase:
     def __init__(self, is_mega: bool):

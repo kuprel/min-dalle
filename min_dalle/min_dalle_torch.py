@@ -27,7 +27,7 @@ class MinDalleTorch(MinDalleBase):
     
         self.encoder_params_path = os.path.join(self.model_path, 'encoder.pt')
         self.decoder_params_path = os.path.join(self.model_path, 'decoder.pt')
-        self.detoker_params_path = os.path.join('pretrained', 'vqgan', 'detokenizer.pt')
+        self.detoker_params_path = os.path.join('pretrained', 'vqgan', 'detoker.pt')
 
         is_converted = os.path.exists(self.encoder_params_path)
         is_converted &= os.path.exists(self.decoder_params_path)
