@@ -9,7 +9,7 @@ It currently takes **7.4 seconds** to generate an image with DALL·E Mega with P
 
 ### Setup
 
-Run either `sh setup_torch.sh` or `sh setup_flax.sh` to install dependencies and download pretrained models.  The torch models can be manually downloaded [here](https://huggingface.co/kuprel/min-dalle/tree/main).
+Run either `sh setup.sh` to install dependencies and download pretrained models.  The torch models can be manually downloaded [here](https://huggingface.co/kuprel/min-dalle/tree/main).
 The flax models can be manually downloaded here: 
 [VQGan](https://huggingface.co/dalle-mini/vqgan_imagenet_f16_16384), 
 [DALL·E Mini](https://wandb.ai/dalle-mini/dalle-mini/artifacts/DalleBart_model/mini-1/v0/files), 

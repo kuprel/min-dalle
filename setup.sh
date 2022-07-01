@@ -2,7 +2,7 @@
 
 set -e
 
-pip3 install torch
+pip3 install -r requirements.txt
 
 mkdir -p ./pretrained/dalle_bart_mega/
 curl https://huggingface.co/kuprel/min-dalle/resolve/main/vocab.json -L --output ./pretrained/dalle_bart_mega/vocab.json

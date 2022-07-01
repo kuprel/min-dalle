@@ -2,7 +2,7 @@
 
 set -e
 
-pip install torch flax wandb
+pip3 install -r requirements_flax.txt
 
 # download vqgan
 mkdir -p pretrained/vqgan
