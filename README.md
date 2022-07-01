@@ -20,22 +20,6 @@ $ pip install min-dalle
 
 ## Usage
 
-
-### Command Line
-
-Use the python script `image_from_text.py` to generate images from the command line.
-
-```bash
-$ python image_from_text.py --text='artificial intelligence' --seed=7
-```
-![Artificial Intelligence](examples/artificial_intelligence.png)
-
-```bash
-$ python image_from_text.py --text='court sketch of godzilla on trial' --mega
-```
-![Godzilla Trial](examples/godzilla_on_trial.png)
-
-
 ### Python
 
 To load a model once and generate multiple times, first initialize `MinDalleTorch`.
@@ -49,7 +33,6 @@ model = MinDalleTorch(
     models_root='./pretrained'
 )
 ```
-
 
 The required models will be downloaded to `models_root` if they are not already there.  After the model has loaded, call `generate_image` with some text and a seed as many times as you want.
 
@@ -66,3 +49,18 @@ image = model.generate_image(text, seed=1)
 display(image)
 ```
 ![Gollum Trailcam](examples/gollum_trailcam.png)
+
+
+### Command Line
+
+Use the python script `image_from_text.py` to generate images from the command line.
+
+```bash
+$ python image_from_text.py --text='artificial intelligence' --seed=7
+```
+![Artificial Intelligence](examples/artificial_intelligence.png)
+
+```bash
+$ python image_from_text.py --text='court sketch of godzilla on trial' --mega
+```
+![Godzilla Trial](examples/godzilla_on_trial.png)
