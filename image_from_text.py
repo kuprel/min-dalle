@@ -11,9 +11,9 @@ parser.add_argument('--no-mega', dest='mega', action='store_false')
 parser.set_defaults(mega=False)
 parser.add_argument('--torch', action='store_true')
 parser.add_argument('--no-torch', dest='torch', action='store_false')
-parser.set_defaults(torch=False)
-parser.add_argument('--text', type=str, default='alien life')
-parser.add_argument('--seed', type=int, default=7)
+parser.set_defaults(torch=True)
+parser.add_argument('--text', type=str, default='cat')
+parser.add_argument('--seed', type=int, default=0)
 parser.add_argument('--image_path', type=str, default='generated')
 parser.add_argument('--token_count', type=int, default=256) # for debugging
 
@@ -48,7 +48,7 @@ def generate_image(
     if is_torch:
         image_generator = MinDalleTorch(is_mega, is_reusable, token_count)
 
-        if token_count < image_generator.config['image_length']:
+        if token_count < 256:
             image_tokens = image_generator.generate_image_tokens(text, seed)
             print('image tokens', list(image_tokens.to('cpu').detach().numpy()))
             return

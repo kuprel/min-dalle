@@ -2,7 +2,7 @@
 **/.cache/
 **/*.pkl
 **/.DS*
-*.pt
+**/*.pt
 *.mlpackage
 **/*.ckpt
 .vscode

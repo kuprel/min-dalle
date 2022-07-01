@@ -22,19 +22,19 @@ Use the python script `image_from_text.py` to generate images from the command l
 ### Examples
 
 ```
-python image_from_text.py --text='artificial intelligence' --torch
+python image_from_text.py --text='artificial intelligence' --seed=7
 ```
 ![Alien](examples/artificial_intelligence.png)
 
 
 ```
-python image_from_text.py --text='a comfy chair that looks like an avocado' --torch --mega --seed=10
+python image_from_text.py --text='a comfy chair that looks like an avocado' --mega --seed=10
 ```
 ![Avocado Armchair](examples/avocado_armchair.png)
 
 
 ```
-python image_from_text.py --text='court sketch of godzilla on trial' --torch --mega --seed=40
+python image_from_text.py --text='court sketch of godzilla on trial' --mega --seed=40
 ```
 
 ![Godzilla Trial](examples/godzilla_trial.png)

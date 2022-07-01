@@ -130,7 +130,6 @@ def keep_top_k(logits: jnp.ndarray, k: int) -> jnp.ndarray:
 
 class DalleBartDecoderFlax(nn.Module):
     image_token_count: int
-    text_token_count: int
     image_vocab_count: int
     attention_head_count: int
     embed_count: int
