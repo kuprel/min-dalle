@@ -11,7 +11,7 @@ The flax model, and the code for coverting it to torch, have been moved [here](h
 
 ### Install
 
-```zsh
+```bash
 $ pip install min-dalle
 ```  
 
@@ -19,12 +19,12 @@ $ pip install min-dalle
 
 Use the python script `image_from_text.py` to generate images from the command line.
 
-```zsh
+```bash
 $ python image_from_text.py --text='artificial intelligence' --seed=7
 ```
 ![Artificial Intelligence](examples/artificial_intelligence.png)
 
-```zsh
+```bash
 $ python image_from_text.py --text='court sketch of godzilla on trial' --mega
 ```
 ![Godzilla Trial](examples/godzilla_on_trial.png)
@@ -48,9 +48,10 @@ display(image)
 ![Avocado Armchair](examples/avocado_armchair.png)
 
 ```python
-image = model.generate_image("trail cam footage of gollum eating watermelon", seed=1)
+image = model.generate_image(
+    "trail cam footage of gollum eating watermelon", 
+    seed=1
+)
 display(image)
 ```
 ![Gollum Trailcam](examples/gollum_trailcam.png)
-
-Model parameters will be downloaded as needed to the directory specified.  The models can also be manually downloaded [here](https://huggingface.co/kuprel/min-dalle/tree/main).
