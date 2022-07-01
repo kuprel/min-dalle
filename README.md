@@ -35,7 +35,7 @@ python image_from_text.py --text='a comfy chair that looks like an avocado' --me
 python image_from_text.py --text='court sketch of godzilla on trial' --mega --seed=40
 ```
 
-![Godzilla Trial](examples/godzilla_trial.png)
+![Godzilla Trial](examples/godzilla_on_trial.png)
 
 
 ```
