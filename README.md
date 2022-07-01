@@ -11,11 +11,27 @@ The flax model, and the code for coverting it to torch, have been moved [here](h
 
 ### Install
 
-```$ pip install min-dalle```  
+```
+$ pip install min-dalle
+```  
 
 ### Usage
 
-Use the python script `image_from_text.py` to generate images from the command line.  Note: the command line script loads the models and parameters each time.  To load a model once and generate multiple times, initialize `MinDalleTorch`, then call `generate_image` with some text and a seed.  See the colab for an example.
+Use the python script `image_from_text.py` to generate images from the command line.
+
+To load a model once and generate multiple times, initialize `MinDalleTorch`, then call `generate_image` with some text and a seed.
+
+```
+from min_dalle import MinDalleTorch
+
+model = MinDalleTorch(
+    is_mega=True, 
+    is_reusable=True,
+    models_root='./pretrained'
+)
+
+image = model.generate_image("court sketch of godzilla on trial", seed=40)
+```
 
 Model parameters will be downloaded as needed to the directory specified.  The models can also be manually downloaded [here](https://huggingface.co/kuprel/min-dalle/tree/main).
 
@@ -36,7 +52,6 @@ python image_from_text.py --text='a comfy chair that looks like an avocado' --me
 ```
 python image_from_text.py --text='court sketch of godzilla on trial' --mega --seed=40
 ```
-
 ![Godzilla Trial](examples/godzilla_on_trial.png)
 
 
