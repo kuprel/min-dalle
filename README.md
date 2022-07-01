@@ -9,13 +9,15 @@ It currently takes **7.4 seconds** to generate an image with DALL·E Mega with P
 
 The flax model, and the code for coverting it to torch, have been moved [here](https://github.com/kuprel/min-dalle-flax).
 
-### Setup
+### Install
 
-Run `sh setup.sh` to install dependencies and download pretrained models.  The torch models can be manually downloaded [here](https://huggingface.co/kuprel/min-dalle/tree/main).
+```$ pip install min-dalle```  
 
 ### Usage
 
 Use the python script `image_from_text.py` to generate images from the command line.  Note: the command line script loads the models and parameters each time.  To load a model once and generate multiple times, initialize `MinDalleTorch`, then call `generate_image` with some text and a seed.  See the colab for an example.
+
+Model parameters will be downloaded as needed to the directory specified.  The models can also be manually downloaded [here](https://huggingface.co/kuprel/min-dalle/tree/main).
 
 ### Examples
 

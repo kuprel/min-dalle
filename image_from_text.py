@@ -39,8 +39,12 @@ def generate_image(
     image_path: str,
     token_count: int
 ):
-    is_reusable = False
-    model = MinDalleTorch(is_mega, is_reusable, token_count)
+    model = MinDalleTorch(
+        is_mega=is_mega, 
+        models_root='pretrained',
+        is_reusable=False,
+        sample_token_count=token_count
+    )
 
     if token_count < 256:
         image_tokens = model.generate_image_tokens(text, seed)

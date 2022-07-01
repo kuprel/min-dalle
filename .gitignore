@@ -10,3 +10,7 @@
 **/generated
 **/pretrained
 **/*.msgpack
+*.egg-info/
+*.egg
+dist
+build
