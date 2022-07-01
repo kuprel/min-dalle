@@ -10,7 +10,7 @@ This is a minimal implementation of Boris Dayma's [DALL·E Mini](https://github.
 
 It currently takes **7.4 seconds** to generate an image with DALL·E Mega on a standard GPU runtime in Colab.
 
-The flax model and the code for coverting it to torch can be found [here](https://github.com/kuprel/min-dalle-flax).
+The flax model and code for converting it to torch can be found [here](https://github.com/kuprel/min-dalle-flax).
 
 ## Install
 
@@ -53,7 +53,7 @@ display(image)
 
 ### Command Line
 
-Use the python script `image_from_text.py` to generate images from the command line.
+Use `image_from_text.py` to generate images from the command line.
 
 ```bash
 $ python image_from_text.py --text='artificial intelligence' --seed=7
