@@ -29,7 +29,7 @@ $ python image_from_text.py --text='court sketch of godzilla on trial' --mega
 ```
 ![Godzilla Trial](examples/godzilla_on_trial.png)
 
-To load a model once and generate multiple times, initialize `MinDalleTorch`, then call `generate_image` with some text and a seed.
+To load a model once and generate multiple times, first initialize `MinDalleTorch`
 
 ```python
 from min_dalle import MinDalleTorch
@@ -40,6 +40,8 @@ model = MinDalleTorch(
     models_root='./pretrained'
 )
 ```
+
+then call `generate_image` with some text and a seed as many times as you like
 
 ```python
 image = model.generate_image("a comfy chair that looks like an avocado")
