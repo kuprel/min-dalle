@@ -4,17 +4,22 @@ set -e
 
 pip3 install -r requirements.txt
 
-mkdir -p ./pretrained/dalle_bart_mega/
-curl https://huggingface.co/kuprel/min-dalle/resolve/main/vocab.json -L --output ./pretrained/dalle_bart_mega/vocab.json
-curl https://huggingface.co/kuprel/min-dalle/resolve/main/merges.txt -L --output ./pretrained/dalle_bart_mega/merges.txt
-curl https://huggingface.co/kuprel/min-dalle/resolve/main/encoder.pt -L --output ./pretrained/dalle_bart_mega/encoder.pt
-curl https://huggingface.co/kuprel/min-dalle/resolve/main/decoder.pt -L --output ./pretrained/dalle_bart_mega/decoder.pt
+repo_path="https://huggingface.co/kuprel/min-dalle/resolve/main"
 
-mkdir -p ./pretrained/dalle_bart_mini/
-curl https://huggingface.co/kuprel/min-dalle/resolve/main/vocab_mini.json -L --output ./pretrained/dalle_bart_mini/vocab.json
-curl https://huggingface.co/kuprel/min-dalle/resolve/main/merges_mini.txt -L --output ./pretrained/dalle_bart_mini/merges.txt
-curl https://huggingface.co/kuprel/min-dalle/resolve/main/encoder_mini.pt -L --output ./pretrained/dalle_bart_mini/encoder.pt
-curl https://huggingface.co/kuprel/min-dalle/resolve/main/decoder_mini.pt -L --output ./pretrained/dalle_bart_mini/decoder.pt
+mini_path="./pretrained/dalle_bart_mini"
+mega_path="./pretrained/dalle_bart_mega"
+vqgan_path="./pretrained/vqgan"
 
-mkdir -p ./pretrained/vqgan/
-curl https://huggingface.co/kuprel/min-dalle/resolve/main/detoker.pt -L --output ./pretrained/vqgan/detoker.pt
+mkdir -p ${vqgan_path}
+mkdir -p ${mini_path}
+mkdir -p ${mega_path}
+
+curl ${repo_path}/detoker.pt -L --output ${vqgan_path}/detoker.pt
+curl ${repo_path}/vocab_mini.json -L --output ${mini_path}/vocab.json
+curl ${repo_path}/merges_mini.txt -L --output ${mini_path}/merges.txt
+curl ${repo_path}/encoder_mini.pt -L --output ${mini_path}/encoder.pt
+curl ${repo_path}/decoder_mini.pt -L --output ${mini_path}/decoder.pt
+curl ${repo_path}/vocab.json -L --output ${mega_path}/vocab.json
+curl ${repo_path}/merges.txt -L --output ${mega_path}/merges.txt
+curl ${repo_path}/encoder.pt -L --output ${mega_path}/encoder.pt
+curl ${repo_path}/decoder.pt -L --output ${mega_path}/decoder.pt

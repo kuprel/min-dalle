@@ -1,18 +1,20 @@
 import os
 from PIL import Image
 from typing import Dict
+import numpy
 from torch import LongTensor
 import torch
+import json
 torch.set_grad_enabled(False)
 torch.set_num_threads(os.cpu_count())
 
-from .min_dalle_base import MinDalleBase
+from .text_tokenizer import TextTokenizer
 from .models.dalle_bart_encoder_torch import DalleBartEncoderTorch
 from .models.dalle_bart_decoder_torch import DalleBartDecoderTorch
 from .models.vqgan_detokenizer import VQGanDetokenizer
 
 
-class MinDalleTorch(MinDalleBase):
+class MinDalleTorch:
     def __init__(
         self, 
         is_mega: bool, 
@@ -20,7 +22,20 @@ class MinDalleTorch(MinDalleBase):
         token_count: int = 256
     ):
         print("initializing MinDalleTorch")
-        super().__init__(is_mega)
+        self.is_mega = is_mega
+        model_name = 'dalle_bart_{}'.format('mega' if is_mega else 'mini')
+        self.model_path = os.path.join('pretrained', model_name)
+
+        print("reading files from {}".format(self.model_path))
+        vocab_path = os.path.join(self.model_path, 'vocab.json')
+        merges_path = os.path.join(self.model_path, 'merges.txt')
+
+        with open(vocab_path, 'r', encoding='utf8') as f:
+            vocab = json.load(f)
+        with open(merges_path, 'r', encoding='utf8') as f:
+            merges = f.read().split("\n")[1:-1]
+            
+        self.tokenizer = TextTokenizer(vocab, merges)
         self.is_reusable = is_reusable
         self.token_count = token_count
     
@@ -76,7 +91,17 @@ class MinDalleTorch(MinDalleBase):
         self.detokenizer.load_state_dict(params)
         del params
         if torch.cuda.is_available(): self.detokenizer = self.detokenizer.cuda()
-            
+
+
+    def tokenize_text(self, text: str) -> numpy.ndarray:
+        print("tokenizing text")
+        tokens = self.tokenizer.tokenize(text)
+        print("text tokens", tokens)
+        text_tokens = numpy.ones((2, 64), dtype=numpy.int32)
+        text_tokens[0, :2] = [tokens[0], tokens[-1]]
+        text_tokens[1, :len(tokens)] = tokens
+        return text_tokens
+
 
     def generate_image_tokens(self, text: str, seed: int) -> LongTensor:
         text_tokens = self.tokenize_text(text)
