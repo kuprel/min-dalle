@@ -6,7 +6,6 @@ import torch
 torch.set_grad_enabled(False)
 torch.set_num_threads(os.cpu_count())
 
-from .load_params import convert_and_save_torch_params
 from .min_dalle_base import MinDalleBase
 from .models.dalle_bart_encoder_torch import DalleBartEncoderTorch
 from .models.dalle_bart_decoder_torch import DalleBartDecoderTorch
@@ -28,12 +27,6 @@ class MinDalleTorch(MinDalleBase):
         self.encoder_params_path = os.path.join(self.model_path, 'encoder.pt')
         self.decoder_params_path = os.path.join(self.model_path, 'decoder.pt')
         self.detoker_params_path = os.path.join('pretrained', 'vqgan', 'detoker.pt')
-
-        is_converted = os.path.exists(self.encoder_params_path)
-        is_converted &= os.path.exists(self.decoder_params_path)
-        is_converted &= os.path.exists(self.detoker_params_path)
-        if not is_converted:
-            convert_and_save_torch_params(is_mega, self.model_path)
 
         if is_reusable:
             self.init_encoder()
