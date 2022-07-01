@@ -1,1 +1,1 @@
-from .min_dalle_torch import MinDalleTorch
+from .min_dalle import MinDalle

@@ -3,9 +3,9 @@ import setuptools
 setuptools.setup(
     name='min-dalle',
     description = 'min(DALL·E)',
-    version='0.1.4',
+    version='0.2.0',
     author='Brett Kuprel',
-    author_email = 'brkuprel@gmail.com',
+    author_email='brkuprel@gmail.com',
     packages=[
         'min_dalle', 
         'min_dalle.models'
@@ -18,6 +18,7 @@ setuptools.setup(
     keywords = [
         'artificial intelligence',
         'deep learning',
-        'text to image'
+        'text-to-image',
+        'pytorch'
     ]
 )

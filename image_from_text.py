@@ -2,14 +2,15 @@ import argparse
 import os
 from PIL import Image
 
-from min_dalle import MinDalleTorch
+from min_dalle import MinDalle
+
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--mega', action='store_true')
 parser.add_argument('--no-mega', dest='mega', action='store_false')
 parser.set_defaults(mega=False)
 parser.add_argument('--text', type=str, default='alien life')
-parser.add_argument('--seed', type=int, default=7)
+parser.add_argument('--seed', type=int, default=-1)
 parser.add_argument('--image_path', type=str, default='generated')
 parser.add_argument('--token_count', type=int, default=256) # for debugging
 
@@ -39,7 +40,7 @@ def generate_image(
     image_path: str,
     token_count: int
 ):
-    model = MinDalleTorch(
+    model = MinDalle(
         is_mega=is_mega, 
         models_root='pretrained',
         is_reusable=False,

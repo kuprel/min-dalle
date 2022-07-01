@@ -1,6 +1,5 @@
 import os
 from PIL import Image
-from typing import Dict
 import numpy
 from torch import LongTensor
 import torch
@@ -10,16 +9,13 @@ import random
 torch.set_grad_enabled(False)
 torch.set_num_threads(os.cpu_count())
 
+from .text_tokenizer import TextTokenizer
+from .models import DalleBartEncoder, DalleBartDecoder, VQGanDetokenizer
+
 MIN_DALLE_REPO = 'https://huggingface.co/kuprel/min-dalle/resolve/main/'
 
-from .text_tokenizer import TextTokenizer
-from .models import (
-    DalleBartEncoderTorch, 
-    DalleBartDecoderTorch, 
-    VQGanDetokenizer
-)
 
-class MinDalleTorch:
+class MinDalle:
     def __init__(
         self,
         is_mega: bool, 
@@ -104,7 +100,7 @@ class MinDalleTorch:
         is_downloaded = os.path.exists(self.encoder_params_path)
         if not is_downloaded: self.download_encoder()
         print("initializing DalleBartEncoderTorch")
-        self.encoder = DalleBartEncoderTorch(
+        self.encoder = DalleBartEncoder(
             attention_head_count = self.attention_head_count,
             embed_count = self.embed_count,
             glu_embed_count = self.glu_embed_count,
@@ -122,7 +118,7 @@ class MinDalleTorch:
         is_downloaded = os.path.exists(self.decoder_params_path)
         if not is_downloaded: self.download_decoder()
         print("initializing DalleBartDecoderTorch")
-        self.decoder = DalleBartDecoderTorch(
+        self.decoder = DalleBartDecoder(
             sample_token_count = self.sample_token_count,
             image_token_count = self.image_token_count,
             image_vocab_count = self.image_vocab_count,

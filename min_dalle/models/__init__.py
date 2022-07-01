@@ -1,3 +1,3 @@
-from .dalle_bart_encoder_torch import DalleBartEncoderTorch
-from .dalle_bart_decoder_torch import DalleBartDecoderTorch
+from .dalle_bart_encoder import DalleBartEncoder
+from .dalle_bart_decoder import DalleBartDecoder
 from .vqgan_detokenizer import VQGanDetokenizer

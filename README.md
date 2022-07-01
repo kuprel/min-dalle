@@ -22,12 +22,12 @@ $ pip install min-dalle
 
 ### Python
 
-To load a model once and generate multiple times, first initialize `MinDalleTorch`.
+To load a model once and generate multiple times, first initialize `MinDalle`.
 
 ```python
-from min_dalle import MinDalleTorch
+from min_dalle import MinDalle
 
-model = MinDalleTorch(
+model = MinDalle(
     is_mega=True, 
     is_reusable=True,
     models_root='./pretrained'

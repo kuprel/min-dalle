@@ -1,11 +1,11 @@
 import tempfile
 from cog import BasePredictor, Path, Input
 
-from min_dalle.min_dalle_torch import MinDalleTorch
+from min_dalle import MinDalle
 
 class Predictor(BasePredictor):
     def setup(self):
-        self.model = MinDalleTorch(is_mega=True)
+        self.model = MinDalle(is_mega=True)
 
     def predict(
         self,

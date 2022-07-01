@@ -4,7 +4,7 @@ from torch import nn, BoolTensor, FloatTensor, LongTensor
 torch.set_grad_enabled(False)
 
 
-class GLUTorch(nn.Module):
+class GLU(nn.Module):
     def __init__(self, count_in_out, count_middle):
         super().__init__()
         self.gelu = nn.GELU()
@@ -24,7 +24,7 @@ class GLUTorch(nn.Module):
         return z
 
 
-class AttentionTorch(nn.Module):
+class AttentionBase(nn.Module):
     def __init__(self, head_count: int, embed_count: int):
         super().__init__()
         self.head_count = head_count
@@ -72,7 +72,7 @@ class AttentionTorch(nn.Module):
         return attention_output
 
 
-class EncoderSelfAttentionTorch(AttentionTorch):
+class EncoderSelfAttention(AttentionBase):
     def forward(
         self,
         encoder_state: FloatTensor,
@@ -84,13 +84,13 @@ class EncoderSelfAttentionTorch(AttentionTorch):
         return super().forward(keys, values, queries, attention_mask)
 
 
-class EncoderLayerTorch(nn.Module):
+class EncoderLayer(nn.Module):
     def __init__(self, embed_count: int, head_count: int, glu_embed_count: int):
         super().__init__()
         self.pre_self_attn_layer_norm = nn.LayerNorm(embed_count)
-        self.self_attn = EncoderSelfAttentionTorch(head_count, embed_count)
+        self.self_attn = EncoderSelfAttention(head_count, embed_count)
         self.self_attn_layer_norm = nn.LayerNorm(embed_count)
-        self.glu = GLUTorch(embed_count, glu_embed_count)
+        self.glu = GLU(embed_count, glu_embed_count)
     
     def forward(
         self,
@@ -108,7 +108,7 @@ class EncoderLayerTorch(nn.Module):
         return encoder_state
 
 
-class DalleBartEncoderTorch(nn.Module):
+class DalleBartEncoder(nn.Module):
     def __init__(
         self,
         layer_count: int,
@@ -121,8 +121,8 @@ class DalleBartEncoderTorch(nn.Module):
         super().__init__()
         self.embed_tokens = nn.Embedding(text_vocab_count, embed_count)
         self.embed_positions = nn.Embedding(text_token_count, embed_count)
-        self.layers: List[EncoderLayerTorch] = nn.ModuleList([
-            EncoderLayerTorch(
+        self.layers: List[EncoderLayer] = nn.ModuleList([
+            EncoderLayer(
                 embed_count = embed_count,
                 head_count = attention_head_count,
                 glu_embed_count = glu_embed_count
