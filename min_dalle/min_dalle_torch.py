@@ -6,6 +6,7 @@ from torch import LongTensor
 import torch
 import json
 import requests
+import random
 torch.set_grad_enabled(False)
 torch.set_num_threads(os.cpu_count())
 
@@ -167,6 +168,7 @@ class MinDalleTorch:
 
         if not self.is_reusable: self.init_decoder()
         print("sampling image tokens")
+        if seed < 0: seed = random.randint(0, 2 ** 31)
         torch.manual_seed(seed)
         image_tokens = self.decoder.forward(text_tokens, encoder_state)
         if not self.is_reusable: del self.decoder

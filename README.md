@@ -11,13 +11,23 @@ The flax model, and the code for coverting it to torch, have been moved [here](h
 
 ### Install
 
-```bash
+```zsh
 $ pip install min-dalle
 ```  
 
 ### Usage
 
 Use the python script `image_from_text.py` to generate images from the command line.
+
+```zsh
+$ python image_from_text.py --text='artificial intelligence' --seed=7
+```
+![Artificial Intelligence](examples/artificial_intelligence.png)
+
+```zsh
+$ python image_from_text.py --text='court sketch of godzilla on trial' --mega
+```
+![Godzilla Trial](examples/godzilla_on_trial.png)
 
 To load a model once and generate multiple times, initialize `MinDalleTorch`, then call `generate_image` with some text and a seed.
 
@@ -29,33 +39,17 @@ model = MinDalleTorch(
     is_reusable=True,
     models_root='./pretrained'
 )
-
-image = model.generate_image("court sketch of godzilla on trial", seed=40)
 ```
 
-Model parameters will be downloaded as needed to the directory specified.  The models can also be manually downloaded [here](https://huggingface.co/kuprel/min-dalle/tree/main).
-
-### Examples
-
+```python
+image = model.generate_image("a comfy chair that looks like an avocado")
+display(image)
 ```
-python image_from_text.py --text='artificial intelligence' --seed=7
-```
-![Alien](examples/artificial_intelligence.png)
 
-
-```
-python image_from_text.py --text='a comfy chair that looks like an avocado' --mega --seed=10
-```
-![Avocado Armchair](examples/avocado_armchair.png)
-
-
-```
-python image_from_text.py --text='court sketch of godzilla on trial' --mega --seed=40
-```
-![Godzilla Trial](examples/godzilla_on_trial.png)
-
-
-```
-python image_from_text.py --text='trail cam footage of gollum eating watermelon' --mega --seed=1
+```python
+image = model.generate_image("trail cam footage of gollum eating watermelon", seed=1)
+display(image)
 ```
 ![Gollum Trailcam](examples/gollum_trailcam.png)
+
+Model parameters will be downloaded as needed to the directory specified.  The models can also be manually downloaded [here](https://huggingface.co/kuprel/min-dalle/tree/main).
