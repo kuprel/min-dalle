@@ -11,7 +11,7 @@ The flax model, and the code for coverting it to torch, have been moved [here](h
 
 ### Install
 
-```
+```bash
 $ pip install min-dalle
 ```  
 
@@ -21,7 +21,7 @@ Use the python script `image_from_text.py` to generate images from the command l
 
 To load a model once and generate multiple times, initialize `MinDalleTorch`, then call `generate_image` with some text and a seed.
 
-```
+```python
 from min_dalle import MinDalleTorch
 
 model = MinDalleTorch(
