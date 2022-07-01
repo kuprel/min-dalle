@@ -5,9 +5,9 @@
 
 This is a minimal implementation of Boris Dayma's [DALL·E Mini](https://github.com/borisdayma/dalle-mini) in PyTorch.  It has been stripped to the bare essentials necessary for doing inference.  The only third party dependencies are numpy and torch.
 
-It currently takes **7.4 seconds** to generate an image with DALL·E Mega with PyTorch on a standard GPU runtime in Colab
+It currently takes **7.4 seconds** to generate an image with DALL·E Mega on a standard GPU runtime in Colab
 
-The flax model, and the code for coverting it to torch, have been moved [here](https://github.com/kuprel/min-dalle-flax).
+The flax model, and the code for coverting it to torch can be found [here](https://github.com/kuprel/min-dalle-flax).
 
 ## Install
 
