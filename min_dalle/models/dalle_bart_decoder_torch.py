@@ -184,7 +184,7 @@ class DalleBartDecoderTorch(nn.Module):
         decoder_state = self.final_ln(decoder_state)
         logits = self.lm_head(decoder_state)
         a = self.condition_factor
-        logits: FloatTensor = a * logits[0, -1] + (1 - a) * logits[1, -1]
+        logits: FloatTensor = (1 - a) * logits[0, -1] + a * logits[1, -1]
 
         top_logits, _ = logits.topk(50, dim=-1)
         probs = torch.where(
