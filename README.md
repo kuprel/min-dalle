@@ -17,6 +17,9 @@ $ pip install min-dalle
 
 ### Usage
 
+
+#### Command Line
+
 Use the python script `image_from_text.py` to generate images from the command line.
 
 ```bash
@@ -28,6 +31,8 @@ $ python image_from_text.py --text='artificial intelligence' --seed=7
 $ python image_from_text.py --text='court sketch of godzilla on trial' --mega
 ```
 ![Godzilla Trial](examples/godzilla_on_trial.png)
+
+#### Python
 
 To load a model once and generate multiple times, first initialize `MinDalleTorch`
 
