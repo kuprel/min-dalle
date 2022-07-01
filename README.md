@@ -9,16 +9,16 @@ It currently takes **7.4 seconds** to generate an image with DALL·E Mega with P
 
 The flax model, and the code for coverting it to torch, have been moved [here](https://github.com/kuprel/min-dalle-flax).
 
-### Install
+## Install
 
 ```bash
 $ pip install min-dalle
 ```  
 
-### Usage
+## Usage
 
 
-#### Command Line
+### Command Line
 
 Use the python script `image_from_text.py` to generate images from the command line.
 
@@ -32,7 +32,7 @@ $ python image_from_text.py --text='court sketch of godzilla on trial' --mega
 ```
 ![Godzilla Trial](examples/godzilla_on_trial.png)
 
-#### Python
+### Python
 
 To load a model once and generate multiple times, first initialize `MinDalleTorch`
 
