@@ -1,7 +1,7 @@
 import torch
 from torch import Tensor
 from torch.nn import Module, ModuleList, GroupNorm, Conv2d, Embedding
-torch.no_grad()
+torch.set_grad_enabled(False)
 
 BATCH_COUNT: int = 1
 
@@ -61,6 +61,7 @@ class AttentionBlock(Module):
         h = self.proj_out.forward(h)
         return x + h
 
+
 class MiddleLayer(Module):
     def __init__(self):
         super().__init__()
@@ -74,6 +75,7 @@ class MiddleLayer(Module):
         h = self.block_2.forward(h)
         return h
 
+
 class Upsample(Module):
     def __init__(self, log2_count):
         super().__init__()
@@ -85,6 +87,7 @@ class Upsample(Module):
         x = self.upsample.forward(x)
         x = self.conv.forward(x)
         return x
+
 
 class UpsampleBlock(Module):
     def __init__(
@@ -124,6 +127,7 @@ class UpsampleBlock(Module):
             h = self.upsample.forward(h)
         return h
 
+
 class Decoder(Module):
     def __init__(self):
         super().__init__()
@@ -153,6 +157,7 @@ class Decoder(Module):
         z *= torch.sigmoid(z)
         z = self.conv_out.forward(z)
         return z
+
 
 class VQGanDetokenizer(Module):
     def __init__(self):

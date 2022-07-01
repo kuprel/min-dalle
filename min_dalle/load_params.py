@@ -1,17 +1,17 @@
 import os
 import numpy
-from copy import deepcopy
 from typing import Dict
-from flax import traverse_util, serialization
+from flax.traverse_util import flatten_dict
+from flax.serialization import msgpack_restore
 import torch
-torch.no_grad()
+torch.set_grad_enabled(False)
 
 
 def load_vqgan_torch_params(path: str) -> Dict[str, torch.Tensor]:
     with open(os.path.join(path, 'flax_model.msgpack'), "rb") as f:
-        params: Dict[str, numpy.ndarray] = serialization.msgpack_restore(f.read())
+        params: Dict[str, numpy.ndarray] = msgpack_restore(f.read())
 
-    P: Dict[str, numpy.ndarray] = traverse_util.flatten_dict(params, sep='.')
+    P: Dict[str, numpy.ndarray] = flatten_dict(params, sep='.')
 
     for i in list(P.keys()):
         j = i
@@ -30,7 +30,6 @@ def load_vqgan_torch_params(path: str) -> Dict[str, torch.Tensor]:
 
     for i in P:
         P[i] = torch.tensor(P[i])
-        if torch.cuda.is_available(): P[i] = P[i].cuda()
 
     P['embedding.weight'] = P.pop('quantize.embedding.embedding')
 
@@ -43,7 +42,7 @@ def load_vqgan_torch_params(path: str) -> Dict[str, torch.Tensor]:
 
 def load_dalle_bart_flax_params(path: str) -> Dict[str, numpy.ndarray]:
     with open(os.path.join(path, "flax_model.msgpack"), "rb") as f:
-        params = serialization.msgpack_restore(f.read())
+        params = msgpack_restore(f.read())
 
     for codec in ['encoder', 'decoder']:
         k = 'FlaxBart{}Layers'.format(codec.title())
@@ -82,12 +81,10 @@ def convert_dalle_bart_torch_from_flax_params(
     layer_count: int,
     is_encoder: bool
 ) -> dict:
-    P = deepcopy(params)
-    P: Dict[str, numpy.ndarray] = traverse_util.flatten_dict(P, sep='.')
+    P: Dict[str, numpy.ndarray] = flatten_dict(params, sep='.')
 
     for i in P:
-        P[i] = torch.tensor(P[i])
-        if torch.cuda.is_available(): P[i] = P[i].cuda()
+        P[i] = torch.tensor(P[i]).to(torch.float16)
 
     for i in list(P):
         if 'kernel' in i:
@@ -108,3 +105,28 @@ def convert_dalle_bart_torch_from_flax_params(
     P['embed_tokens.weight'] = P.pop('embed_tokens.embedding')
     P['embed_positions.weight'] = P.pop('embed_positions.embedding')
     return P
+
+
+def convert_and_save_torch_params(is_mega: bool, model_path: str):
+    print("converting params to torch")
+    layer_count = 24 if is_mega else 12
+    flax_params = load_dalle_bart_flax_params(model_path)
+    encoder_params = convert_dalle_bart_torch_from_flax_params(
+        flax_params['encoder'],
+        layer_count=layer_count,
+        is_encoder=True
+    )
+    decoder_params = convert_dalle_bart_torch_from_flax_params(
+        flax_params['decoder'],
+        layer_count=layer_count,
+        is_encoder=False
+    )
+
+    for i in decoder_params:
+        decoder_params[i] = decoder_params[i].to(torch.float16)
+    
+    for i in encoder_params:
+        encoder_params[i] = encoder_params[i].to(torch.float16)
+
+    torch.save(encoder_params, os.path.join(model_path, 'encoder.pt'))
+    torch.save(decoder_params, os.path.join(model_path, 'decoder.pt'))

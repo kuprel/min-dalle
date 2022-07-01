@@ -34,12 +34,17 @@ class AttentionFlax(nn.Module):
         self.v_proj = nn.Dense(self.embed_count, use_bias=False)
         self.out_proj = nn.Dense(self.embed_count, use_bias=False)
 
-    def forward(self,
+    def forward(
+        self,
         keys: jnp.ndarray,
         values: jnp.ndarray,
         queries: jnp.ndarray,
         attention_mask: jnp.ndarray
     ) -> jnp.ndarray:
+        keys = keys.reshape(keys.shape[:2] + (self.head_count, -1))
+        values = values.reshape(values.shape[:2] + (self.head_count, -1))
+        queries = queries.reshape(queries.shape[:2] + (self.head_count, -1))
+        queries /= queries.shape[-1] ** 0.5
         attention_bias: jnp.ndarray = lax.select(
             attention_mask,
             jnp.full(attention_mask.shape, 0.0),
@@ -69,11 +74,9 @@ class EncoderSelfAttentionFlax(AttentionFlax):
         encoder_state: jnp.ndarray,
         attention_mask: jnp.ndarray
     ) -> jnp.ndarray:
-        shape_split = encoder_state.shape[:2] + (self.head_count, -1)
-        keys = self.k_proj(encoder_state).reshape(shape_split)
-        values = self.v_proj(encoder_state).reshape(shape_split)
-        queries = self.q_proj(encoder_state).reshape(shape_split)
-        queries /= queries.shape[-1] ** 0.5
+        keys = self.k_proj(encoder_state)
+        values = self.v_proj(encoder_state)
+        queries = self.q_proj(encoder_state)
         return self.forward(keys, values, queries, attention_mask)
 
 
@@ -92,7 +95,8 @@ class DalleBartEncoderLayerFlax(nn.Module):
         self.glu = GLUFlax(self.embed_count, self.glu_embed_count)
 
     @nn.compact
-    def __call__(self,
+    def __call__(
+        self,
         encoder_state: jnp.ndarray,
         attention_mask: jnp.ndarray
     ) -> jnp.ndarray:
@@ -120,7 +124,7 @@ class DalleBartEncoderFlax(nn.Module):
         self.embed_positions = nn.Embed(self.text_token_count, self.embed_count)
         self.layers = nn.scan(
             DalleBartEncoderLayerFlax,
-            variable_axes = { "params": 0, "cache": 0 },
+            variable_axes = { "params": 0 },
             split_rngs = { "params": True },
             in_axes = nn.broadcast,
             length = self.layer_count

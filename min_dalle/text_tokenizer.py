@@ -8,7 +8,7 @@ class TextTokenizer:
         pairs = [tuple(pair.split()) for pair in merges]
         self.rank_from_pair = dict(zip(pairs, range(len(pairs))))
 
-    def __call__(self, text: str) -> List[int]:
+    def tokenize(self, text: str) -> List[int]:
         sep_token = self.token_from_subword['</s>']
         cls_token = self.token_from_subword['<s>']
         unk_token = self.token_from_subword['<unk>']

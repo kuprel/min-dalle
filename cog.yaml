@@ -1,0 +1,12 @@
+build:
+  cuda: "11.0"
+  gpu: true
+  python_version: "3.8"
+  system_packages:
+    - "libgl1-mesa-glx"
+    - "libglib2.0-0"
+  python_packages:
+    - "torch==1.10.1"
+    - "flax==0.5.2"
+
+predict: "predict.py:Predictor"
