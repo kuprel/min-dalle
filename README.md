@@ -3,7 +3,7 @@
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/kuprel/min-dalle/blob/main/min_dalle.ipynb) &nbsp;
 [![Replicate](https://replicate.com/kuprel/min-dalle/badge)](https://replicate.com/kuprel/min-dalle)
 
-This is a minimal implementation of Boris Dayma's [DALL·E Mini](https://github.com/borisdayma/dalle-mini).  It has been stripped to the bare essentials necessary for doing inference, and converted to PyTorch.  To run the torch model, the only third party dependencies are numpy and torch.  Flax is used to convert the weights (which are saved with `torch.save` the first time the model is loaded), and wandb is only used to download the models.
+This is a minimal implementation of Boris Dayma's [DALL·E Mini](https://github.com/borisdayma/dalle-mini).  It has been stripped to the bare essentials necessary for doing inference, and converted to PyTorch.  To run the torch model, the only third party dependencies are numpy and torch.  Flax is used to convert the weights (which are saved the first time the model is loaded), and wandb is only used to download the models.
 
 It currently takes **7.4 seconds** to generate an image with DALL·E Mega with PyTorch on a standard GPU runtime in Colab
 
@@ -33,7 +33,7 @@ python image_from_text.py --text='a comfy chair that looks like an avocado' --to
 
 
 ```
-python image_from_text.py --text='court sketch of godzilla on trial' --mega --seed=100
+python image_from_text.py --text='court sketch of godzilla on trial' --torch --mega --seed=40
 ```
 
 ![Godzilla Trial](examples/godzilla_trial.png)
