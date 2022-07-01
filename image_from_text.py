@@ -2,14 +2,14 @@ import argparse
 import os
 from PIL import Image
 
-from min_dalle.min_dalle_torch import MinDalleTorch
+from min_dalle import MinDalleTorch
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--mega', action='store_true')
 parser.add_argument('--no-mega', dest='mega', action='store_false')
 parser.set_defaults(mega=False)
-parser.add_argument('--text', type=str, default='cat')
-parser.add_argument('--seed', type=int, default=0)
+parser.add_argument('--text', type=str, default='alien life')
+parser.add_argument('--seed', type=int, default=7)
 parser.add_argument('--image_path', type=str, default='generated')
 parser.add_argument('--token_count', type=int, default=256) # for debugging
 
