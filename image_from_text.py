@@ -12,6 +12,7 @@ parser.set_defaults(mega=False)
 parser.add_argument('--text', type=str, default='alien life')
 parser.add_argument('--seed', type=int, default=-1)
 parser.add_argument('--image_path', type=str, default='generated')
+parser.add_argument('--models_root', type=str, default='pretrained')
 parser.add_argument('--token_count', type=int, default=256) # for debugging
 
 
@@ -38,11 +39,12 @@ def generate_image(
     text: str,
     seed: int,
     image_path: str,
+    models_root: str,
     token_count: int
 ):
     model = MinDalle(
         is_mega=is_mega, 
-        models_root='pretrained',
+        models_root=models_root,
         is_reusable=False,
         sample_token_count=token_count,
         is_verbose=True
@@ -65,5 +67,6 @@ if __name__ == '__main__':
         text=args.text,
         seed=args.seed,
         image_path=args.image_path,
+        models_root=args.models_root,
         token_count=args.token_count
     )

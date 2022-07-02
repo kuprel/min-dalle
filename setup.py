@@ -1,11 +1,14 @@
 import setuptools
+from pathlib import Path
 
 setuptools.setup(
     name='min-dalle',
     description = 'min(DALL·E)',
-    version='0.2.0',
+    long_description=(Path(__file__).parent / "README").read_text(),
+    version='0.2.5',
     author='Brett Kuprel',
     author_email='brkuprel@gmail.com',
+    url='https://github.com/kuprel/min-dalle',
     packages=[
         'min_dalle', 
         'min_dalle.models'

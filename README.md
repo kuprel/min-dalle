@@ -37,14 +37,14 @@ text = "a comfy chair that looks like an avocado"
 image = model.generate_image(text)
 display(image)
 ```
-![Avocado Armchair](examples/avocado_armchair.png)
+![Avocado Armchair](https://github.com/kuprel/min-dalle/raw/main/examples/avocado_armchair.png)
 
 ```python
 text = "trail cam footage of gollum eating watermelon"
 image = model.generate_image(text, seed=1)
 display(image)
 ```
-![Gollum Trailcam](examples/gollum_trailcam.png)
+![Gollum Trailcam](https://github.com/kuprel/min-dalle/raw/main/examples/gollum_trailcam.png)
 
 
 ### Command Line
@@ -54,9 +54,9 @@ Use `image_from_text.py` to generate images from the command line.
 ```bash
 $ python image_from_text.py --text='artificial intelligence' --seed=7
 ```
-![Artificial Intelligence](examples/artificial_intelligence.png)
+![Artificial Intelligence](https://github.com/kuprel/min-dalle/raw/main/examples/artificial_intelligence.png)
 
 ```bash
 $ python image_from_text.py --text='court sketch of godzilla on trial' --mega
 ```
-![Godzilla Trial](examples/godzilla_on_trial.png)
+![Godzilla Trial](https://github.com/kuprel/min-dalle/raw/main/examples/godzilla_on_trial.png)
