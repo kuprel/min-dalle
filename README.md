@@ -30,7 +30,7 @@ from min_dalle import MinDalle
 model = MinDalle(is_mega=True, models_root='./pretrained')
 ```
 
-The required models will be downloaded to `models_root` if they are not already there.  After the model has loaded, call `generate_image` with some text and a seed as many times as you want.
+The required models will be downloaded to `models_root` if they are not already there.  Once everything has finished initializing, call `generate_image` with some text and a seed as many times as you want.
 
 ```python
 text = "a comfy chair that looks like an avocado"
