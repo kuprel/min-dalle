@@ -27,11 +27,7 @@ To load a model once and generate multiple times, first initialize `MinDalle`.
 ```python
 from min_dalle import MinDalle
 
-model = MinDalle(
-    is_mega=True, 
-    is_reusable=True,
-    models_root='./pretrained'
-)
+model = MinDalle(is_mega=True, models_root='./pretrained')
 ```
 
 The required models will be downloaded to `models_root` if they are not already there.  After the model has loaded, call `generate_image` with some text and a seed as many times as you want.
