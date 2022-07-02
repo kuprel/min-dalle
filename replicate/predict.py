@@ -13,10 +13,10 @@ class Predictor(BasePredictor):
             description="Text for generating images.",
         ),
         seed: int = Input(
-            description="Specify the seed.",
+            description="Specify a random seed.",
         ),
     ) -> Path:
-        image = self.model.generate_image(text, seed)
+        image = self.model.generate_image(text, seed, grid_size=3)
         out_path = Path(tempfile.mkdtemp()) / "output.png"
         image.save(str(out_path))
 

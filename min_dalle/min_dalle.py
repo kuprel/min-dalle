@@ -5,7 +5,6 @@ from torch import LongTensor
 import torch
 import json
 import requests
-import random
 torch.set_grad_enabled(False)
 torch.set_num_threads(os.cpu_count())
 
@@ -28,7 +27,6 @@ class MinDalle:
         self.is_reusable = is_reusable
         self.is_verbose = is_verbose
         self.sample_token_count = sample_token_count
-        self.batch_count = 2
         self.text_token_count = 64
         self.image_token_count = 256
         self.layer_count = 24 if is_mega else 12
@@ -128,8 +126,7 @@ class MinDalle:
             embed_count = self.embed_count,
             glu_embed_count = self.glu_embed_count,
             layer_count = self.layer_count,
-            start_token = self.image_vocab_count,
-            batch_count = self.batch_count
+            start_token = self.image_vocab_count
         )
         params = torch.load(self.decoder_params_path)
         self.decoder.load_state_dict(params, strict=False)
@@ -148,7 +145,12 @@ class MinDalle:
         if torch.cuda.is_available(): self.detokenizer = self.detokenizer.cuda()
 
 
-    def generate_image_tokens(self, text: str, seed: int) -> LongTensor:
+    def generate_image_tokens(
+        self, 
+        text: str, 
+        seed: int,
+        image_count: int
+    ) -> LongTensor:
         if self.is_verbose: print("tokenizing text")
         tokens = self.tokenizer.tokenize(text)
         if self.is_verbose: print("text tokens", tokens)
@@ -166,18 +168,29 @@ class MinDalle:
 
         if not self.is_reusable: self.init_decoder()
         if self.is_verbose: print("sampling image tokens")
-        if seed < 0: seed = random.randint(0, 2 ** 31)
-        torch.manual_seed(seed)
-        image_tokens = self.decoder.forward(text_tokens, encoder_state)
+        if seed > 0: torch.manual_seed(seed)
+        image_tokens = self.decoder.forward(
+            image_count,
+            text_tokens, 
+            encoder_state
+        )
         if not self.is_reusable: del self.decoder
         return image_tokens
         
 
-    def generate_image(self, text: str, seed: int) -> Image.Image:
-        image_tokens = self.generate_image_tokens(text, seed)
+    def generate_image(
+        self, 
+        text: str, 
+        seed: int = -1,
+        grid_size: int = 1
+    ) -> Image.Image:
+        image_count = grid_size ** 2
+        image_tokens = self.generate_image_tokens(text, seed, image_count)
         if not self.is_reusable: self.init_detokenizer()
         if self.is_verbose: print("detokenizing image")
-        image = self.detokenizer.forward(image_tokens).to(torch.uint8)
+        images = self.detokenizer.forward(image_tokens).to(torch.uint8)
         if not self.is_reusable: del self.detokenizer
+        images = images.reshape([grid_size] * 2 + list(images.shape[1:]))
+        image = images.flatten(1, 2).transpose(0, 1).flatten(1, 2)
         image = Image.fromarray(image.to('cpu').detach().numpy())
         return image

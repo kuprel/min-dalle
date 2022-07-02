@@ -8,7 +8,7 @@
 
 This is a minimal implementation of Boris Dayma's [DALL·E Mini](https://github.com/borisdayma/dalle-mini) in PyTorch.  It has been stripped to the bare essentials necessary for doing inference.  The only third party dependencies are numpy, requests, pillow and torch.
 
-It currently takes **7.4 seconds** to generate an image with DALL·E Mega on a standard GPU runtime in Colab.
+It currently take **35 seconds** to generate a 3x3 grid with DALL·E Mega on a standard GPU runtime in Colab.
 
 The flax model and code for converting it to torch can be found [here](https://github.com/kuprel/min-dalle-flax).
 
@@ -33,18 +33,18 @@ model = MinDalle(is_mega=True, models_root='./pretrained')
 The required models will be downloaded to `models_root` if they are not already there.  Once everything has finished initializing, call `generate_image` with some text and a seed as many times as you want.
 
 ```python
-text = "a comfy chair that looks like an avocado"
+text = 'a comfy chair that looks like an avocado'
 image = model.generate_image(text)
 display(image)
 ```
 ![Avocado Armchair](https://github.com/kuprel/min-dalle/raw/main/examples/avocado_armchair.png)
 
 ```python
-text = "trail cam footage of gollum eating watermelon"
-image = model.generate_image(text, seed=1)
+text = 'court sketch of godzilla on trial'
+image = model.generate_image(text, seed=6, grid_size=3)
 display(image)
 ```
-![Gollum Trailcam](https://github.com/kuprel/min-dalle/raw/main/examples/gollum_trailcam.png)
+![Godzilla Trial](https://github.com/kuprel/min-dalle/raw/main/examples/godzilla_trial.png)
 
 
 ### Command Line
@@ -57,6 +57,6 @@ $ python image_from_text.py --text='artificial intelligence' --seed=7
 ![Artificial Intelligence](https://github.com/kuprel/min-dalle/raw/main/examples/artificial_intelligence.png)
 
 ```bash
-$ python image_from_text.py --text='court sketch of godzilla on trial' --mega
+$ python image_from_text.py --text='trail cam footage of gollum eating watermelon' --mega --seed=1 --grid-size=3
 ```
-![Godzilla Trial](https://github.com/kuprel/min-dalle/raw/main/examples/godzilla_on_trial.png)
+![Gollum Trailcam](https://github.com/kuprel/min-dalle/raw/main/examples/gollum_trailcam.png)

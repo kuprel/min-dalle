@@ -137,8 +137,7 @@ class DalleBartEncoder(nn.Module):
 
     def forward(self, text_tokens: LongTensor) -> FloatTensor:
         attention_mask = text_tokens.not_equal(1)
-        batch_count = text_tokens.shape[0]
-        pose_tokens = torch.stack([self.token_indices] * batch_count)
+        pose_tokens = self.token_indices[None][[0] * text_tokens.shape[0]]
         encoder_state = (
             self.embed_tokens.forward(text_tokens) +
             self.embed_positions.forward(pose_tokens)
