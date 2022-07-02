@@ -10,19 +10,22 @@ class Predictor(BasePredictor):
     def predict(
         self,
         text: str = Input(
-            description="Text for generating images.",
+            description='Text',
+            default='court sketch of godzilla on trial'
         ),
         seed: int = Input(
-            description="Specify a random seed."
+            description='Seed',
+            default=6
         ),
         grid_size: int = Input(
-            description="Specify the grid size.",
+            description='Grid Size',
             ge=1,
-            le=3
+            le=3,
+            default=3
         )
     ) -> Path:
         image = self.model.generate_image(text, seed, grid_size=grid_size)
-        out_path = Path(tempfile.mkdtemp()) / "output.png"
+        out_path = Path(tempfile.mkdtemp()) / 'output.png'
         image.save(str(out_path))
 
         return out_path
