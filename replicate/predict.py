@@ -20,8 +20,8 @@ class Predictor(BasePredictor):
         grid_size: int = Input(
             description='Grid Size',
             ge=1,
-            le=3,
-            default=3
+            le=2,
+            default=2
         )
     ) -> Path:
         image = self.model.generate_image(text, seed, grid_size=grid_size)
