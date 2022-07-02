@@ -48,6 +48,27 @@ display(image)
 ```
 ![Godzilla Trial](https://github.com/kuprel/min-dalle/raw/main/examples/godzilla_trial.png)
 
+```python
+text = 'a funeral at Whole Foods'
+image = model.generate_image(text, seed=10, grid_size=3)
+display(image)
+```
+![Whole Foods Funeral](https://github.com/kuprel/min-dalle/raw/main/examples/funeral.png)
+
+```python
+text = 'Jesus turning water into wine on Americas Got Talent'
+image = model.generate_image(text, seed=2, grid_size=3)
+display(image)
+```
+![Jesus Water Wine](https://github.com/kuprel/min-dalle/raw/main/examples/jesus.png)
+
+```python
+text = 'cctv footage of Yoda robbing a liquor store'
+image = model.generate_image(text, seed=0, grid_size=3)
+display(image)
+```
+![Yoda](https://github.com/kuprel/min-dalle/raw/main/examples/yoda.png)
+
 
 ### Command Line
 
