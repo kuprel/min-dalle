@@ -57,6 +57,6 @@ $ python image_from_text.py --text='artificial intelligence' --seed=7
 ![Artificial Intelligence](https://github.com/kuprel/min-dalle/raw/main/examples/artificial_intelligence.png)
 
 ```bash
-$ python image_from_text.py --text='court sketch of godzilla on trial' --mega
+$ python image_from_text.py --text='court sketch of godzilla on trial' --mega --seed=6 --grid-size=3
 ```
-![Godzilla Trial](https://github.com/kuprel/min-dalle/raw/main/examples/godzilla_on_trial.png)
+![Godzilla Trial](https://github.com/kuprel/min-dalle/raw/main/examples/godzilla_trial.png)
