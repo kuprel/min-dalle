@@ -6,6 +6,6 @@ build:
     - "libgl1-mesa-glx"
     - "libglib2.0-0"
   python_packages:
-    - "min-dalle>=0.2.10"
+    - "min-dalle==0.2.10"
 
 predict: "replicate/predict.py:Predictor"
