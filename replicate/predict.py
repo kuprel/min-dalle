@@ -13,10 +13,12 @@ class Predictor(BasePredictor):
             description="Text for generating images.",
         ),
         seed: int = Input(
-            description="Specify a random seed.",
+            description="Specify a random seed."
         ),
         grid_size: int = Input(
             description="Specify the grid size.",
+            ge=1,
+            le=4
         )
     ) -> Path:
         image = self.model.generate_image(text, seed, grid_size=grid_size)

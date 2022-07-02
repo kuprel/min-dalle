@@ -9,4 +9,4 @@ build:
     - "torch==1.10.1"
     - "flax==0.5.2"
 
-predict: "predict.py:Predictor"
+predict: "replicate/predict.py:Predictor"
