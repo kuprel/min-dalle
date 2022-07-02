@@ -5,7 +5,7 @@ setuptools.setup(
     name='min-dalle',
     description = 'min(DALL·E)',
     long_description=(Path(__file__).parent / "README").read_text(),
-    version='0.2.9',
+    version='0.2.10',
     author='Brett Kuprel',
     author_email='brkuprel@gmail.com',
     url='https://github.com/kuprel/min-dalle',

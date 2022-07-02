@@ -15,8 +15,11 @@ class Predictor(BasePredictor):
         seed: int = Input(
             description="Specify a random seed.",
         ),
+        grid_size: int = Input(
+            description="Specify the grid size.",
+        )
     ) -> Path:
-        image = self.model.generate_image(text, seed, grid_size=3)
+        image = self.model.generate_image(text, seed, grid_size=grid_size)
         out_path = Path(tempfile.mkdtemp()) / "output.png"
         image.save(str(out_path))
 
