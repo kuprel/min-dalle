@@ -1,13 +1,14 @@
 from math import inf
+from typing import List, Tuple
 
 class TextTokenizer:
-    def __init__(self, vocab: dict, merges: list[str], is_verbose: bool = True):
+    def __init__(self, vocab: dict, merges: List[str], is_verbose: bool = True):
         self.is_verbose = is_verbose
         self.token_from_subword = vocab
         pairs = [tuple(pair.split()) for pair in merges]
         self.rank_from_pair = dict(zip(pairs, range(len(pairs))))
 
-    def tokenize(self, text: str) -> list[int]:
+    def tokenize(self, text: str) -> List[int]:
         sep_token = self.token_from_subword['</s>']
         cls_token = self.token_from_subword['<s>']
         unk_token = self.token_from_subword['<unk>']
@@ -19,8 +20,8 @@ class TextTokenizer:
         ]
         return [cls_token] + tokens + [sep_token]
 
-    def get_byte_pair_encoding(self, word: str) -> list[str]:
-        def get_pair_rank(pair: tuple[str, str]) -> int:
+    def get_byte_pair_encoding(self, word: str) -> List[str]:
+        def get_pair_rank(pair: Tuple[str, str]) -> int:
             return self.rank_from_pair.get(pair, inf)
 
         subwords = [chr(ord(" ") + 256)] + list(word)

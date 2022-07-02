@@ -1,12 +1,10 @@
 import os
-from re import I
 from PIL import Image
 import numpy
 from torch import LongTensor
 import torch
 import json
 import requests
-import random
 torch.set_grad_enabled(False)
 torch.set_num_threads(os.cpu_count())
 
