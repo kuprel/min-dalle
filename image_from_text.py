@@ -44,7 +44,8 @@ def generate_image(
         is_mega=is_mega, 
         models_root='pretrained',
         is_reusable=False,
-        sample_token_count=token_count
+        sample_token_count=token_count,
+        is_verbose=True
     )
 
     if token_count < 256:

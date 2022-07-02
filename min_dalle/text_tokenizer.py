@@ -3,7 +3,8 @@ from typing import List, Tuple
 
 
 class TextTokenizer:
-    def __init__(self, vocab: dict, merges: List[str]):
+    def __init__(self, vocab: dict, merges: List[str], is_verbose: bool = True):
+        self.is_verbose = is_verbose
         self.token_from_subword = vocab
         pairs = [tuple(pair.split()) for pair in merges]
         self.rank_from_pair = dict(zip(pairs, range(len(pairs))))
@@ -36,5 +37,5 @@ class TextTokenizer:
                 (subwords[i + 2:] if i + 2 < len(subwords) else [])
             )
 
-        print(subwords)
+        if self.is_verbose: print(subwords)
         return subwords
