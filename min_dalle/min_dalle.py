@@ -148,7 +148,13 @@ class MinDalle:
         if torch.cuda.is_available(): self.detokenizer = self.detokenizer.cuda()
 
 
-    def generate_image_tokens(self, text: str, seed: int) -> LongTensor:
+    def generate_image_tokens(self, text: str, seeds) -> LongTensor:
+        # Accept a non-list seed and Return a single entry instead of a list in that case, keeping compatibility
+        if type(seeds) is int:
+            single_mode = True
+            seeds = [ seeds ]
+        else:
+            single_mode = False
         if self.is_verbose: print("tokenizing text")
         tokens = self.tokenizer.tokenize(text)
         if self.is_verbose: print("text tokens", tokens)
@@ -165,19 +171,30 @@ class MinDalle:
         if not self.is_reusable: del self.encoder
 
         if not self.is_reusable: self.init_decoder()
-        if self.is_verbose: print("sampling image tokens")
-        if seed < 0: seed = random.randint(0, 2 ** 31)
-        torch.manual_seed(seed)
-        image_tokens = self.decoder.forward(text_tokens, encoder_state)
+        image_tokens_array = [ ]
+        for s in seeds:
+            if self.is_verbose: print("sampling image tokens for seed {}".format(s))
+            torch.manual_seed(s)
+            image_tokens_array += [ self.decoder.forward(text_tokens, encoder_state) ]
         if not self.is_reusable: del self.decoder
-        return image_tokens
+        
+        return image_tokens_array[0] if single_mode else image_tokens_array
         
 
-    def generate_image(self, text: str, seed: int) -> Image.Image:
-        image_tokens = self.generate_image_tokens(text, seed)
+    def generate_image(self, text: str, seeds) -> Image.Image:
+        # Accept a non-list seed and Return a single entry instead of a list in that case, keeping compatibility
+        if type(seeds) is int:
+            single_mode = True
+            seeds = [ seeds ]
+        else:
+            single_mode = False
+        image_tokens_array = self.generate_image_tokens(text, seeds)
         if not self.is_reusable: self.init_detokenizer()
-        if self.is_verbose: print("detokenizing image")
-        image = self.detokenizer.forward(image_tokens).to(torch.uint8)
+        images = [ ]
+        for image_tokens in image_tokens_array:
+            if self.is_verbose: print("detokenizing image")
+            image = self.detokenizer.forward(image_tokens).to(torch.uint8)
+            images += [ Image.fromarray(image.to('cpu').detach().numpy()) ]
         if not self.is_reusable: del self.detokenizer
-        image = Image.fromarray(image.to('cpu').detach().numpy())
-        return image
+        # If we didn't get a seed list, return a single image and not a list of images for backwards compatibility
+        return images[0] if single_mode else images
