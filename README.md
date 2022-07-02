@@ -22,7 +22,7 @@ $ pip install min-dalle
 
 ### Python
 
-To load a model once and generate multiple times, first initialize `MinDalle`.
+Load the model parameters once and reuse the model to generate multiple images.
 
 ```python
 from min_dalle import MinDalle
