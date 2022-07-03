@@ -38,42 +38,42 @@ text = 'Dali painting of WallE'
 image = model.generate_image(text, seed=0, grid_size=4)
 display(image)
 ```
-<img src="https://github.com/kuprel/min-dalle/raw/main/examples/dali_walle.png" alt="drawing" width="300"/>
+<img src="https://github.com/kuprel/min-dalle/raw/main/examples/dali_walle.jpg" alt="drawing" width="300"/>
 
 ```python
 text = 'Rusty Iron Man suit found abandoned in the woods being reclaimed by nature'
 image = model.generate_image(text, seed=0, grid_size=3)
 display(image)
 ```
-<img src="https://github.com/kuprel/min-dalle/raw/main/examples/ironman.png" alt="drawing" width="300"/>
+<img src="https://github.com/kuprel/min-dalle/raw/main/examples/ironman.jpg" alt="drawing" width="300"/>
 
 ```python
 text = 'court sketch of godzilla on trial'
 image = model.generate_image(text, seed=6, grid_size=3)
 display(image)
 ```
-<img src="https://github.com/kuprel/min-dalle/raw/main/examples/godzilla_trial.png" alt="drawing" width="300"/>
+<img src="https://github.com/kuprel/min-dalle/raw/main/examples/godzilla_trial.jpg" alt="drawing" width="300"/>
 
 ```python
 text = 'a funeral at Whole Foods'
 image = model.generate_image(text, seed=10, grid_size=3)
 display(image)
 ```
-<img src="https://github.com/kuprel/min-dalle/raw/main/examples/funeral.png" alt="drawing" width="300"/>
+<img src="https://github.com/kuprel/min-dalle/raw/main/examples/funeral.jpg" alt="drawing" width="300"/>
 
 ```python
 text = 'Jesus turning water into wine on Americas Got Talent'
 image = model.generate_image(text, seed=2, grid_size=3)
 display(image)
 ```
-<img src="https://github.com/kuprel/min-dalle/raw/main/examples/jesus.png" alt="drawing" width="300"/>
+<img src="https://github.com/kuprel/min-dalle/raw/main/examples/jesus.jpg" alt="drawing" width="300"/>
 
 ```python
 text = 'cctv footage of Yoda robbing a liquor store'
 image = model.generate_image(text, seed=0, grid_size=3)
 display(image)
 ```
-<img src="https://github.com/kuprel/min-dalle/raw/main/examples/yoda.png" alt="drawing" width="300"/>
+<img src="https://github.com/kuprel/min-dalle/raw/main/examples/yoda.jpg" alt="drawing" width="300"/>
 
 
 ### Command Line
@@ -83,9 +83,9 @@ Use `image_from_text.py` to generate images from the command line.
 ```bash
 $ python image_from_text.py --text='artificial intelligence' --seed=7
 ```
-<img src="https://github.com/kuprel/min-dalle/raw/main/examples/artificial_intelligence.png" alt="drawing" width="200"/>
+<img src="https://github.com/kuprel/min-dalle/raw/main/examples/artificial_intelligence.jpg" alt="drawing" width="200"/>
 
 ```bash
 $ python image_from_text.py --text='trail cam footage of gollum eating watermelon' --mega --seed=1 --grid-size=3
 ```
-<img src="https://github.com/kuprel/min-dalle/raw/main/examples/gollum_trailcam.png" alt="drawing" width="300"/>
+<img src="https://github.com/kuprel/min-dalle/raw/main/examples/gollum_trailcam.jpg" alt="drawing" width="300"/>
