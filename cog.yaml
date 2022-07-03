@@ -7,5 +7,7 @@ build:
     - "libglib2.0-0"
   python_packages:
     - "min-dalle==0.2.10"
+  run:
+    - pip install torch==1.10.0+cu113 -f https://download.pytorch.org/whl/torch_stable.html
 
 predict: "replicate/predict.py:Predictor"
