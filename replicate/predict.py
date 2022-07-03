@@ -20,7 +20,7 @@ class Predictor(BasePredictor):
         grid_size: int = Input(
             description='Grid Size',
             ge=1,
-            le=3,
+            le=4,
             default=3
         )
     ) -> Path:

@@ -6,7 +6,7 @@
 &nbsp;
 [![Join us on Discord](https://img.shields.io/discord/823813159592001537?color=5865F2&logo=discord&logoColor=white)](https://discord.gg/xBPBXfcFHd)
 
-This is a minimal implementation of Boris Dayma's [DALL·E Mini](https://github.com/borisdayma/dalle-mini) in PyTorch.  It has been stripped to the bare essentials necessary for doing inference.  The only third party dependencies are numpy, requests, pillow and torch.
+This is a fast, minimal implementation of Boris Dayma's [DALL·E Mini](https://github.com/borisdayma/dalle-mini) in PyTorch.  It has been stripped to the bare essentials necessary for doing inference.  The only third party dependencies are numpy, requests, pillow and torch.
 
 To generate a 3x3 grid of DALL·E Mega images it takes
 - **35 seconds** with a P100 in Colab
