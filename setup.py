@@ -5,7 +5,7 @@ setuptools.setup(
     name='min-dalle',
     description = 'min(DALL·E)',
     long_description=(Path(__file__).parent / "README").read_text(),
-    version='0.2.10',
+    version='0.2.12',
     author='Brett Kuprel',
     author_email='brkuprel@gmail.com',
     url='https://github.com/kuprel/min-dalle',
@@ -18,7 +18,8 @@ setuptools.setup(
         'torch>=1.10.0',
         'typing_extensions>=4.1.0',
         'numpy>=1.21',
-        'pillow>=7.1'
+        'pillow>=7.1',
+        'requests>=2.23'
     ],
     keywords = [
         'artificial intelligence',
