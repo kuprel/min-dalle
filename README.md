@@ -11,6 +11,7 @@ This is a minimal implementation of Boris Dayma's [DALL·E Mini](https://github.
 To generate a 3x3 grid of DALL·E Mega images it takes
 - **35 seconds** with a P100 in Colab
 - **15 seconds** with an A100 on Replicate
+- **TBD seconds** with an H100
 
 The flax model and code for converting it to torch can be found [here](https://github.com/kuprel/min-dalle-flax).
 
