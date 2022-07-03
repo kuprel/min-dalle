@@ -34,15 +34,8 @@ model = MinDalle(is_mega=True, models_root='./pretrained')
 The required models will be downloaded to `models_root` if they are not already there.  Once everything has finished initializing, call `generate_image` with some text and a seed as many times as you want.
 
 ```python
-text = 'a comfy chair that looks like an avocado'
-image = model.generate_image(text)
-display(image)
-```
-<img src="https://github.com/kuprel/min-dalle/raw/main/examples/avocado_armchair.png" alt="drawing" width="200"/>
-
-```python
 text = 'Dali painting of WallE'
-image = model.generate_image(text, seed=0, grid_size=3)
+image = model.generate_image(text, seed=0, grid_size=4)
 display(image)
 ```
 <img src="https://github.com/kuprel/min-dalle/raw/main/examples/dali_walle.png" alt="drawing" width="300"/>
