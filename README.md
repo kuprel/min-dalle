@@ -6,7 +6,7 @@
 &nbsp;
 [![Join us on Discord](https://img.shields.io/discord/823813159592001537?color=5865F2&logo=discord&logoColor=white)](https://discord.gg/xBPBXfcFHd)
 
-This is a fast, minimal implementation of Boris Dayma's [DALL·E Mini](https://github.com/borisdayma/dalle-mini).  It has been stripped for inference and converted to PyTorch.  The only third party dependencies are numpy, requests, pillow and torch.
+This is a fast, minimal implementation of Boris Dayma's [DALL·E Mini](https://github.com/borisdayma/dalle-mini).  It has been stripped down for inference and converted to PyTorch.  The only third party dependencies are numpy, requests, pillow and torch.
 
 To generate a 3x3 grid of DALL·E Mega images it takes
 - **35 seconds** with a P100 in Colab
@@ -22,8 +22,6 @@ $ pip install min-dalle
 ```  
 
 ## Usage
-
-### Python
 
 Load the model parameters once and reuse the model to generate multiple images.
 
@@ -43,11 +41,11 @@ display(image)
 <img src="https://github.com/kuprel/min-dalle/raw/main/examples/avocado_armchair.png" alt="drawing" width="200"/>
 
 ```python
-text = 'court sketch of godzilla on trial'
-image = model.generate_image(text, seed=6, grid_size=3)
+text = 'Dali painting of WallE'
+image = model.generate_image(text, seed=0, grid_size=3)
 display(image)
 ```
-<img src="https://github.com/kuprel/min-dalle/raw/main/examples/godzilla_trial.png" alt="drawing" width="300"/>
+<img src="https://github.com/kuprel/min-dalle/raw/main/examples/dali_walle.png" alt="drawing" width="300"/>
 
 ```python
 text = 'Rusty Iron Man suit found abandoned in the woods being reclaimed by nature'
@@ -55,6 +53,13 @@ image = model.generate_image(text, seed=0, grid_size=3)
 display(image)
 ```
 <img src="https://github.com/kuprel/min-dalle/raw/main/examples/ironman.png" alt="drawing" width="300"/>
+
+```python
+text = 'court sketch of godzilla on trial'
+image = model.generate_image(text, seed=6, grid_size=3)
+display(image)
+```
+<img src="https://github.com/kuprel/min-dalle/raw/main/examples/godzilla_trial.png" alt="drawing" width="300"/>
 
 ```python
 text = 'a funeral at Whole Foods'

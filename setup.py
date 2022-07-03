@@ -16,7 +16,9 @@ setuptools.setup(
     license='MIT',
     install_requires=[
         'torch>=1.10.0',
-        'typing_extensions>=4.1.0'
+        'typing_extensions>=4.1.0',
+        'numpy>=1.21',
+        'pillow>=7.1'
     ],
     keywords = [
         'artificial intelligence',
