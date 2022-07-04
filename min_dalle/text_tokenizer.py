@@ -2,13 +2,12 @@ from math import inf
 from typing import List, Tuple
 
 class TextTokenizer:
-    def __init__(self, vocab: dict, merges: List[str], is_verbose: bool = True):
-        self.is_verbose = is_verbose
+    def __init__(self, vocab: dict, merges: List[str]):
         self.token_from_subword = vocab
         pairs = [tuple(pair.split()) for pair in merges]
         self.rank_from_pair = dict(zip(pairs, range(len(pairs))))
 
-    def tokenize(self, text: str) -> List[int]:
+    def tokenize(self, text: str, is_verbose: bool = False) -> List[int]:
         sep_token = self.token_from_subword['</s>']
         cls_token = self.token_from_subword['<s>']
         unk_token = self.token_from_subword['<unk>']
@@ -16,11 +15,11 @@ class TextTokenizer:
         tokens = [
             self.token_from_subword.get(subword, unk_token)
             for word in text.split(" ") if len(word) > 0
-            for subword in self.get_byte_pair_encoding(word)
+            for subword in self.get_byte_pair_encoding(word, is_verbose)
         ]
         return [cls_token] + tokens + [sep_token]
 
-    def get_byte_pair_encoding(self, word: str) -> List[str]:
+    def get_byte_pair_encoding(self, word: str, is_verbose: bool) -> List[str]:
         def get_pair_rank(pair: Tuple[str, str]) -> int:
             return self.rank_from_pair.get(pair, inf)
 
@@ -36,5 +35,5 @@ class TextTokenizer:
                 (subwords[i + 2:] if i + 2 < len(subwords) else [])
             )
 
-        if self.is_verbose: print(subwords)
+        if is_verbose: print(subwords)
         return subwords

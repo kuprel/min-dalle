@@ -8,7 +8,7 @@
 
 This is a fast, minimal implementation of Boris Dayma's [DALL·E Mega](https://github.com/borisdayma/dalle-mini).  It has been stripped down for inference and converted to PyTorch.  The only third party dependencies are numpy, requests, pillow and torch.
 
-To generate a 4x4 grid of DALL·E Mega images it takes
+To generate a 4x4 grid of DALL·E Mega images it takes:
 - 89 sec with a T4 in Colab
 - 48 sec with a P100 in Colab
 - 14 sec with an A100 on Replicate

@@ -8,9 +8,9 @@ Mega <https://github.com/borisdayma/dalle-mini>`__. It has been stripped
 down for inference and converted to PyTorch. The only third party
 dependencies are numpy, requests, pillow and torch.
 
-It takes - **35 seconds** to generate a 3x3 grid with a P100 in Colab -
-**16 seconds** to generate a 4x4 grid with an A100 on Replicate -
-**TBD** to generate a 4x4 grid with an H100 (@NVIDIA?)
+To generate a 4x4 grid of DALL·E Mega images it takes: - 89 sec with a
+T4 in Colab - 48 sec with a P100 in Colab - 14 sec with an A100 on
+Replicate - TBD with an H100 (@NVIDIA?)
 
 The flax model and code for converting it to torch can be found
 `here <https://github.com/kuprel/min-dalle-flax>`__.
