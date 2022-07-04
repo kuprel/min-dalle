@@ -165,6 +165,7 @@ class MinDalle:
         if self.is_verbose: print("encoding text tokens")
         encoder_state = self.encoder.forward(text_tokens)
         if not self.is_reusable: del self.encoder
+        if torch.cuda.is_available(): torch.cuda.empty_cache()
 
         if not self.is_reusable: self.init_decoder()
         if self.is_verbose: print("sampling image tokens")
@@ -175,7 +176,6 @@ class MinDalle:
             encoder_state
         )
         if not self.is_reusable: del self.decoder
-        if torch.cuda.is_available(): torch.cuda.empty_cache()
         return image_tokens
         
 
@@ -187,6 +187,7 @@ class MinDalle:
     ) -> Image.Image:
         image_count = grid_size ** 2
         image_tokens = self.generate_image_tokens(text, seed, image_count)
+        if torch.cuda.is_available(): torch.cuda.empty_cache()
         if not self.is_reusable: self.init_detokenizer()
         if self.is_verbose: print("detokenizing image")
         images = self.detokenizer.forward(image_tokens).to(torch.uint8)
@@ -194,4 +195,5 @@ class MinDalle:
         images = images.reshape([grid_size] * 2 + list(images.shape[1:]))
         image = images.flatten(1, 2).transpose(0, 1).flatten(1, 2)
         image = Image.fromarray(image.to('cpu').detach().numpy())
+        if torch.cuda.is_available(): torch.cuda.empty_cache()
         return image

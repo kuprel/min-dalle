@@ -20,25 +20,28 @@ class DecoderCrossAttention(AttentionBase):
 
 
 class DecoderSelfAttention(AttentionBase):
+    def __init__(self, head_count: int, embed_count: int):
+        super().__init__(head_count, embed_count)
+        token_indices = torch.arange(256)
+        if torch.cuda.is_available(): token_indices = token_indices.cuda()
+        self.token_indices = token_indices
+
     def forward(
         self, 
         decoder_state: FloatTensor,
         attention_state: FloatTensor,
-        attention_mask: BoolTensor,
-        token_mask: BoolTensor
+        token_index: LongTensor
     ) -> Tuple[FloatTensor, FloatTensor]:
         keys = self.k_proj.forward(decoder_state)
         values = self.v_proj.forward(decoder_state)
         queries = self.q_proj.forward(decoder_state)
-        attention_state = torch.where(
-            token_mask[None, :, None], 
-            torch.cat([keys, values]), 
-            attention_state
-        )
+        attn_mask = self.token_indices < token_index + 1
+        attn_mask = attn_mask[None][[0] * decoder_state.shape[0]]
+        attention_state[:, token_index] = torch.cat([keys, values])
         batch_count = decoder_state.shape[0]
         keys = attention_state[:batch_count]
         values = attention_state[batch_count:]
-        decoder_state = super().forward(keys, values, queries, attention_mask)
+        decoder_state = super().forward(keys, values, queries, attn_mask)
         return decoder_state, attention_state
 
 
@@ -60,9 +63,6 @@ class DecoderLayer(nn.Module):
         self.encoder_attn_layer_norm = nn.LayerNorm(embed_count)
         self.glu = GLU(embed_count, glu_embed_count)
 
-        self.token_indices = torch.arange(self.image_token_count)
-        if torch.cuda.is_available():
-            self.token_indices = self.token_indices.cuda()
 
     def forward(
         self,
@@ -75,14 +75,10 @@ class DecoderLayer(nn.Module):
         # Self Attention
         residual = decoder_state
         decoder_state = self.pre_self_attn_layer_norm.forward(decoder_state)
-        self_attn_mask = self.token_indices < token_index + 1
-        self_attn_mask = self_attn_mask[None][[0] * decoder_state.shape[0]]
-        token_mask = self.token_indices == token_index
         decoder_state, attention_state = self.self_attn.forward(
             decoder_state,
             attention_state,
-            self_attn_mask,
-            token_mask
+            token_index
         )
         decoder_state = self.self_attn_layer_norm.forward(decoder_state)
         decoder_state = residual + decoder_state
