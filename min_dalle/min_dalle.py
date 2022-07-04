@@ -206,7 +206,7 @@ class MinDalle:
                 attention_state,
                 image_tokens
             )
-            if handle_intermediate_image is not None:
+            if handle_intermediate_image is not None and log2_mid_count > 0:
                 if ((row_index + 1) * (2 ** log2_mid_count)) % row_count == 0:
                     tokens = image_tokens[:, 1:]
                     image = self.image_from_tokens(grid_size, tokens, is_verbose)
