@@ -16,7 +16,7 @@ class Predictor(BasePredictor):
         grid_size: int = Input(
             description='Size of the image grid',
             ge=1,
-            le=4,
+            le=5,
             default=4
         ),
         seed: int = Input(
