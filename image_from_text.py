@@ -14,7 +14,7 @@ parser.add_argument('--seed', type=int, default=-1)
 parser.add_argument('--grid-size', type=int, default=1)
 parser.add_argument('--image-path', type=str, default='generated')
 parser.add_argument('--models-root', type=str, default='pretrained')
-parser.add_argument('--token-count', type=int, default=256) # for debugging
+parser.add_argument('--row-count', type=int, default=16) # for debugging
 
 
 def ascii_from_image(image: Image.Image, size: int) -> str:
@@ -42,18 +42,23 @@ def generate_image(
     grid_size: int,
     image_path: str,
     models_root: str,
-    token_count: int
+    row_count: int
 ):
     model = MinDalle(
         is_mega=is_mega, 
         models_root=models_root,
         is_reusable=False,
-        sample_token_count=token_count,
         is_verbose=True
     )
 
-    if token_count < 256:
-        image_tokens = model.generate_image_tokens(text, seed, grid_size ** 2)
+    if row_count < 16:
+        token_count = 16 * row_count
+        image_tokens = model.generate_image_tokens(
+            text, 
+            seed, 
+            grid_size ** 2, 
+            row_count
+        )
         image_tokens = image_tokens[:, :token_count].to('cpu').detach().numpy()
         print('image tokens', image_tokens)
     else:
@@ -72,5 +77,5 @@ if __name__ == '__main__':
         grid_size=args.grid_size,
         image_path=args.image_path,
         models_root=args.models_root,
-        token_count=args.token_count
+        row_count=args.row_count
     )

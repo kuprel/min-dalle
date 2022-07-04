@@ -111,7 +111,6 @@ class DalleBartDecoder(nn.Module):
         self,
         image_vocab_count: int,
         image_token_count: int,
-        sample_token_count: int,
         embed_count: int,
         attention_head_count: int,
         glu_embed_count: int,
@@ -121,7 +120,6 @@ class DalleBartDecoder(nn.Module):
         super().__init__()
         self.layer_count = layer_count
         self.embed_count = embed_count
-        self.sample_token_count = sample_token_count
         self.condition_factor = 10.0
         self.image_token_count = image_token_count
         self.embed_tokens = nn.Embedding(image_vocab_count + 1, embed_count)
@@ -139,7 +137,7 @@ class DalleBartDecoder(nn.Module):
         self.final_ln = nn.LayerNorm(embed_count)
         self.lm_head = nn.Linear(embed_count, image_vocab_count + 1, bias=False)
         self.zero_prob = torch.zeros([1])
-        self.token_indices = torch.arange(self.sample_token_count)
+        self.token_indices = torch.arange(self.image_token_count)
         self.start_token = torch.tensor([start_token]).to(torch.long)
         if torch.cuda.is_available():
             self.zero_prob = self.zero_prob.cuda()
@@ -185,11 +183,35 @@ class DalleBartDecoder(nn.Module):
             torch.exp(logits - top_logits[:, [0]])
         )
         return probs, attention_state
+        
+
+    def decode_row(
+        self,
+        row_index: int,
+        attention_mask: BoolTensor,
+        encoder_state: FloatTensor,
+        attention_state: FloatTensor,
+        image_tokens_sequence: LongTensor
+    ) -> Tuple[FloatTensor, LongTensor]:
+        for col_index in range(16):
+            i = 16 * row_index + col_index
+            probs, attention_state = self.decode_step(
+                attention_mask = attention_mask,
+                encoder_state = encoder_state,
+                attention_state = attention_state,
+                prev_tokens = image_tokens_sequence[:, i],
+                token_index = self.token_indices[[i]]
+            )
+
+            image_tokens_sequence[:, i + 1] = torch.multinomial(probs, 1)[:, 0]
+
+        return attention_state, image_tokens_sequence
 
 
     def forward(
         self,
         image_count: int,
+        row_count: int,
         text_tokens: LongTensor,
         encoder_state: FloatTensor
     ) -> LongTensor:
@@ -206,7 +228,7 @@ class DalleBartDecoder(nn.Module):
         )
         attention_state = torch.zeros(attention_state_shape)
         image_tokens_sequence = torch.full(
-            (image_count, self.image_token_count), 
+            (image_count, self.image_token_count + 1), 
             6965, # black token
             dtype=torch.long
         )
@@ -214,18 +236,15 @@ class DalleBartDecoder(nn.Module):
             attention_state = attention_state.cuda()
             image_tokens_sequence = image_tokens_sequence.cuda()
         
-        image_tokens = self.start_token[[0] * image_count]
-        
-        for i in range(self.sample_token_count):
-            probs, attention_state = self.decode_step(
-                attention_mask = attention_mask,
-                encoder_state = encoder_state,
-                attention_state = attention_state,
-                prev_tokens = image_tokens,
-                token_index = self.token_indices[[i]]
-            )
+        image_tokens_sequence[:, 0] = self.start_token[0]
 
-            image_tokens = torch.multinomial(probs, 1)[:, 0]
-            image_tokens_sequence[:, i] = image_tokens
+        for row_index in range(row_count):
+            attention_state, image_tokens_sequence = self.decode_row(
+                row_index,
+                attention_mask,
+                encoder_state,
+                attention_state,
+                image_tokens_sequence
+            )
         
-        return image_tokens_sequence
+        return image_tokens_sequence[:, 1:]

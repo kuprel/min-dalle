@@ -20,13 +20,11 @@ class MinDalle:
         is_mega: bool, 
         is_reusable: bool = True,
         models_root: str = 'pretrained',
-        sample_token_count: int = 256,
         is_verbose = True
     ):
         self.is_mega = is_mega
         self.is_reusable = is_reusable
         self.is_verbose = is_verbose
-        self.sample_token_count = sample_token_count
         self.text_token_count = 64
         self.image_token_count = 256
         self.layer_count = 24 if is_mega else 12
@@ -119,7 +117,6 @@ class MinDalle:
         if not is_downloaded: self.download_decoder()
         if self.is_verbose: print("initializing DalleBartDecoder")
         self.decoder = DalleBartDecoder(
-            sample_token_count = self.sample_token_count,
             image_token_count = self.image_token_count,
             image_vocab_count = self.image_vocab_count,
             attention_head_count = self.attention_head_count,
@@ -149,7 +146,8 @@ class MinDalle:
         self, 
         text: str, 
         seed: int,
-        image_count: int
+        image_count: int,
+        row_count: int
     ) -> LongTensor:
         if self.is_verbose: print("tokenizing text")
         tokens = self.tokenizer.tokenize(text)
@@ -172,6 +170,7 @@ class MinDalle:
         if seed > 0: torch.manual_seed(seed)
         image_tokens = self.decoder.forward(
             image_count,
+            row_count,
             text_tokens, 
             encoder_state
         )
@@ -186,7 +185,8 @@ class MinDalle:
         grid_size: int = 1
     ) -> Image.Image:
         image_count = grid_size ** 2
-        image_tokens = self.generate_image_tokens(text, seed, image_count)
+        row_count = 16
+        image_tokens = self.generate_image_tokens(text, seed, image_count, row_count)
         if torch.cuda.is_available(): torch.cuda.empty_cache()
         if not self.is_reusable: self.init_detokenizer()
         if self.is_verbose: print("detokenizing image")
