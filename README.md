@@ -81,7 +81,7 @@ display(image)
 Use `image_from_text.py` to generate images from the command line.
 
 ```bash
-$ python image_from_text.py --text='artificial intelligence' --seed=7
+$ python image_from_text.py --text='artificial intelligence' --no-mega --seed=7
 ```
 <img src="https://github.com/kuprel/min-dalle/raw/main/examples/artificial_intelligence.jpg" alt="min-dalle" width="200"/>
 

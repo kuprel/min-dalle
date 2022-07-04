@@ -142,7 +142,6 @@ class MinDalle:
         params = torch.load(self.detoker_params_path)
         self.detokenizer.load_state_dict(params)
         del params
-        torch.cuda.empty_cache()
         if torch.cuda.is_available(): self.detokenizer = self.detokenizer.cuda()
 
 
@@ -176,7 +175,7 @@ class MinDalle:
             encoder_state
         )
         if not self.is_reusable: del self.decoder
-        torch.cuda.empty_cache()
+        if torch.cuda.is_available(): torch.cuda.empty_cache()
         return image_tokens
         
 
