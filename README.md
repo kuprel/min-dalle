@@ -11,7 +11,7 @@ This is a fast, minimal implementation of Boris Dayma's [DALL·E Mega](https://g
 To generate a 4x4 grid of DALL·E Mega images it takes
 - 89 sec with a T4 in Colab
 - 48 sec with a P100 in Colab
-- 16 sec with an A100 on Replicate
+- 14 sec with an A100 on Replicate
 - TBD with an H100 (@NVIDIA?)
 
 The flax model and code for converting it to torch can be found [here](https://github.com/kuprel/min-dalle-flax).
