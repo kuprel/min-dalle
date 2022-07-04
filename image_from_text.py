@@ -55,7 +55,7 @@ def generate_image(
         image_tokens = model.generate_image_tokens(
             text, 
             seed, 
-            grid_size ** 2, 
+            grid_size ** 2,
             row_count,
             is_verbose=True
         )
