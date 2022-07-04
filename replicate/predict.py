@@ -11,17 +11,17 @@ class Predictor(BasePredictor):
         self,
         text: str = Input(
             description='Text',
-            default='court sketch of godzilla on trial'
+            default='Dali painting of WALL·E'
         ),
         seed: int = Input(
-            description='Seed',
-            default=6
+            description='Set the seed to a positive number for reproducible results',
+            default=-1
         ),
         grid_size: int = Input(
-            description='Grid Size',
+            description='Size of the image grid',
             ge=1,
             le=4,
-            default=3
+            default=4
         )
     ) -> Path:
         image = self.model.generate_image(text, seed, grid_size=grid_size)

@@ -4,13 +4,13 @@ min(DALL·E)
 |Open In Colab|   |Replicate|   |Join us on Discord|
 
 This is a fast, minimal implementation of Boris Dayma’s `DALL·E
-Mini <https://github.com/borisdayma/dalle-mini>`__. It has been stripped
+Mega <https://github.com/borisdayma/dalle-mini>`__. It has been stripped
 down for inference and converted to PyTorch. The only third party
 dependencies are numpy, requests, pillow and torch.
 
-To generate a 3x3 grid of DALL·E Mega images it takes - **35 seconds**
-with a P100 in Colab - **15 seconds** with an A100 on Replicate -
-**TBD** with an H100 (@NVIDIA?)
+It takes - **35 seconds** to generate a 3x3 grid with a P100 in Colab -
+**16 seconds** to generate a 4x4 grid with an A100 on Replicate -
+**TBD** to generate a 4x4 grid with an H100 (@NVIDIA?)
 
 The flax model and code for converting it to torch can be found
 `here <https://github.com/kuprel/min-dalle-flax>`__.
@@ -40,7 +40,7 @@ not already there. Once everything has finished initializing, call
 
 .. code:: python
 
-   text = 'Dali painting of WallE'
+   text = 'Dali painting of WALL·E'
    image = model.generate_image(text, seed=0, grid_size=4)
    display(image)
 
@@ -81,7 +81,7 @@ Use ``image_from_text.py`` to generate images from the command line.
 
 .. code:: bash
 
-   $ python image_from_text.py --text='artificial intelligence' --seed=7
+   $ python image_from_text.py --text='artificial intelligence' --no-mega --seed=7
 
 .. code:: bash
 
