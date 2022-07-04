@@ -32,7 +32,7 @@ class Predictor(BasePredictor):
         ),
     ) -> Path:
 
-        def handle_intermediate_image(i: int, image: Image.Image) -> Path:
+        def handle_intermediate_image(i: int, image: Image.Image):
             if i + 1 == 16: return
             out_path = Path(tempfile.mkdtemp()) / 'output.jpg'
             image.save(str(out_path))
