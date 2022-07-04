@@ -27,9 +27,9 @@ def ascii_from_image(image: Image.Image, size: int) -> str:
 
 def save_image(image: Image.Image, path: str):
     if os.path.isdir(path):
-        path = os.path.join(path, 'generated.png')
-    elif not path.endswith('.png'):
-        path += '.png'
+        path = os.path.join(path, 'generated.jpg')
+    elif not path.endswith('.jpg'):
+        path += '.jpg'
     print("saving image to", path)
     image.save(path)
     return image

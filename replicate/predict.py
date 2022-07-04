@@ -25,7 +25,7 @@ class Predictor(BasePredictor):
         )
     ) -> Path:
         image = self.model.generate_image(text, seed, grid_size=grid_size)
-        out_path = Path(tempfile.mkdtemp()) / 'output.png'
+        out_path = Path(tempfile.mkdtemp()) / 'output.jpg'
         image.save(str(out_path))
 
         return out_path
