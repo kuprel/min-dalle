@@ -54,7 +54,8 @@ def generate_image(
 
     if token_count < 256:
         image_tokens = model.generate_image_tokens(text, seed, grid_size ** 2)
-        print('image tokens', image_tokens.to('cpu').detach().numpy())
+        image_tokens = image_tokens[:, :token_count].to('cpu').detach().numpy()
+        print('image tokens', image_tokens)
     else:
         image = model.generate_image(text, seed, grid_size)
         save_image(image, image_path)

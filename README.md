@@ -9,7 +9,7 @@
 This is a fast, minimal implementation of Boris Dayma's [DALL·E Mega](https://github.com/borisdayma/dalle-mini).  It has been stripped down for inference and converted to PyTorch.  The only third party dependencies are numpy, requests, pillow and torch.
 
 It takes
-- **35 seconds** to generate a 3x3 grid with a P100 in Colab
+- **32 seconds** to generate a 3x3 grid with a P100 in Colab
 - **16 seconds** to generate a 4x4 grid with an A100 on Replicate
 - **TBD** to generate a 4x4 grid with an H100 (@NVIDIA?)
 
