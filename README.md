@@ -49,7 +49,7 @@ image = model.generate_image(
 
 display(image)
 ```
-<img src="https://github.com/kuprel/min-dalle/raw/main/examples/nuclear_broccoli.jpg" alt="min-dalle" width="300"/>
+<img src="https://github.com/kuprel/min-dalle/raw/main/examples/nuclear_broccoli.jpg" alt="min-dalle" width="400"/>
 
 ### Interactive
 
