@@ -29,12 +29,12 @@ class Predictor(BasePredictor):
         intermediate_image_count: int = Input(
             description='Set the number of intermediate images to show while running',
             choices=[1, 2, 4, 8, 16],
-            default=8
+            default=4
         ),
         supercondition_factor: int = Input(
             description='Lower results in a wider variety of images but less agreement with the text',
             choices=[2, 4, 8, 16, 32, 64],
-            default=8
+            default=16
         ),
     ) -> Iterator[Path]:
         image_stream = self.model.generate_image_stream(
@@ -46,7 +46,10 @@ class Predictor(BasePredictor):
             is_verbose=True
         )
 
+        iter = 0
+        path = Path(tempfile.mkdtemp())
         for image in image_stream:
-            path = Path(tempfile.mkdtemp()) / 'output.jpg'
-            image.save(str(path))
-            yield path
+            iter += 1
+            image_path = path / 'min-dalle-iter-{}.jpg'.format(iter)
+            image.save(str(image_path))
+            yield image_path
