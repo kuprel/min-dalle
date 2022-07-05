@@ -1,3 +1,4 @@
+from contextlib import suppress
 from min_dalle import MinDalle
 import tempfile
 from typing import Iterator
@@ -30,12 +31,18 @@ class Predictor(BasePredictor):
             choices=[1, 2, 4, 8, 16],
             default=8
         ),
+        supercondition_factor: int = Input(
+            description='Lower results in a wider variety of images but less agreement with the text',
+            choices=[2, 4, 8, 16, 32, 64],
+            default=8
+        ),
     ) -> Iterator[Path]:
         image_stream = self.model.generate_image_stream(
             text,
             seed,
             grid_size=grid_size,
             log2_mid_count=log2(intermediate_image_count),
+            log2_supercondition_factor=log2(supercondition_factor),
             is_verbose=True
         )
 

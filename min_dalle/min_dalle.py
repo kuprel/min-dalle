@@ -164,7 +164,8 @@ class MinDalle:
         text: str, 
         seed: int,
         grid_size: int,
-        log2_mid_count: int = 0,
+        log2_mid_count: int,
+        log2_supercondition_factor: int = 3,
         is_verbose: bool = False
     ) -> Iterator[Image.Image]:
         if is_verbose: print("tokenizing text")
@@ -200,6 +201,7 @@ class MinDalle:
                 print('sampling row {} of {}'.format(row_index + 1, row_count))
             attention_state, image_tokens = self.decoder.decode_row(
                 row_index,
+                log2_supercondition_factor,
                 encoder_state,
                 attention_mask,
                 attention_state,
@@ -216,6 +218,7 @@ class MinDalle:
         text: str,
         seed: int = -1,
         grid_size: int = 1,
+        log2_supercondition_factor: int = 3,
         is_verbose: bool = False
     ) -> Image.Image:
         log2_mid_count = 0
@@ -224,6 +227,7 @@ class MinDalle:
             seed,
             grid_size,
             log2_mid_count,
+            log2_supercondition_factor,
             is_verbose
         )
         return next(image_stream)
