@@ -33,7 +33,7 @@ class ReplicatePredictor(BasePredictor):
             default=2
         ),
         log2_supercondition_factor: int = Input(
-            description='Lower results in a wider variety of images but less agreement with the text',
+            description='Higher values result in better agreement with the text but a narrower variety of generated images',
             ge=1,
             le=6,
             default=4
