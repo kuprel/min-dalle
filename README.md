@@ -29,53 +29,46 @@ Load the model parameters once and reuse the model to generate multiple images.
 ```python
 from min_dalle import MinDalle
 
-model = MinDalle(is_mega=True, models_root='./pretrained')
+model = MinDalle(
+    is_mega=True, 
+    is_reusable=True,
+    models_root='./pretrained'
+)
 ```
 
 The required models will be downloaded to `models_root` if they are not already there.  Once everything has finished initializing, call `generate_image` with some text as many times as you want.
 
 ```python
-text = 'Dali painting of WALL·E'
-image = model.generate_image(text, grid_size=4)
+image = model.generate_image(
+    'Dali painting of WALL·E', 
+    seed=-1,
+    grid_size=4,
+    log2_supercondition_factor=3
+)
 display(image)
 ```
 <img src="https://github.com/kuprel/min-dalle/raw/main/examples/dali_walle.jpg" alt="min-dalle" width="300"/>
 
-```python
-text = 'Rusty Iron Man suit found abandoned in the woods being reclaimed by nature'
-image = model.generate_image(text, grid_size=3)
-display(image)
-```
-<img src="https://github.com/kuprel/min-dalle/raw/main/examples/ironman.jpg" alt="min-dalle" width="300"/>
+Use a positive `seed` for reproducible results.  Higher values for `log2_supercondition_factor` result in better agreement with the text but a narrower variety of generated images.
+
+If the model is being used interactively (e.g. in a notebook) `generate_image_stream` can be used to generate a stream of images as it the model is decoding.  The detokenizer adds a slight delay for each intermediate image.
 
 ```python
-text = 'court sketch of godzilla on trial'
-image = model.generate_image(text, grid_size=3)
-display(image)
-```
-<img src="https://github.com/kuprel/min-dalle/raw/main/examples/godzilla_trial.jpg" alt="min-dalle" width="300"/>
+image_stream = model.generate_image_stream(
+    text='Dali painting of WALL·E',
+    seed=-1,
+    grid_size=3,
+    log2_mid_count=3,
+    log2_supercondition_factor=3
+)
 
-```python
-text = 'a funeral at Whole Foods'
-image = model.generate_image(text, grid_size=3)
-display(image)
+is_first = True
+for image in image_stream:
+    display_image = display if is_first else update_display
+    display_image(image, display_id=1)
+    is_first = False
 ```
-<img src="https://github.com/kuprel/min-dalle/raw/main/examples/funeral.jpg" alt="min-dalle" width="300"/>
-
-```python
-text = 'Jesus turning water into wine on Americas Got Talent'
-image = model.generate_image(text, grid_size=3)
-display(image)
-```
-<img src="https://github.com/kuprel/min-dalle/raw/main/examples/jesus.jpg" alt="min-dalle" width="300"/>
-
-```python
-text = 'cctv footage of Yoda robbing a liquor store'
-image = model.generate_image(text, grid_size=3)
-display(image)
-```
-<img src="https://github.com/kuprel/min-dalle/raw/main/examples/yoda.jpg" alt="min-dalle" width="300"/>
-
+<img src="https://github.com/kuprel/min-dalle/raw/main/examples/dali_walle_animated.gif" alt="min-dalle" width="300"/>
 
 ### Command Line
 
@@ -85,8 +78,3 @@ Use `image_from_text.py` to generate images from the command line.
 $ python image_from_text.py --text='artificial intelligence' --no-mega
 ```
 <img src="https://github.com/kuprel/min-dalle/raw/main/examples/artificial_intelligence.jpg" alt="min-dalle" width="200"/>
-
-```bash
-$ python image_from_text.py --text='trail cam footage of gollum eating watermelon' --mega --grid-size=3
-```
-<img src="https://github.com/kuprel/min-dalle/raw/main/examples/gollum_trailcam.jpg" alt="min-dalle" width="300"/>
