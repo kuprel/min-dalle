@@ -60,11 +60,8 @@ image_stream = model.generate_image_stream(
     log2_supercondition_factor=3
 )
 
-is_first = True
 for image in image_stream:
-    display_image = display if is_first else update_display
-    display_image(image, display_id=1)
-    is_first = False
+    display(image)
 ```
 <img src="https://github.com/kuprel/min-dalle/raw/main/examples/dali_walle_animated.gif" alt="min-dalle" width="300"/>
 
