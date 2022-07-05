@@ -10,4 +10,4 @@ build:
   run:
     - pip install torch==1.10.0+cu113 -f https://download.pytorch.org/whl/torch_stable.html
 
-predict: "replicate/predict.py:Predictor"
+predict: "cogrun.py:Predictor"

@@ -1,8 +1,8 @@
+from min_dalle import MinDalle
 import tempfile
+from typing import Iterator
 from cog import BasePredictor, Path, Input
 
-from min_dalle import MinDalle
-from PIL import Image
 
 class Predictor(BasePredictor):
     def setup(self):
@@ -30,19 +30,16 @@ class Predictor(BasePredictor):
             le=4,
             default=3
         ),
-    ) -> Path:
-
-        def handle_intermediate_image(i: int, image: Image.Image):
-            if i + 1 == 16: return
-            out_path = Path(tempfile.mkdtemp()) / 'output.jpg'
-            image.save(str(out_path))
-
-        image = self.model.generate_image(
+    ) -> Iterator[Path]:
+        image_stream = self.model.generate_image_stream(
             text, 
             seed, 
             grid_size=grid_size,
             log2_mid_count=log2_intermediate_image_count,
-            handle_intermediate_image=handle_intermediate_image
+            is_verbose=True
         )
 
-        return handle_intermediate_image(-1, image)
+        for image in image_stream:
+            out_path = Path(tempfile.mkdtemp()) / 'output.jpg'
+            image.save(str(out_path))
+            yield out_path

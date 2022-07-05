@@ -1,6 +1,7 @@
 import argparse
 import os
 from PIL import Image
+from matplotlib.pyplot import grid
 from min_dalle import MinDalle
 
 
@@ -13,7 +14,6 @@ parser.add_argument('--seed', type=int, default=-1)
 parser.add_argument('--grid-size', type=int, default=1)
 parser.add_argument('--image-path', type=str, default='generated')
 parser.add_argument('--models-root', type=str, default='pretrained')
-parser.add_argument('--row-count', type=int, default=16) # for debugging
 
 
 def ascii_from_image(image: Image.Image, size: int = 128) -> str:
@@ -40,8 +40,7 @@ def generate_image(
     seed: int,
     grid_size: int,
     image_path: str,
-    models_root: str,
-    row_count: int
+    models_root: str
 ):
     model = MinDalle(
         is_mega=is_mega, 
@@ -50,21 +49,9 @@ def generate_image(
         is_verbose=True
     )
 
-    if row_count < 16:
-        token_count = 16 * row_count
-        image_tokens = model.generate_image_tokens(
-            text, 
-            seed, 
-            grid_size ** 2,
-            row_count,
-            is_verbose=True
-        )
-        image_tokens = image_tokens[:, :token_count].to('cpu').detach().numpy()
-        print('image tokens', image_tokens)
-    else:
-        image = model.generate_image(text, seed, grid_size, is_verbose=True)
-        save_image(image, image_path)
-        print(ascii_from_image(image, size=128))
+    image = model.generate_image(text, seed, grid_size, is_verbose=True)
+    save_image(image, image_path)
+    print(ascii_from_image(image, size=128))
 
 
 if __name__ == '__main__':
@@ -76,6 +63,5 @@ if __name__ == '__main__':
         seed=args.seed,
         grid_size=args.grid_size,
         image_path=args.image_path,
-        models_root=args.models_root,
-        row_count=args.row_count
+        models_root=args.models_root
     )
