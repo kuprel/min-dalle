@@ -23,11 +23,11 @@ class ReplicatePredictor(BasePredictor):
             default=4
         ),
         seed: int = Input(
-            description='Set the seed to a positive number for reproducible results',
+            description='A positive number will generate reproducible results',
             default=-1
         ),
         log2_intermediate_image_count: int = Input(
-            description='Set the total number of images to show while running.  Each image adds a slight delay.',
+            description='Number of images to show while running, each adds a slight delay',
             ge=0,
             le=4,
             default=2
