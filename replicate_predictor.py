@@ -26,23 +26,25 @@ class ReplicatePredictor(BasePredictor):
             description='Set the seed to a positive number for reproducible results',
             default=-1
         ),
-        intermediate_image_count: int = Input(
+        log2_intermediate_image_count: int = Input(
             description='Set the number of intermediate images to show while running',
-            choices=[1, 2, 4, 8, 16],
-            default=4
+            ge=0,
+            le=4,
+            default=2
         ),
-        supercondition_factor: int = Input(
+        log2_supercondition_factor: int = Input(
             description='Lower results in a wider variety of images but less agreement with the text',
-            choices=[2, 4, 8, 16, 32, 64],
-            default=8
+            ge=1,
+            le=6,
+            default=4
         ),
     ) -> Iterator[Path]:
         image_stream = self.model.generate_image_stream(
             text,
             seed,
             grid_size=grid_size,
-            log2_mid_count=log2(intermediate_image_count),
-            log2_supercondition_factor=log2(supercondition_factor),
+            log2_mid_count=log2_intermediate_image_count,
+            log2_supercondition_factor=log2_supercondition_factor,
             is_verbose=True
         )
 
