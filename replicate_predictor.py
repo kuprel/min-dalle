@@ -6,7 +6,7 @@ from math import log2
 from cog import BasePredictor, Path, Input
 
 
-class Predictor(BasePredictor):
+class ReplicatePredictor(BasePredictor):
     def setup(self):
         self.model = MinDalle(is_mega=True)
 
