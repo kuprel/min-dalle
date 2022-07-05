@@ -36,7 +36,7 @@ model = MinDalle(
 )
 ```
 
-The required models will be downloaded to `models_root` if they are not already there.  Once everything has finished initializing, call `generate_image` with some text as many times as you want.
+The required models will be downloaded to `models_root` if they are not already there.  Once everything has finished initializing, call `generate_image` with some text as many times as you want.  Use a positive `seed` for reproducible results.  Higher values for `log2_supercondition_factor` result in better agreement with the text but a narrower variety of generated images.
 
 ```python
 image = model.generate_image(
@@ -48,8 +48,6 @@ image = model.generate_image(
 display(image)
 ```
 <img src="https://github.com/kuprel/min-dalle/raw/main/examples/dali_walle.jpg" alt="min-dalle" width="300"/>
-
-Use a positive `seed` for reproducible results.  Higher values for `log2_supercondition_factor` result in better agreement with the text but a narrower variety of generated images.
 
 If the model is being used interactively (e.g. in a notebook) `generate_image_stream` can be used to generate a stream of images as it the model is decoding.  The detokenizer adds a slight delay for each intermediate image.  Setting `log2_mid_count` to 3 results in a total of `2 ** 3 = 8` generated images.  The only valid values for `log2_mid_count` are 0, 1, 2, 3, 4.
 
