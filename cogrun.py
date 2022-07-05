@@ -34,7 +34,7 @@ class Predictor(BasePredictor):
         supercondition_factor: int = Input(
             description='Lower results in a wider variety of images but less agreement with the text',
             choices=[2, 4, 8, 16, 32, 64],
-            default=16
+            default=8
         ),
     ) -> Iterator[Path]:
         image_stream = self.model.generate_image_stream(
