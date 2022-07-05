@@ -14,10 +14,6 @@ class ReplicatePredictor(BasePredictor):
             description='Text',
             default='Dali painting of WALL·E'
         ),
-        seed: int = Input(
-            description='A positive number will generate reproducible results',
-            default=-1
-        ),
         grid_size: int = Input(
             description='Size of the image grid',
             ge=1,
@@ -37,6 +33,7 @@ class ReplicatePredictor(BasePredictor):
             default=4
         ),
     ) -> Iterator[Path]:
+        seed = -1
         image_stream = self.model.generate_image_stream(
             text,
             seed,
