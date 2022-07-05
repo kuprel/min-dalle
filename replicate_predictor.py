@@ -27,7 +27,7 @@ class ReplicatePredictor(BasePredictor):
             default=-1
         ),
         log2_intermediate_image_count: int = Input(
-            description='Set the number of intermediate images to show while running',
+            description='Set the total number of images to show while running.  Each image adds a slight delay.',
             ge=0,
             le=4,
             default=2
