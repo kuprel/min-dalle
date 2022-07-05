@@ -6,7 +6,7 @@ from cog import BasePredictor, Path, Input
 
 class ReplicatePredictor(BasePredictor):
     def setup(self):
-        self.model = MinDalle(is_mega=True)
+        self.model = MinDalle(is_mega=True, is_reusable=True)
 
     def predict(
         self,
