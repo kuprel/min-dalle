@@ -140,6 +140,7 @@ class DalleBartDecoder(nn.Module):
 
     def decode_step(
         self,
+        log2_k: int,
         log2_supercondition_factor: int,
         attention_mask: BoolTensor,
         encoder_state: FloatTensor,
@@ -170,7 +171,7 @@ class DalleBartDecoder(nn.Module):
             logits[image_count:, -1] * a
         )
 
-        top_logits, _ = logits.topk(50, dim=-1)
+        top_logits, _ = logits.topk(2 ** log2_k, dim=-1)
         probs = torch.where(
             logits < top_logits[:, [-1]],
             self.zero_prob,
@@ -182,6 +183,7 @@ class DalleBartDecoder(nn.Module):
     def decode_row(
         self,
         row_index: int,
+        log2_k: int,
         log2_supercondition_factor: int,
         encoder_state: FloatTensor,
         attention_mask: BoolTensor,
@@ -191,6 +193,7 @@ class DalleBartDecoder(nn.Module):
         for col_index in range(16):
             i = 16 * row_index + col_index
             probs, attention_state = self.decode_step(
+                log2_k = log2_k,
                 log2_supercondition_factor = log2_supercondition_factor,
                 attention_mask = attention_mask,
                 encoder_state = encoder_state,

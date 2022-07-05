@@ -165,6 +165,7 @@ class MinDalle:
         seed: int,
         grid_size: int,
         log2_mid_count: int,
+        log2_k: int = 6,
         log2_supercondition_factor: int = 3,
         is_verbose: bool = False
     ) -> Iterator[Image.Image]:
@@ -202,6 +203,7 @@ class MinDalle:
                 print('sampling row {} of {}'.format(row_index + 1, row_count))
             attention_state, image_tokens = self.decoder.decode_row(
                 row_index,
+                log2_k,
                 log2_supercondition_factor,
                 encoder_state,
                 attention_mask,
@@ -219,6 +221,7 @@ class MinDalle:
         text: str,
         seed: int = -1,
         grid_size: int = 1,
+        log2_k: int = 6,
         log2_supercondition_factor: int = 3,
         is_verbose: bool = False
     ) -> Image.Image:
@@ -228,6 +231,7 @@ class MinDalle:
             seed,
             grid_size,
             log2_mid_count,
+            log2_k,
             log2_supercondition_factor,
             is_verbose
         )
