@@ -1,11 +1,11 @@
 import os
 from PIL import Image
 import numpy
-from torch import LongTensor, FloatTensor
+from torch import LongTensor
 import torch
 import json
 import requests
-from typing import Callable, Tuple, Iterator
+from typing import Iterator
 torch.set_grad_enabled(False)
 torch.set_num_threads(os.cpu_count())
 

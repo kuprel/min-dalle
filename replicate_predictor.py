@@ -1,8 +1,6 @@
-from contextlib import suppress
 from min_dalle import MinDalle
 import tempfile
 from typing import Iterator
-from math import log2
 from cog import BasePredictor, Path, Input
 
 
