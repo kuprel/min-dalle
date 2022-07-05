@@ -168,6 +168,7 @@ class MinDalle:
         log2_supercondition_factor: int = 3,
         is_verbose: bool = False
     ) -> Iterator[Image.Image]:
+        assert(log2_mid_count in range(5))
         if is_verbose: print("tokenizing text")
         tokens = self.tokenizer.tokenize(text, is_verbose=is_verbose)
         if is_verbose: print("text tokens", tokens)
