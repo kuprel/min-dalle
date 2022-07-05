@@ -40,10 +40,11 @@ The required models will be downloaded to `models_root` if they are not already 
 
 ```python
 image = model.generate_image(
-    'Dali painting of WALL·E', 
+    text='Dali painting of WALL·E', 
     seed=-1,
     grid_size=4,
-    log2_supercondition_factor=3
+    log2_supercondition_factor=3,
+    is_verbose=False
 )
 
 display(image)
@@ -60,7 +61,8 @@ image_stream = model.generate_image_stream(
     seed=-1,
     grid_size=3,
     log2_mid_count=3,
-    log2_supercondition_factor=3
+    log2_supercondition_factor=3,
+    is_verbose=False
 )
 
 for image in image_stream:
