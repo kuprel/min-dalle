@@ -40,16 +40,16 @@ The required models will be downloaded to `models_root` if they are not already 
 
 ```python
 image = model.generate_image(
-    text='Dali painting of WALL·E', 
+    text='Nuclear explosion broccoli', 
     seed=-1,
     grid_size=4,
-    log2_supercondition_factor=3,
+    log2_supercondition_factor=5,
     is_verbose=False
 )
 
 display(image)
 ```
-<img src="https://github.com/kuprel/min-dalle/raw/main/examples/dali_walle.jpg" alt="min-dalle" width="300"/>
+<img src="https://github.com/kuprel/min-dalle/raw/main/examples/nuclear_broccoli.jpg" alt="min-dalle" width="300"/>
 
 ### Interactive
 
