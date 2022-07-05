@@ -1,7 +1,6 @@
 import argparse
 import os
 from PIL import Image
-from matplotlib.pyplot import grid
 from min_dalle import MinDalle
 
 
