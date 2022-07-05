@@ -16,15 +16,15 @@ class ReplicatePredictor(BasePredictor):
             description='Text',
             default='Dali painting of WALL·E'
         ),
+        seed: int = Input(
+            description='A positive number will generate reproducible results',
+            default=-1
+        ),
         grid_size: int = Input(
             description='Size of the image grid',
             ge=1,
             le=4,
             default=4
-        ),
-        seed: int = Input(
-            description='A positive number will generate reproducible results',
-            default=-1
         ),
         log2_intermediate_image_count: int = Input(
             description='Number of images to show while running, each adds a slight delay',
