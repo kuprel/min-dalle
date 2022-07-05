@@ -27,7 +27,7 @@ class Predictor(BasePredictor):
             default=-1
         ),
         intermediate_image_count: int = Input(
-            description='Set the number of intermediate images to show',
+            description='Set the number of intermediate images to show while running',
             choices=[1, 2, 4, 8, 16],
             default=8
         ),
