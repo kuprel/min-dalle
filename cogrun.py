@@ -32,8 +32,8 @@ class Predictor(BasePredictor):
         ),
     ) -> Iterator[Path]:
         image_stream = self.model.generate_image_stream(
-            text, 
-            seed, 
+            text,
+            seed,
             grid_size=grid_size,
             log2_mid_count=log2_intermediate_image_count,
             is_verbose=True
