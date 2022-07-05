@@ -45,9 +45,12 @@ image = model.generate_image(
     grid_size=4,
     log2_supercondition_factor=3
 )
+
 display(image)
 ```
 <img src="https://github.com/kuprel/min-dalle/raw/main/examples/dali_walle.jpg" alt="min-dalle" width="300"/>
+
+### Interactive
 
 If the model is being used interactively (e.g. in a notebook) `generate_image_stream` can be used to generate a stream of images as the model is decoding.  The detokenizer adds a slight delay for each image.  Setting `log2_mid_count` to 3 results in a total of `2 ** 3 = 8` generated images.  The only valid values for `log2_mid_count` are 0, 1, 2, 3, 4.
 
