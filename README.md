@@ -40,7 +40,7 @@ The required models will be downloaded to `models_root` if they are not already 
 
 ```python
 image = model.generate_image(
-    text='Nuclear explosion broccoli', 
+    text='Nuclear explosion broccoli', # credit: https://twitter.com/hardmaru/status/1544354119527596034
     seed=-1,
     grid_size=4,
     log2_k=6,
