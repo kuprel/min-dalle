@@ -1,7 +1,7 @@
 import os
 from PIL import Image
 import numpy
-from torch import LongTensor
+from torch import LongTensor, Tensor
 import torch
 import json
 import requests
@@ -141,11 +141,10 @@ class MinDalle:
         if torch.cuda.is_available(): self.detokenizer = self.detokenizer.cuda()
 
 
-    def image_from_tokens(
+    def images_from_tokens(
         self,
-        grid_size: int,
         image_tokens: LongTensor,
-        is_verbose: bool = False
+        is_verbose: bool = False,
     ) -> Image.Image:
         if not self.is_reusable: del self.decoder
         if torch.cuda.is_available(): torch.cuda.empty_cache()
@@ -153,11 +152,35 @@ class MinDalle:
         if is_verbose: print("detokenizing image")
         images = self.detokenizer.forward(image_tokens).to(torch.uint8)
         if not self.is_reusable: del self.detokenizer
+        return images
+
+    def images_to_grid(
+        self,
+        images: Tensor,
+        grid_size: int,
+    ) -> Image.Image:
         images = images.reshape([grid_size] * 2 + list(images.shape[1:]))
         image = images.flatten(1, 2).transpose(0, 1).flatten(1, 2)
         image = Image.fromarray(image.to('cpu').detach().numpy())
         return image
 
+    def save_images(
+        self,
+        images: Tensor,
+        seed: int,
+        save_dir: str,
+        is_verbose: bool = False,
+    ): 
+        if is_verbose: print("Saving individual images...")
+        i = 0
+        if not os.path.exists(save_dir): os.makedirs(save_dir)
+        grid_images = images.to('cpu').detach().numpy()
+        for image in numpy.array(grid_images):
+            i += 1
+            split_image = Image.fromarray(image)
+            split_image.save(f"{save_dir}/seed{seed:05d}_{i:02d}.png")
+            
+        if is_verbose: print(f"Images successfully saved at: {save_dir}")
 
     def generate_image_stream(
         self, 
@@ -167,7 +190,10 @@ class MinDalle:
         log2_mid_count: int,
         log2_k: int = 6,
         log2_supercondition_factor: int = 3,
-        is_verbose: bool = False
+        is_verbose: bool = False,
+        save_individual_images: bool = False,
+        save_grid_image: bool = False,
+        save_dir: str = './'
     ) -> Iterator[Image.Image]:
         assert(log2_mid_count in range(5))
         if is_verbose: print("tokenizing text")
@@ -214,8 +240,17 @@ class MinDalle:
             )
             if ((row_index + 1) * (2 ** log2_mid_count)) % row_count == 0:
                 tokens = image_tokens[:, 1:]
-                image = self.image_from_tokens(grid_size, tokens, is_verbose)
-                yield image
+                images = self.images_from_tokens(tokens, is_verbose)
+                image_grid = self.images_to_grid(images, grid_size)
+
+                if row_index + 1 == row_count :
+                    if save_individual_images :
+                        self.save_images(images, seed, save_dir)
+                    if save_grid_image :
+                        image_grid.save(f"{save_dir}/seed{seed:05d}_grid.png")
+
+
+                yield image_grid
 
 
     def generate_image(
@@ -225,7 +260,10 @@ class MinDalle:
         grid_size: int = 1,
         log2_k: int = 6,
         log2_supercondition_factor: int = 3,
-        is_verbose: bool = False
+        is_verbose: bool = False,
+        save_individual_images: bool = False,
+        save_grid_image: bool = False,
+        save_dir: str = './'
     ) -> Image.Image:
         log2_mid_count = 0
         image_stream = self.generate_image_stream(
@@ -235,6 +273,9 @@ class MinDalle:
             log2_mid_count,
             log2_k,
             log2_supercondition_factor,
-            is_verbose
+            is_verbose,
+            save_individual_images,
+            save_grid_image,
+            save_dir
         )
         return next(image_stream)
