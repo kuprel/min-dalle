@@ -11,7 +11,7 @@ class ReplicatePredictor(BasePredictor):
     def predict(
         self,
         text: str = Input(
-            description='Text',
+            description='For long prompts, only the first 64 tokens will be used to generate the image.',
             default='Dali painting of WALL·E'
         ),
         intermediate_outputs: bool = Input(

@@ -1,12 +1,12 @@
 build:
-  cuda: "11.0"
+  cuda: "11.3"
   gpu: true
   python_version: "3.8"
   system_packages:
     - "libgl1-mesa-glx"
     - "libglib2.0-0"
   python_packages:
-    - "min-dalle==0.2.28"
+    - "min-dalle==0.2.29"
   run:
     - pip install torch==1.10.0+cu113 -f https://download.pytorch.org/whl/torch_stable.html
 

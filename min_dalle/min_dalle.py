@@ -172,6 +172,8 @@ class MinDalle:
         assert(log2_mid_count in range(5))
         if is_verbose: print("tokenizing text")
         tokens = self.tokenizer.tokenize(text, is_verbose=is_verbose)
+        if len(tokens) > self.text_token_count: 
+            tokens = tokens[:self.text_token_count]
         if is_verbose: print("text tokens", tokens)
         text_tokens = numpy.ones((2, 64), dtype=numpy.int32)
         text_tokens[0, :2] = [tokens[0], tokens[-1]]
