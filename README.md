@@ -36,7 +36,7 @@ model = MinDalle(
 )
 ```
 
-The required models will be downloaded to `models_root` if they are not already there.  Once everything has finished initializing, call `generate_image` with some text as many times as you want.  Use a positive `seed` for reproducible results.  Higher values for `log2_supercondition_factor` result in better agreement with the text but a narrower variety of generated images.  Every image token is sampled from the $k$ most probably tokens.
+The required models will be downloaded to `models_root` if they are not already there.  Once everything has finished initializing, call `generate_image` with some text as many times as you want.  Use a positive `seed` for reproducible results.  Higher values for `log2_supercondition_factor` result in better agreement with the text but a narrower variety of generated images.  Every image token is sampled from the top $k$ most probable tokens.
 
 ```python
 image = model.generate_image(
