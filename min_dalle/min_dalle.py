@@ -1,4 +1,6 @@
 import os
+import string
+import time
 from PIL import Image
 import numpy
 from torch import LongTensor, Tensor
@@ -14,6 +16,9 @@ from .models import DalleBartEncoder, DalleBartDecoder, VQGanDetokenizer
 
 MIN_DALLE_REPO = 'https://huggingface.co/kuprel/min-dalle/resolve/main/'
 
+def sanitize_prompt(text) :
+  valid_chars = "-_.() %s%s" % (string.ascii_letters, string.digits)
+  return "".join([c for c in text.lower().replace(' ', '_') if c in valid_chars])
 
 class MinDalle:
     def __init__(
@@ -167,18 +172,17 @@ class MinDalle:
     def save_images(
         self,
         images: Tensor,
-        seed: int,
         save_dir: str,
+        file_name: str,
         is_verbose: bool = False,
     ): 
         if is_verbose: print("Saving individual images...")
         i = 0
-        if not os.path.exists(save_dir): os.makedirs(save_dir)
         grid_images = images.to('cpu').detach().numpy()
         for image in numpy.array(grid_images):
             i += 1
             split_image = Image.fromarray(image)
-            split_image.save(f"{save_dir}/seed{seed:05d}_{i:02d}.png")
+            split_image.save(os.path.join(save_dir, f"{file_name}_{i:02d}.png"))
             
         if is_verbose: print(f"Images successfully saved at: {save_dir}")
 
@@ -243,15 +247,15 @@ class MinDalle:
                 images = self.images_from_tokens(tokens, is_verbose)
                 image_grid = self.images_to_grid(images, grid_size)
 
-                if row_index + 1 == row_count :
-                    if save_individual_images :
-                        self.save_images(images, seed, save_dir)
-                    if save_grid_image :
-                        image_grid.save(f"{save_dir}/seed{seed:05d}_grid.png")
+                if row_index + 1 == row_count and (save_individual_images or save_grid_image) :
+                    save_dir = os.path.join(save_dir, sanitize_prompt(text))
+                    if not os.path.exists(save_dir): os.makedirs(save_dir)
 
+                    file_name = f"{abs(seed):05d}_" + time.strftime("%Y%m%d-%H%M%S")
+                    if save_individual_images : self.save_images(images, save_dir, file_name)
+                    if save_grid_image : image_grid.save(os.path.join(save_dir, f"{file_name}_grid.png"))
 
                 yield image_grid
-
 
     def generate_image(
         self, 
