@@ -1,5 +1,5 @@
 import torch
-from torch import Tensor
+from torch import FloatTensor
 from torch.nn import Module, ModuleList, GroupNorm, Conv2d, Embedding
 torch.set_grad_enabled(False)
 
@@ -16,7 +16,7 @@ class ResnetBlock(Module):
         if not self.is_middle:
             self.nin_shortcut = Conv2d(m, n, 1)
 
-    def forward(self, x: Tensor) -> Tensor:
+    def forward(self, x: FloatTensor) -> FloatTensor:
         h = x
         h = self.norm1.forward(h)
         h *= torch.sigmoid(h)
@@ -39,7 +39,7 @@ class AttentionBlock(Module):
         self.v = Conv2d(n, n, 1)
         self.proj_out = Conv2d(n, n, 1)
 
-    def forward(self, x: Tensor) -> Tensor:
+    def forward(self, x: FloatTensor) -> FloatTensor:
         n, m = 2 ** 9, x.shape[0]
         h = x
         h = self.norm(h)
@@ -67,7 +67,7 @@ class MiddleLayer(Module):
         self.attn_1 = AttentionBlock()
         self.block_2 = ResnetBlock(9, 9)
     
-    def forward(self, h: Tensor) -> Tensor:
+    def forward(self, h: FloatTensor) -> FloatTensor:
         h = self.block_1.forward(h)
         h = self.attn_1.forward(h)
         h = self.block_2.forward(h)
@@ -81,7 +81,7 @@ class Upsample(Module):
         self.upsample = torch.nn.UpsamplingNearest2d(scale_factor=2)
         self.conv = Conv2d(n, n, 3, padding=1)
 
-    def forward(self, x: Tensor) -> Tensor:
+    def forward(self, x: FloatTensor) -> FloatTensor:
         x = self.upsample.forward(x.to(torch.float32))
         x = self.conv.forward(x)
         return x
@@ -116,7 +116,7 @@ class UpsampleBlock(Module):
             self.upsample = Upsample(log2_count_out)
 
 
-    def forward(self, h: Tensor) -> Tensor:
+    def forward(self, h: FloatTensor) -> FloatTensor:
         for j in range(3):
             h = self.block[j].forward(h)
             if self.has_attention:
@@ -144,7 +144,7 @@ class Decoder(Module):
         self.norm_out = GroupNorm(2 ** 5, 2 ** 7)
         self.conv_out = Conv2d(2 ** 7, 3, 3, padding=1)
 
-    def forward(self, z: Tensor) -> Tensor:
+    def forward(self, z: FloatTensor) -> FloatTensor:
         z = self.conv_in.forward(z)
         z = self.mid.forward(z)
 
@@ -165,7 +165,7 @@ class VQGanDetokenizer(Module):
         self.post_quant_conv = Conv2d(n, n, 1)
         self.decoder = Decoder()
 
-    def forward(self, z: Tensor) -> Tensor:
+    def forward(self, z: FloatTensor) -> FloatTensor:
         z = self.embedding.forward(z)
         z = z.view((z.shape[0], 2 ** 4, 2 ** 4, 2 ** 8))
         z = z.permute(0, 3, 1, 2).contiguous()
