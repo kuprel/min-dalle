@@ -41,10 +41,11 @@ class MinDalle:
         model_name = f"dalle_bart_{'mega' if is_mega else 'mini'}"
         dalle_path = os.path.join(models_root, model_name)
         vqgan_path = os.path.join(models_root, "vqgan")
-        if not os.path.exists(dalle_path):
-            os.makedirs(dalle_path)
-        if not os.path.exists(vqgan_path):
-            os.makedirs(vqgan_path)
+
+        for _path in [dalle_path, vqgan_path]:
+            if not os.path.exists(_path):
+                os.makedirs(_path)
+
         self.vocab_path = os.path.join(dalle_path, "vocab.json")
         self.merges_path = os.path.join(dalle_path, "merges.txt")
         self.encoder_params_path = os.path.join(dalle_path, "encoder.pt")
@@ -53,9 +54,12 @@ class MinDalle:
 
         self.init_tokenizer()
         if is_reusable:
-            self.init_encoder()
-            self.init_decoder()
-            self.init_detokenizer()
+            for _initializer in [
+                self.init_encoder,
+                self.init_decoder,
+                self.init_detokenizer,
+            ]:
+                _initializer()
 
     def _verbose_print(self, string: str):
         if self.is_verbose:
@@ -66,10 +70,10 @@ class MinDalle:
         suffix = "" if self.is_mega else "_mini"
         vocab = requests.get(f"{MIN_DALLE_REPO}vocab{suffix}.json")
         merges = requests.get(f"{MIN_DALLE_REPO}merges{suffix}.txt")
-        with open(self.vocab_path, "wb") as f:
-            f.write(vocab.content)
-        with open(self.merges_path, "wb") as f:
-            f.write(merges.content)
+
+        for _path, _data in [(self.vocab_path, vocab), (self.merges_path, merges)]:
+            with open(_path, "wb") as f:
+                f.write(_data.text)
 
     def download_encoder(self):
         self._verbose_print("downloading encoder params")
@@ -97,10 +101,12 @@ class MinDalle:
         if not is_downloaded:
             self.download_tokenizer()
         self._verbose_print("intializing TextTokenizer")
+
         with open(self.vocab_path, "r", encoding="utf8") as f:
             vocab = json.load(f)
         with open(self.merges_path, "r", encoding="utf8") as f:
             merges = f.read().split("\n")[1:-1]
+
         self.tokenizer = TextTokenizer(vocab, merges)
 
     def init_encoder(self):
