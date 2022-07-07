@@ -31,21 +31,27 @@ class ReplicatePredictor(BasePredictor):
             default=4
         ),
     ) -> Iterator[Path]:
-        seed = -1
-        log2_mid_count = 3 if intermediate_outputs else 0
-        image_stream = self.model.generate_image_stream(
-            text,
-            seed,
-            grid_size=grid_size,
-            log2_mid_count=log2_mid_count,
-            log2_supercondition_factor=log2_supercondition_factor,
-            is_verbose=True
-        )
+        try: 
+            seed = -1
+            log2_mid_count = 3 if intermediate_outputs else 0
+            image_stream = self.model.generate_image_stream(
+                text,
+                seed,
+                grid_size=grid_size,
+                log2_mid_count=log2_mid_count,
+                log2_supercondition_factor=log2_supercondition_factor,
+                is_verbose=True
+            )
 
-        iter = 0
-        path = Path(tempfile.mkdtemp())
-        for image in image_stream:
-            iter += 1
-            image_path = path / 'min-dalle-iter-{}.jpg'.format(iter)
-            image.save(str(image_path))
-            yield image_path
+            iter = 0
+            path = Path(tempfile.mkdtemp())
+            for image in image_stream:
+                iter += 1
+                image_path = path / 'min-dalle-iter-{}.jpg'.format(iter)
+                image.save(str(image_path))
+                yield image_path
+        except:
+            print("An error occured, deleting model")
+            del self.model
+            self.setup()
+            raise Exception("There was an error, please try again")
