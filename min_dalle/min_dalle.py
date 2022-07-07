@@ -135,7 +135,7 @@ class MinDalle:
         is_downloaded = os.path.exists(self.detoker_params_path)
         if not is_downloaded: self.download_detokenizer()
         if self.is_verbose: print("initializing VQGanDetokenizer")
-        self.detokenizer = VQGanDetokenizer().to(self.dtype).eval()
+        self.detokenizer = VQGanDetokenizer().eval()
         params = torch.load(self.detoker_params_path)
         self.detokenizer.load_state_dict(params)
         del params
@@ -216,6 +216,7 @@ class MinDalle:
                     attention_state,
                     image_tokens
                 )
+            with torch.cuda.amp.autocast(dtype=torch.float32):
                 if ((row_index + 1) * (2 ** log2_mid_count)) % row_count == 0:
                     tokens = image_tokens[:, 1:]
                     image = self.image_from_tokens(grid_size, tokens, is_verbose)
