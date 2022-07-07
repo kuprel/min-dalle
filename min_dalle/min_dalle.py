@@ -36,7 +36,7 @@ class MinDalle:
         self.text_vocab_count = 50272 if is_mega else 50264
         self.image_vocab_count = 16415 if is_mega else 16384
 
-        model_name = 'dalle_bart_{}'.format('mega' if is_mega else 'mini')
+        model_name = f"dalle_bart_{'mega' if is_mega else 'mini'}"
         dalle_path = os.path.join(models_root, model_name)
         vqgan_path = os.path.join(models_root, 'vqgan')
         if not os.path.exists(dalle_path): os.makedirs(dalle_path)
@@ -60,8 +60,8 @@ class MinDalle:
     def download_tokenizer(self):
         self._verbose_print("downloading tokenizer params")
         suffix = '' if self.is_mega else '_mini'
-        vocab = requests.get(MIN_DALLE_REPO + 'vocab{}.json'.format(suffix))
-        merges = requests.get(MIN_DALLE_REPO + 'merges{}.txt'.format(suffix))
+        vocab = requests.get(f'{MIN_DALLE_REPO}vocab{suffix}.json')
+        merges = requests.get(f'{MIN_DALLE_REPO}merges{suffix}.txt')
         with open(self.vocab_path, 'wb') as f: f.write(vocab.content)
         with open(self.merges_path, 'wb') as f: f.write(merges.content)
 
@@ -69,20 +69,20 @@ class MinDalle:
     def download_encoder(self):
         self._verbose_print("downloading encoder params")
         suffix = '' if self.is_mega else '_mini'
-        params = requests.get(MIN_DALLE_REPO + 'encoder{}.pt'.format(suffix))
+        params = requests.get(f'{MIN_DALLE_REPO}encoder{suffix}.pt')
         with open(self.encoder_params_path, 'wb') as f: f.write(params.content)
 
 
     def download_decoder(self):
         self._verbose_print("downloading decoder params")
         suffix = '' if self.is_mega else '_mini'
-        params = requests.get(MIN_DALLE_REPO + 'decoder{}.pt'.format(suffix))
+        params = requests.get(f'{MIN_DALLE_REPO}decoder{suffix}.pt')
         with open(self.decoder_params_path, 'wb') as f: f.write(params.content)
     
 
     def download_detokenizer(self):
         self._verbose_print("downloading detokenizer params")
-        params = requests.get(MIN_DALLE_REPO + 'detoker.pt')
+        params = requests.get(f'{MIN_DALLE_REPO}detoker.pt')
         with open(self.detoker_params_path, 'wb') as f: f.write(params.content)
 
 
@@ -208,7 +208,7 @@ class MinDalle:
         row_count = 16
         for row_index in range(row_count):
             if is_verbose: 
-                print('sampling row {} of {}'.format(row_index + 1, row_count))
+                print(f'sampling row {row_index + 1} of {row_count}')
             with torch.cuda.amp.autocast(dtype=self.dtype):
                 attention_state, image_tokens = self.decoder.decode_row(
                     row_index,
@@ -222,8 +222,7 @@ class MinDalle:
             with torch.cuda.amp.autocast(dtype=torch.float32):
                 if ((row_index + 1) * (2 ** log2_mid_count)) % row_count == 0:
                     tokens = image_tokens[:, 1:]
-                    image = self.image_from_tokens(grid_size, tokens, is_verbose)
-                    yield image
+                    yield self.image_from_tokens(grid_size, tokens, is_verbose)
 
 
     def generate_image(
