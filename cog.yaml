@@ -6,8 +6,8 @@ build:
     - "libgl1-mesa-glx"
     - "libglib2.0-0"
   python_packages:
-    - "min-dalle==0.2.29"
+    - "min-dalle==0.2.35"
   run:
-    - pip install torch==1.10.0+cu113 -f https://download.pytorch.org/whl/torch_stable.html
+    - pip install torch==1.11.0+cu113 -f https://download.pytorch.org/whl/torch_stable.html
 
 predict: "replicate_predictor.py:ReplicatePredictor"

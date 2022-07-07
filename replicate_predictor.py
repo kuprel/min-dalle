@@ -19,9 +19,9 @@ class ReplicatePredictor(BasePredictor):
             default=True
         ),
         grid_size: int = Input(
-            description='Size of the image grid',
+            description='Size of the image grid.  4x4 takes about 15 seconds, 8x8 takes about 45 seconds',
             ge=1,
-            le=4,
+            le=8,
             default=4
         ),
         log2_supercondition_factor: int = Input(
