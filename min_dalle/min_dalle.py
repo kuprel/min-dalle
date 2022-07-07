@@ -1,15 +1,17 @@
-import json
-import os
+from json import load as json_load
+from os import cpu_count, makedirs
+from pathlib import Path
 from typing import Iterator
 
-import numpy
 import requests
 import torch
+from numpy import int32 as np_int32
+from numpy import ones as np_ones
 from PIL import Image
 from torch import LongTensor
 
 torch.set_grad_enabled(False)
-torch.set_num_threads(os.cpu_count())
+torch.set_num_threads(cpu_count())
 
 from .models import DalleBartDecoder, DalleBartEncoder, VQGanDetokenizer
 from .text_tokenizer import TextTokenizer
@@ -26,6 +28,8 @@ class MinDalle:
         is_reusable: bool = True,
         is_verbose=True,
     ):
+        _models_root = Path(models_root)
+
         self.is_mega = is_mega
         self.is_reusable = is_reusable
         self.dtype = dtype
@@ -39,18 +43,18 @@ class MinDalle:
         self.image_vocab_count = 16415 if is_mega else 16384
 
         model_name = f"dalle_bart_{'mega' if is_mega else 'mini'}"
-        dalle_path = os.path.join(models_root, model_name)
-        vqgan_path = os.path.join(models_root, "vqgan")
+        dalle_path = _models_root / model_name
+        vqgan_path = _models_root / "vqgan"
 
         for _path in [dalle_path, vqgan_path]:
-            if not os.path.exists(_path):
-                os.makedirs(_path)
+            if not Path(_path).exists():
+                makedirs(_path)
 
-        self.vocab_path = os.path.join(dalle_path, "vocab.json")
-        self.merges_path = os.path.join(dalle_path, "merges.txt")
-        self.encoder_params_path = os.path.join(dalle_path, "encoder.pt")
-        self.decoder_params_path = os.path.join(dalle_path, "decoder.pt")
-        self.detoker_params_path = os.path.join(vqgan_path, "detoker.pt")
+        self.vocab_path = dalle_path / "vocab.json"
+        self.merges_path = dalle_path / "merges.txt"
+        self.encoder_params_path = dalle_path / "encoder.pt"
+        self.decoder_params_path = dalle_path / "decoder.pt"
+        self.detoker_params_path = vqgan_path / "detoker.pt"
 
         self.init_tokenizer()
         if is_reusable:
@@ -73,7 +77,7 @@ class MinDalle:
 
         for _path, _data in [(self.vocab_path, vocab), (self.merges_path, merges)]:
             with open(_path, "wb") as f:
-                f.write(_data.text)
+                f.write(_data.content)
 
     def download_encoder(self):
         self._verbose_print("downloading encoder params")
@@ -96,21 +100,21 @@ class MinDalle:
             f.write(params.content)
 
     def init_tokenizer(self):
-        is_downloaded = os.path.exists(self.vocab_path)
-        is_downloaded &= os.path.exists(self.merges_path)
+        is_downloaded = self.vocab_path.exists()
+        is_downloaded &= self.merges_path.exists()
         if not is_downloaded:
             self.download_tokenizer()
         self._verbose_print("intializing TextTokenizer")
 
         with open(self.vocab_path, "r", encoding="utf8") as f:
-            vocab = json.load(f)
+            vocab = json_load(f)
         with open(self.merges_path, "r", encoding="utf8") as f:
             merges = f.read().split("\n")[1:-1]
 
         self.tokenizer = TextTokenizer(vocab, merges)
 
     def init_encoder(self):
-        is_downloaded = os.path.exists(self.encoder_params_path)
+        is_downloaded = self.encoder_params_path.exists()
         if not is_downloaded:
             self.download_encoder()
         self._verbose_print("initializing DalleBartEncoder")
@@ -133,7 +137,7 @@ class MinDalle:
             self.encoder = self.encoder.cuda()
 
     def init_decoder(self):
-        is_downloaded = os.path.exists(self.decoder_params_path)
+        is_downloaded = self.decoder_params_path.exists()
         if not is_downloaded:
             self.download_decoder()
         self._verbose_print("initializing DalleBartDecoder")
@@ -156,7 +160,7 @@ class MinDalle:
             self.decoder = self.decoder.cuda()
 
     def init_detokenizer(self):
-        is_downloaded = os.path.exists(self.detoker_params_path)
+        is_downloaded = self.detoker_params_path.exists()
         if not is_downloaded:
             self.download_detokenizer()
         self._verbose_print("initializing VQGanDetokenizer")
@@ -204,7 +208,7 @@ class MinDalle:
             tokens = tokens[: self.text_token_count]
         if is_verbose:
             print("text tokens", tokens)
-        text_tokens = numpy.ones((2, 64), dtype=numpy.int32)
+        text_tokens = np_ones((2, 64), dtype=np_int32)
         text_tokens[0, :2] = [tokens[0], tokens[-1]]
         text_tokens[1, : len(tokens)] = tokens
 
