@@ -53,9 +53,12 @@ class MinDalle:
             self.init_decoder()
             self.init_detokenizer()
 
+    def _verbose_print(self, string: str):
+        if self.is_verbose:
+            print(string)
 
     def download_tokenizer(self):
-        if self.is_verbose: print("downloading tokenizer params")
+        self._verbose_print("downloading tokenizer params")
         suffix = '' if self.is_mega else '_mini'
         vocab = requests.get(MIN_DALLE_REPO + 'vocab{}.json'.format(suffix))
         merges = requests.get(MIN_DALLE_REPO + 'merges{}.txt'.format(suffix))
@@ -64,21 +67,21 @@ class MinDalle:
 
 
     def download_encoder(self):
-        if self.is_verbose: print("downloading encoder params")
+        self._verbose_print("downloading encoder params")
         suffix = '' if self.is_mega else '_mini'
         params = requests.get(MIN_DALLE_REPO + 'encoder{}.pt'.format(suffix))
         with open(self.encoder_params_path, 'wb') as f: f.write(params.content)
 
 
     def download_decoder(self):
-        if self.is_verbose: print("downloading decoder params")
+        self._verbose_print("downloading decoder params")
         suffix = '' if self.is_mega else '_mini'
         params = requests.get(MIN_DALLE_REPO + 'decoder{}.pt'.format(suffix))
         with open(self.decoder_params_path, 'wb') as f: f.write(params.content)
     
 
     def download_detokenizer(self):
-        if self.is_verbose: print("downloading detokenizer params")
+        self._verbose_print("downloading detokenizer params")
         params = requests.get(MIN_DALLE_REPO + 'detoker.pt')
         with open(self.detoker_params_path, 'wb') as f: f.write(params.content)
 
@@ -87,7 +90,7 @@ class MinDalle:
         is_downloaded = os.path.exists(self.vocab_path)
         is_downloaded &= os.path.exists(self.merges_path)
         if not is_downloaded: self.download_tokenizer()
-        if self.is_verbose: print("intializing TextTokenizer")
+        self._verbose_print("intializing TextTokenizer")
         with open(self.vocab_path, 'r', encoding='utf8') as f:
             vocab = json.load(f)
         with open(self.merges_path, 'r', encoding='utf8') as f:
@@ -98,7 +101,7 @@ class MinDalle:
     def init_encoder(self):
         is_downloaded = os.path.exists(self.encoder_params_path)
         if not is_downloaded: self.download_encoder()
-        if self.is_verbose: print("initializing DalleBartEncoder")
+        self._verbose_print("initializing DalleBartEncoder")
         self.encoder = DalleBartEncoder(
             attention_head_count = self.attention_head_count,
             embed_count = self.embed_count,
@@ -116,7 +119,7 @@ class MinDalle:
     def init_decoder(self):
         is_downloaded = os.path.exists(self.decoder_params_path)
         if not is_downloaded: self.download_decoder()
-        if self.is_verbose: print("initializing DalleBartDecoder")
+        self._verbose_print("initializing DalleBartDecoder")
         self.decoder = DalleBartDecoder(
             image_vocab_count = self.image_vocab_count,
             attention_head_count = self.attention_head_count,
@@ -134,7 +137,7 @@ class MinDalle:
     def init_detokenizer(self):
         is_downloaded = os.path.exists(self.detoker_params_path)
         if not is_downloaded: self.download_detokenizer()
-        if self.is_verbose: print("initializing VQGanDetokenizer")
+        self._verbose_print("initializing VQGanDetokenizer")
         self.detokenizer = VQGanDetokenizer().eval()
         params = torch.load(self.detoker_params_path)
         self.detokenizer.load_state_dict(params)
