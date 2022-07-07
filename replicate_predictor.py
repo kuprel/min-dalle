@@ -1,5 +1,6 @@
 from min_dalle import MinDalle
 import tempfile
+import torch
 from typing import Iterator
 from cog import BasePredictor, Path, Input
 
@@ -53,5 +54,6 @@ class ReplicatePredictor(BasePredictor):
         except:
             print("An error occured, deleting model")
             del self.model
+            torch.cuda.empty_cache()
             self.setup()
             raise Exception("There was an error, please try again")

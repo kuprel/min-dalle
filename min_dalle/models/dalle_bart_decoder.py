@@ -1,6 +1,6 @@
 from typing import Tuple, List
 import torch
-from torch import LongTensor, nn, FloatTensor, BoolTensor
+from torch import nn, LongTensor, FloatTensor, BoolTensor
 torch.set_grad_enabled(False)
 
 from .dalle_bart_encoder import GLU, AttentionBase
