@@ -161,7 +161,7 @@ class MinDalle:
         grid_size = int(sqrt(images.shape[0]))
         images = images.reshape([grid_size] * 2 + list(images.shape[1:]))
         image = images.flatten(1, 2).transpose(0, 1).flatten(1, 2)
-        image = Image.fromarray(image.to('cpu').detach().numpy())
+        image = Image.fromarray(image.to('cpu').numpy())
         return image
 
 

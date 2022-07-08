@@ -70,9 +70,9 @@ images = model.generate_images(
 
 To get an image into PIL format you will have to first move the images to the CPU and convert the tensor to a numpy array.
 ```python
-images = images.to('cpu').detach().numpy()
+images = images.to('cpu').numpy()
 ```
-Then image $i$ can be coverted to a PIL.Image and saved with its `save` method
+Then image $i$ can be coverted to a PIL.Image and saved
 ```python
 image = Image.fromarray(images[i])
 image.save('image_{}.png'.format(i))
