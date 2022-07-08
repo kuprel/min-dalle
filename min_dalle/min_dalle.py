@@ -170,7 +170,7 @@ class MinDalle:
         self, 
         text: str, 
         seed: int,
-        grid_size: int,
+        image_count: int,
         log2_mid_count: int,
         log2_k: int = 6,
         log2_supercondition_factor: int = 3,
@@ -202,7 +202,7 @@ class MinDalle:
             encoder_state, attention_mask, attention_state, image_tokens = ( 
                 self.decoder.decode_initial(
                     seed, 
-                    grid_size ** 2, 
+                    image_count, 
                     text_tokens, 
                     encoder_state
                 )
@@ -242,7 +242,7 @@ class MinDalle:
         images_stream = self.generate_images_stream(
             text, 
             seed,
-            grid_size,
+            grid_size ** 2,
             log2_mid_count,
             log2_k,
             log2_supercondition_factor,
@@ -256,7 +256,7 @@ class MinDalle:
         self, 
         text: str,
         seed: int = -1,
-        grid_size: int = 1,
+        image_count: int = 1,
         log2_k: int = 6,
         log2_supercondition_factor: int = 3,
         is_verbose: bool = False
@@ -265,7 +265,7 @@ class MinDalle:
         images_stream = self.generate_images_stream(
             text,
             seed,
-            grid_size,
+            image_count,
             log2_mid_count,
             log2_k,
             log2_supercondition_factor,
