@@ -68,7 +68,15 @@ images = model.generate_images(
 )
 ```
 
-Note: you will have to move the images to the cpu and convert to numpy, e.g. `images = images.to('cpu').detach().numpy()`.  Then image $i$ can be coverted to a PIL.Image `image = Image.fromarray(images[i])`, and saved with its `save` method `image.save('image.png')`.
+Note: you will have to move the images to the cpu and convert to numpy, e.g. 
+```python
+images = images.to('cpu').detach().numpy()
+```
+Then image $i$ can be coverted to a PIL.Image 
+```python
+image = Image.fromarray(images[i])
+```
+and saved with its `save` method `image.save('image.png')`.
 
 ### Interactive
 
