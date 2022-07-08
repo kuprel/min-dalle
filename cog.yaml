@@ -6,7 +6,7 @@ build:
     - "libgl1-mesa-glx"
     - "libglib2.0-0"
   python_packages:
-    - "min-dalle==0.3.3"
+    - "min-dalle==0.3.4"
   run:
     - pip install torch==1.11.0+cu113 -f https://download.pytorch.org/whl/torch_stable.html
 
