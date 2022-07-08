@@ -53,6 +53,21 @@ display(image)
 <img src="https://github.com/kuprel/min-dalle/raw/main/examples/nuclear_broccoli.jpg" alt="min-dalle" width="400"/>
 credit: https://twitter.com/hardmaru/status/1544354119527596034
 
+The images can also be generated as a `FloatTensor` in case you want to process them manually (e.g. save individual images).
+
+```python
+images = model.generate_images(
+    text='Nuclear explosion broccoli',
+    seed=-1,
+    image_count=7,
+    log2_k=6,
+    log2_supercondition_factor=5,
+    is_verbose=False
+)
+```
+
+Note: you will have to move the images to the cpu and convert to numpy, e.g. `images = images.to('cpu').detach().numpy()`.  Then image $i$ can be coverted to a PIL.Image `image = Image.fromarray(images[i])`, and saved with its `save` method `image.save('image.png')`.
+
 ### Interactive
 
 If the model is being used interactively (e.g. in a notebook) `generate_image_stream` can be used to generate a stream of images as the model is decoding.  The detokenizer adds a slight delay for each image.  Setting `log2_mid_count` to 3 results in a total of `2 ** 3 = 8` generated images.  The only valid values for `log2_mid_count` are 0, 1, 2, 3, and 4.  This is implemented in the colab.
