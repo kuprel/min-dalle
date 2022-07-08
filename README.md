@@ -53,7 +53,9 @@ display(image)
 <img src="https://github.com/kuprel/min-dalle/raw/main/examples/nuclear_broccoli.jpg" alt="min-dalle" width="400"/>
 credit: https://twitter.com/hardmaru/status/1544354119527596034
 
-The images can also be generated as a `FloatTensor` in case you want to process them manually (e.g. save individual images).
+
+### Saving Individual Images
+The images can also be generated as a `FloatTensor` in case you want to process them manually.
 
 ```python
 images = model.generate_images(
