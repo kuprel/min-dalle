@@ -75,6 +75,7 @@ images = images.to('cpu').detach().numpy()
 Then image $i$ can be coverted to a PIL.Image and saved with its `save` method
 ```python
 image = Image.fromarray(images[i])
+image.save('image_{}.png'.format(i))
 ```
 
 ### Interactive
