@@ -1,13 +1,13 @@
 build:
-  cuda: "11.4"
+  cuda: "11.5.1"
   gpu: true
   python_version: "3.10"
   system_packages:
     - "libgl1-mesa-glx"
     - "libglib2.0-0"
   python_packages:
-    - "min-dalle==0.3.5"
+    - "min-dalle==0.3.7"
   run:
-    - pip install torch==1.11.0+cu113 -f https://download.pytorch.org/whl/torch_stable.html
+    - pip install torch==1.12.0+cu116 -f https://download.pytorch.org/whl/torch_stable.html
 
 predict: "replicate_predictor.py:ReplicatePredictor"

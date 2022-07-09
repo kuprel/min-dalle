@@ -1,7 +1,6 @@
 import torch
 from torch import FloatTensor, LongTensor
 from torch.nn import Module, ModuleList, GroupNorm, Conv2d, Embedding
-torch.set_grad_enabled(False)
 
 
 class ResnetBlock(Module):

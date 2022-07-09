@@ -1,8 +1,10 @@
 from min_dalle import MinDalle
 import tempfile
-import torch
+import torch, torch.backends.cudnn
 from typing import Iterator
 from cog import BasePredictor, Path, Input
+
+torch.backends.cudnn.deterministic = False
 
 
 class ReplicatePredictor(BasePredictor):
