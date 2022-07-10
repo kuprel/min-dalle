@@ -138,7 +138,7 @@ class DalleBartEncoder(nn.Module):
     def forward(self, text_tokens: LongTensor) -> FloatTensor:
         attention_mask = text_tokens.not_equal(1)
         pose_tokens = self.token_indices[None][[0] * text_tokens.shape[0]]
-        text_tokens = text_tokens.clamp(0, self.text_vocab_count - 1)
+        text_tokens.clamp_(0, self.text_vocab_count - 1)
         encoder_state = (
             self.embed_tokens.forward(text_tokens) +
             self.embed_positions.forward(pose_tokens)

@@ -151,7 +151,7 @@ class DalleBartDecoder(nn.Module):
         image_count = encoder_state.shape[0] // 2
         token_index_batched = token_index[[0] * image_count * 2]
         prev_tokens = prev_tokens[list(range(image_count)) * 2]
-        prev_tokens = prev_tokens.clamp(0, self.image_vocab_count)
+        prev_tokens.clamp_(0, self.image_vocab_count)
         decoder_state = self.embed_tokens.forward(prev_tokens)
         decoder_state += self.embed_positions.forward(token_index_batched)
         decoder_state = self.layernorm_embedding.forward(decoder_state)

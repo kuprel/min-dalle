@@ -166,7 +166,7 @@ class VQGanDetokenizer(Module):
         self.decoder = Decoder()
 
     def forward(self, z: LongTensor) -> FloatTensor:
-        z = z.clamp(0, self.vocab_count - 1)
+        z.clamp_(0, self.vocab_count - 1)
         z = self.embedding.forward(z)
         z = z.view((z.shape[0], 2 ** 4, 2 ** 4, 2 ** 8))
         z = z.permute(0, 3, 1, 2).contiguous()

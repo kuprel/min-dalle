@@ -22,7 +22,7 @@ class ReplicatePredictor(BasePredictor):
             default=True
         ),
         grid_size: int = Input(
-            description='Size of the image grid.  4x4 takes about 15 seconds, 8x8 takes about 35 seconds',
+            description='Size of the image grid.  5x5 takes around 16 seconds, 8x8 takes around 36 seconds',
             ge=1,
             le=8,
             default=4
