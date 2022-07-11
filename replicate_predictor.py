@@ -27,11 +27,11 @@ class ReplicatePredictor(BasePredictor):
             le=8,
             default=4
         ),
-        log2_temperature: float = Input(
+        temperature: float = Input(
             description='A higher temperature results in more variety.',
-            ge=-3,
+            ge=0.01,
             le=3,
-            default=0
+            default=1
         ),
     ) -> Iterator[Path]:
         try: 
@@ -40,7 +40,7 @@ class ReplicatePredictor(BasePredictor):
                 seed = -1,
                 grid_size = grid_size,
                 log2_mid_count = 3 if intermediate_outputs else 0,
-                temperature = 2 ** log2_temperature,
+                temperature = temperature,
                 supercondition_factor = 2 ** 4,
                 top_k = 2 ** 8,
                 is_verbose = True
