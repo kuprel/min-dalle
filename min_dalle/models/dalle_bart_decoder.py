@@ -140,8 +140,9 @@ class DalleBartDecoder(nn.Module):
 
     def decode_step(
         self,
-        log2_k: int,
-        log2_supercondition_factor: int,
+        temperature: float,
+        top_k: int,
+        supercondition_factor: int,
         attention_mask: BoolTensor,
         encoder_state: FloatTensor,
         attention_state: FloatTensor,
@@ -166,18 +167,17 @@ class DalleBartDecoder(nn.Module):
             )
         decoder_state = self.final_ln(decoder_state)
         logits = self.lm_head(decoder_state)
-        a = 2 ** log2_supercondition_factor
+        a = supercondition_factor
         logits: FloatTensor = (
             logits[:image_count, -1] * (1 - a) + 
             logits[image_count:, -1] * a
         )
 
-        top_logits, _ = logits.topk(2 ** log2_k, dim=-1)
-        probs = torch.where(
-            logits < top_logits[:, [-1]],
-            self.zero_prob,
-            torch.exp(logits - top_logits[:, [0]])
-        )
+        top_logits, _ = logits.topk(top_k, dim=-1)
+        is_kept = logits >= top_logits[:, [-1]]
+        logits -= top_logits[:, [0]]
+        logits /= max(temperature, 1e-6)
+        probs = torch.where(is_kept, torch.exp(logits), self.zero_prob)
         probs[:, 2 ** 14:] = 0              # vqgan vocab_count is only 2 ** 14
         return probs, attention_state
 
@@ -185,8 +185,9 @@ class DalleBartDecoder(nn.Module):
     def decode_row(
         self,
         row_index: int,
-        log2_k: int,
-        log2_supercondition_factor: int,
+        temperature: float,
+        top_k: int,
+        supercondition_factor: int,
         encoder_state: FloatTensor,
         attention_mask: BoolTensor,
         attention_state: FloatTensor,
@@ -195,8 +196,9 @@ class DalleBartDecoder(nn.Module):
         for col_index in range(16):
             i = 16 * row_index + col_index
             probs, attention_state = self.decode_step(
-                log2_k = log2_k,
-                log2_supercondition_factor = log2_supercondition_factor,
+                temperature = temperature,
+                top_k = top_k,
+                supercondition_factor = supercondition_factor,
                 attention_mask = attention_mask,
                 encoder_state = encoder_state,
                 attention_state = attention_state,

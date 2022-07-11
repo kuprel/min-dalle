@@ -13,6 +13,7 @@ parser.add_argument('--seed', type=int, default=-1)
 parser.add_argument('--grid-size', type=int, default=1)
 parser.add_argument('--image-path', type=str, default='generated')
 parser.add_argument('--models-root', type=str, default='pretrained')
+parser.add_argument('--top_k', type=int, default=256)
 
 
 def ascii_from_image(image: Image.Image, size: int = 128) -> str:
@@ -38,6 +39,7 @@ def generate_image(
     text: str,
     seed: int,
     grid_size: int,
+    top_k: int,
     image_path: str,
     models_root: str
 ):
@@ -48,7 +50,13 @@ def generate_image(
         is_verbose=True
     )
 
-    image = model.generate_image(text, seed, grid_size, is_verbose=True)
+    image = model.generate_image(
+        text, 
+        seed, 
+        grid_size, 
+        top_k=top_k, 
+        is_verbose=True
+    )
     save_image(image, image_path)
     print(ascii_from_image(image, size=128))
 
@@ -61,6 +69,7 @@ if __name__ == '__main__':
         text=args.text,
         seed=args.seed,
         grid_size=args.grid_size,
+        top_k=args.top_k,
         image_path=args.image_path,
         models_root=args.models_root
     )
