@@ -27,23 +27,23 @@ class ReplicatePredictor(BasePredictor):
             le=8,
             default=4
         ),
-        log2_supercondition_factor: int = Input(
-            description='Higher values result in better agreement with the text but a narrower variety of generated images',
-            ge=1,
-            le=6,
-            default=4
+        log2_temperature: float = Input(
+            description='A higher temperature results in more variety.',
+            ge=-3,
+            le=3,
+            default=0
         ),
     ) -> Iterator[Path]:
         try: 
-            seed = -1
-            log2_mid_count = 3 if intermediate_outputs else 0
             image_stream = self.model.generate_image_stream(
-                text,
-                seed,
-                grid_size=grid_size,
-                log2_mid_count=log2_mid_count,
-                log2_supercondition_factor=log2_supercondition_factor,
-                is_verbose=True
+                text = text,
+                seed = -1,
+                grid_size = grid_size,
+                log2_mid_count = 3 if intermediate_outputs else 0,
+                temperature = 2 ** log2_temperature,
+                supercondition_factor = 2 ** 4,
+                top_k = 2 ** 8,
+                is_verbose = True
             )
 
             iter = 0
