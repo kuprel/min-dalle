@@ -13,6 +13,10 @@ To generate a 4x4 grid of DALL·E Mega images it takes:
 - 48 sec with a P100 in Colab
 - 13 sec with an A100 on Replicate
 
+Here's a more detailed breakdown on the A100 of total inference time vs number of generated images:
+<img src="https://github.com/kuprel/min-dalle/raw/main/performance_a100.png" alt="min-dalle" width="400"/>
+Credit to @technobird22 and his [NeoGen](https://github.com/technobird22/NeoGen) discord bot for the graph
+
 The flax model and code for converting it to torch can be found [here](https://github.com/kuprel/min-dalle-flax).
 
 ## Install
