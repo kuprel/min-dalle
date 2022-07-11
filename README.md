@@ -42,15 +42,16 @@ model = MinDalle(
 )
 ```
 
-The required models will be downloaded to `models_root` if they are not already there.  Set the `dtype` to `torch.float16` to save GPU memory.  If you have an Ampere architecture GPU you can use `torch.bfloat16`.  Once everything has finished initializing, call `generate_image` with some text as many times as you want.  Use a positive `seed` for reproducible results.  Higher values for `log2_supercondition_factor` result in better agreement with the text but a narrower variety of generated images.  Every image token is sampled from the top-$k$ most probable tokens.
+The required models will be downloaded to `models_root` if they are not already there.  Set the `dtype` to `torch.float16` to save GPU memory.  If you have an Ampere architecture GPU you can use `torch.bfloat16`.  Once everything has finished initializing, call `generate_image` with some text as many times as you want.  Use a positive `seed` for reproducible results.  Higher values for `supercondition_factor` result in better agreement with the text but a narrower variety of generated images.  Every image token is sampled from the `top_k` most probable tokens.  The largest logit is subtracted from the logits to avoid infs.  The logits are then divided by the `temperature`.  
 
 ```python
 image = model.generate_image(
     text='Nuclear explosion broccoli',
     seed=-1,
     grid_size=4,
-    log2_k=6,
-    log2_supercondition_factor=5,
+    temperature=1,
+    top_k=256,
+    supercondition_factor=32,
     is_verbose=False
 )
 
@@ -68,8 +69,9 @@ images = model.generate_images(
     text='Nuclear explosion broccoli',
     seed=-1,
     image_count=7,
-    log2_k=6,
-    log2_supercondition_factor=5,
+    temperature=1,
+    top_k=256,
+    supercondition_factor=16,
     is_verbose=False
 )
 ```
@@ -94,8 +96,9 @@ image_stream = model.generate_image_stream(
     seed=-1,
     grid_size=3,
     log2_mid_count=3,
-    log2_k=6,
-    log2_supercondition_factor=3,
+    temperature=1,
+    top_k=256,
+    supercondition_factor=16,
     is_verbose=False
 )
 
