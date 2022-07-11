@@ -2,6 +2,8 @@
 
 [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/kuprel/min-dalle/blob/main/min_dalle.ipynb)
 &nbsp;
+[![Lightning](https://img.shields.io/badge/Lightning.AI-Launch%20Demo-blueviolet)](https://01g7k49cp0v7cdygnm7pbt37fa.litng-ai-03.litng.ai/view/Poster)
+&nbsp;
 [![Replicate](https://replicate.com/kuprel/min-dalle/badge)](https://replicate.com/kuprel/min-dalle)
 &nbsp;
 [![Discord](https://img.shields.io/discord/823813159592001537?color=5865F2&logo=discord&logoColor=white)](https://discord.com/channels/823813159592001537/912729332311556136)
