@@ -15,7 +15,7 @@ To generate a 4x4 grid of DALL·E Mega images it takes:
 
 Here's a more detailed breakdown of performance on an A100:
 <br />
-<img src="https://github.com/kuprel/min-dalle/raw/main/performance.png" alt="min-dalle" width="450"/>
+<img src="https://github.com/kuprel/min-dalle/raw/main/batch_performance.png" alt="min-dalle" width="450"/>
 <br />
 Credit to @technobird22 and his [NeoGen](https://github.com/technobird22/NeoGen) discord bot for the graph
 
