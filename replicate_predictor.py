@@ -30,11 +30,11 @@ class ReplicatePredictor(BasePredictor):
         temperature: float = Input(
             description='A higher temperature results in more variety.',
             ge=0.01,
-            le=3,
-            default=1
+            le=10,
+            default=2
         ),
     ) -> Iterator[Path]:
-        try: 
+        try:
             image_stream = self.model.generate_image_stream(
                 text = text,
                 seed = -1,
