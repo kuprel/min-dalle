@@ -6,7 +6,6 @@ from cog import BasePredictor, Path, Input
 
 torch.backends.cudnn.deterministic = False
 
-
 class ReplicatePredictor(BasePredictor):
     def setup(self):
         self.model = MinDalle(
@@ -18,22 +17,37 @@ class ReplicatePredictor(BasePredictor):
     def predict(
         self,
         text: str = Input(default='Dali painting of WALL·E'),
-        output_png: bool = Input(default=False),
-        intermediate_outputs: bool = Input(default=True),
+        save_as_png: bool = Input(default=False),
+        progressive_outputs: bool = Input(default=True),
         grid_size: int = Input(ge=1, le=9, default=5),
-        log2_temperature: float = Input(ge=-3, le=3, default=2),
-        log2_top_k: int = Input(ge=0, le=14, default=4),
-        log2_supercondition_factor: float = Input(ge=2, le=6, default=4)
+        temperature: str = Input(
+            choices=(
+                ['1/{}'.format(2 ** i) for i in range(4, 0, -1)] +
+                [str(2 ** i) for i in range(5)]
+            ),
+            default='4',
+            description='Advanced Setting, see Readme below if interested.'
+        ),
+        top_k: int = Input(
+            choices=[2 ** i for i in range(15)], 
+            default=64,
+            description='Advanced Setting, see Readme below if interested.'
+        ),
+        supercondition_factor: int = Input(
+            choices=[2 ** i for i in range(2, 7)], 
+            default=16,
+            description='Advanced Setting, see Readme below if interested.'
+        )
     ) -> Iterator[Path]:
-        log2_mid_count = 3 if intermediate_outputs else 0
+        log2_mid_count = 3 if progressive_outputs else 0
         image_stream = self.model.generate_image_stream(
             text = text,
             seed = -1,
             grid_size = grid_size,
             log2_mid_count = log2_mid_count,
-            temperature = 2 ** log2_temperature,
-            supercondition_factor = 2 ** log2_supercondition_factor,
-            top_k = 2 ** log2_top_k,
+            temperature = eval(temperature),
+            supercondition_factor = float(supercondition_factor),
+            top_k = top_k,
             is_verbose = True
         )
 
@@ -41,7 +55,7 @@ class ReplicatePredictor(BasePredictor):
         path = Path(tempfile.mkdtemp())
         for image in image_stream:
             i += 1
-            ext = 'png' if i == 2 ** log2_mid_count and output_png else 'jpg'
+            ext = 'png' if i == 2 ** log2_mid_count and save_as_png else 'jpg'
             image_path = path / 'min-dalle-iter-{}.{}'.format(i, ext)
             image.save(str(image_path))
             yield image_path
