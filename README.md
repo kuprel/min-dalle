@@ -13,7 +13,7 @@ To generate a 4x4 grid of DALL·E Mega images it takes:
 - 48 sec with a P100 in Colab
 - 13 sec with an A100 on Replicate
 
-Here's a more detailed breakdown of performance on an A100. Credit to @technobird22 and his [NeoGen](https://github.com/technobird22/NeoGen) discord bot for the graph.
+Here's a more detailed breakdown of performance on an A100. Credit to [@technobird22](https://github.com/technobird22) and his [NeoGen](https://github.com/technobird22/NeoGen) discord bot for the graph.
 <br />
 <img src="https://github.com/kuprel/min-dalle/raw/main/performance.png" alt="min-dalle" width="450"/>
 <br />
@@ -57,7 +57,7 @@ image = model.generate_image(
 display(image)
 ```
 <img src="https://github.com/kuprel/min-dalle/raw/main/examples/nuclear_broccoli.jpg" alt="min-dalle" width="400"/>
-credit: https://twitter.com/hardmaru/status/1544354119527596034
+Credit to [@hardmaru](https://twitter.com/hardmaru) for the [example](https://twitter.com/hardmaru/status/1544354119527596034)
 
 
 ### Saving Individual Images
