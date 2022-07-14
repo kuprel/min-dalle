@@ -17,9 +17,9 @@ parser.add_argument('--top_k', type=int, default=256)
 
 
 def ascii_from_image(image: Image.Image, size: int = 128) -> str:
-    rgb_pixels = image.resize((size, int(0.55 * size))).convert('L').getdata()
+    gray_pixels = image.resize((size, int(0.55 * size))).convert('L').getdata()
     chars = list('.,;/IOX')
-    chars = [chars[i * len(chars) // 256] for i in rgb_pixels]
+    chars = [chars[i * len(chars) // 256] for i in gray_pixels]
     chars = [chars[i * size: (i + 1) * size] for i in range(size // 2)]
     return '\n'.join(''.join(row) for row in chars)
 
