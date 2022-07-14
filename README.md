@@ -86,7 +86,7 @@ image = Image.fromarray(images[i])
 image.save('image_{}.png'.format(i))
 ```
 
-### Interactive
+### Progressive Outputs
 
 If the model is being used interactively (e.g. in a notebook) `generate_image_stream` can be used to generate a stream of images as the model is decoding.  The detokenizer adds a slight delay for each image.  Setting `log2_mid_count` to 3 results in a total of `2 ** 3 = 8` generated images.  The only valid values for `log2_mid_count` are 0, 1, 2, 3, and 4.  This is implemented in the colab.
 
