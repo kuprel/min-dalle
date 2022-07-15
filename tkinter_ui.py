@@ -6,8 +6,6 @@ import PIL.ImageTk
 import tkinter
 from tkinter import ttk
 
-# -- decide stuff --
-
 def regen_root():
     global root
     global blank_image
@@ -16,21 +14,19 @@ def regen_root():
     root = tkinter.Tk()
     root.wm_resizable(False, False)
 
-    blank_image = PIL.ImageTk.PhotoImage(PIL.Image.new(size=(256, 256), mode="RGB"))
+    blank_image = PIL.ImageTk.PhotoImage(PIL.Image.new(size=(256 * 3, 256 * 3), mode="RGB"))
     padding_image = PIL.ImageTk.PhotoImage(PIL.Image.new(size=(16, 16), mode="RGBA"))
 
 regen_root()
 
-# -- --
-
-meganess = None
+is_mega = None
 def set_mega_true_and_destroy():
-	global meganess
-	meganess = True
+	global is_mega
+	is_mega = True
 	root.destroy()
 def set_mega_false_and_destroy():
-	global meganess
-	meganess = False
+	global is_mega
+	is_mega = False
 	root.destroy()
 
 frm = ttk.Frame(root, padding=16)
@@ -40,16 +36,16 @@ ttk.Label(frm, image=padding_image).grid(column=1, row=0)
 ttk.Button(frm, text="Not-Mega", command=set_mega_false_and_destroy).grid(column=2, row=0)
 root.mainloop()
 
-if meganess is None:
-	print("no option selected, goodbye")
+if is_mega is None:
+	print("no option selected")
 	sys.exit(0)
 
-print("confirmed mega: ", str(meganess))
+print("confirmed mega: ", str(is_mega))
 
 # -- --
 
 model = MinDalle(
-    is_mega=meganess, 
+    is_mega=is_mega, 
     models_root="./pretrained",
     is_reusable=True,
     is_verbose=True
@@ -63,9 +59,9 @@ regen_root()
 
 label_image_content = blank_image
 
-sv_prompt = tkinter.StringVar(value="mouse")
+sv_prompt = tkinter.StringVar(value="artificial intelligence")
 sv_temperature = tkinter.StringVar(value="1")
-sv_topk = tkinter.StringVar(value="1024")
+sv_topk = tkinter.StringVar(value="128")
 sv_supercond = tkinter.StringVar(value="16")
 
 def generate():
@@ -89,6 +85,7 @@ def generate():
     global label_image_content
     image = model.generate_image(
         sv_prompt.get(),
+        grid_size=3,
         temperature=temperature,
         top_k=topk,
         supercondition_factor=supercond,
