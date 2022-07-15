@@ -5,7 +5,7 @@ from PIL import Image
 from min_dalle import MinDalle
 
 
-parser = argparse.ArgumentParser('min-dalle',     
+parser = argparse.ArgumentParser(    
     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument('--mega', action='store_true',
     help='use mega model')
