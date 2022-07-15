@@ -81,7 +81,7 @@ def generate():
         sv_prompt.get(),
         grid_size=2,
         seed=-1,
-        progressive_outputs=False,
+        progressive_outputs=True,
         temperature=temperature,
         top_k=topk,
         supercondition_factor=supercond,
