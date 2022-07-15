@@ -91,10 +91,10 @@ def generate_image(
 if __name__ == '__main__':
     args = parser.parse_args()
     print('Config:', vars(args))
-    if args.fp16:
-        dtype = torch.float16
     if args.bf16:
         dtype = torch.bfloat16
+    elif args.fp16:
+        dtype = torch.float16
     else:
         dtype = torch.float32
     generate_image(
