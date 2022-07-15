@@ -14,7 +14,7 @@ def regen_root():
     root = tkinter.Tk()
     root.wm_resizable(False, False)
 
-    blank_image = PIL.ImageTk.PhotoImage(PIL.Image.new(size=(256 * 3, 256 * 3), mode="RGB"))
+    blank_image = PIL.ImageTk.PhotoImage(PIL.Image.new(size=(256 * 2, 256 * 2), mode="RGB"))
     padding_image = PIL.ImageTk.PhotoImage(PIL.Image.new(size=(16, 16), mode="RGBA"))
 
 regen_root()
@@ -33,29 +33,23 @@ frm = ttk.Frame(root, padding=16)
 frm.grid()
 ttk.Button(frm, text="Mega", command=set_mega_true_and_destroy).grid(column=0, row=0)
 ttk.Label(frm, image=padding_image).grid(column=1, row=0)
-ttk.Button(frm, text="Not-Mega", command=set_mega_false_and_destroy).grid(column=2, row=0)
+ttk.Button(frm, text="Mini", command=set_mega_false_and_destroy).grid(column=2, row=0)
 root.mainloop()
 
 if is_mega is None:
 	print("no option selected")
 	sys.exit(0)
 
-print("confirmed mega: ", str(is_mega))
-
-# -- --
+print("is_mega", is_mega)
 
 model = MinDalle(
-    is_mega=is_mega, 
     models_root="./pretrained",
+    is_mega=is_mega, 
     is_reusable=True,
     is_verbose=True
 )
 
-# -- --
-
 regen_root()
-
-# -- --
 
 label_image_content = blank_image
 
@@ -83,17 +77,20 @@ def generate():
         return
     # and continue
     global label_image_content
-    image = model.generate_image(
+    image_stream = model.generate_image_stream(
         sv_prompt.get(),
-        grid_size=3,
+        grid_size=2,
+        seed=-1,
+        progressive_outputs=False,
         temperature=temperature,
         top_k=topk,
         supercondition_factor=supercond,
         is_verbose=True
     )
-    image.save("out.png")
-    label_image_content = PIL.ImageTk.PhotoImage(image)
-    label_image.configure(image=label_image_content)
+    for image in image_stream:
+        label_image_content = PIL.ImageTk.PhotoImage(image)
+        label_image.configure(image=label_image_content)
+        label_image.update()
 
 frm = ttk.Frame(root, padding=16)
 frm.grid()
@@ -131,6 +128,4 @@ ttk.Label(props, image=padding_image).grid(column=0, row=7)
 ttk.Button(props, text="Generate", command=generate).grid(column=0, row=8)
 ttk.Button(props, text="Quit", command=root.destroy).grid(column=1, row=8)
 
-# alrighty
 root.mainloop()
-

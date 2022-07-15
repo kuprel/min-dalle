@@ -20,6 +20,7 @@ torch.backends.cuda.matmul.allow_tf32 = True
 torch.backends.cuda.matmul.allow_fp16_reduced_precision_reduction = True
 
 MIN_DALLE_REPO = 'https://huggingface.co/kuprel/min-dalle/resolve/main/'
+IMAGE_TOKEN_COUNT = 256
 
 
 class MinDalle:
@@ -27,10 +28,15 @@ class MinDalle:
         self,
         models_root: str = 'pretrained',
         dtype: torch.dtype = torch.float32,
+        device: str = None,
         is_mega: bool = True, 
         is_reusable: bool = True,
         is_verbose = True
     ):
+        if device == None:
+            device = 'cuda' if torch.cuda.is_available() else 'cpu'
+        if is_verbose: print("using device", device)
+        self.device = device
         self.is_mega = is_mega
         self.is_reusable = is_reusable
         self.dtype = dtype
@@ -112,12 +118,13 @@ class MinDalle:
             glu_embed_count = self.glu_embed_count,
             text_token_count = self.text_token_count,
             text_vocab_count = self.text_vocab_count,
-            layer_count = self.layer_count
+            layer_count = self.layer_count,
+            device=self.device
         ).to(self.dtype).eval()
         params = torch.load(self.encoder_params_path)
         self.encoder.load_state_dict(params, strict=False)
         del params
-        if torch.cuda.is_available(): self.encoder = self.encoder.cuda()
+        self.encoder = self.encoder.to(device=self.device)
 
 
     def init_decoder(self):
@@ -130,12 +137,12 @@ class MinDalle:
             embed_count = self.embed_count,
             glu_embed_count = self.glu_embed_count,
             layer_count = self.layer_count,
-            start_token = self.image_vocab_count
+            device=self.device
         ).to(self.dtype).eval()
         params = torch.load(self.decoder_params_path)
         self.decoder.load_state_dict(params, strict=False)
         del params
-        if torch.cuda.is_available(): self.decoder = self.decoder.cuda()
+        self.decoder = self.decoder.to(device=self.device)
 
 
     def init_detokenizer(self):
@@ -146,7 +153,7 @@ class MinDalle:
         params = torch.load(self.detoker_params_path)
         self.detokenizer.load_state_dict(params)
         del params
-        if torch.cuda.is_available(): self.detokenizer = self.detokenizer.cuda()
+        self.detokenizer = self.detokenizer.to(device=self.device)
 
 
     def images_from_tokens(
@@ -155,7 +162,7 @@ class MinDalle:
         is_verbose: bool = False
     ) -> FloatTensor:
         if not self.is_reusable: del self.decoder
-        if torch.cuda.is_available(): torch.cuda.empty_cache()
+        torch.cuda.empty_cache()
         if not self.is_reusable: self.init_detokenizer()
         if is_verbose: print("detokenizing image")
         images = self.detokenizer.forward(image_tokens).to(torch.uint8)
@@ -176,13 +183,12 @@ class MinDalle:
         text: str, 
         seed: int,
         image_count: int,
-        log2_mid_count: int,
+        progressive_outputs: bool = False,
         temperature: float = 1,
         top_k: int = 256,
         supercondition_factor: int = 16,
         is_verbose: bool = False
     ) -> Iterator[FloatTensor]:
-        assert(log2_mid_count in range(5))
         if is_verbose: print("tokenizing text")
         tokens = self.tokenizer.tokenize(text, is_verbose=is_verbose)
         if len(tokens) > self.text_token_count: 
@@ -191,49 +197,67 @@ class MinDalle:
         text_tokens = numpy.ones((2, 64), dtype=numpy.int32)
         text_tokens[0, :2] = [tokens[0], tokens[-1]]
         text_tokens[1, :len(tokens)] = tokens
-
-        text_tokens = torch.tensor(text_tokens).to(torch.long)
-        if torch.cuda.is_available(): text_tokens = text_tokens.cuda()
+        text_tokens = torch.tensor(
+            text_tokens, 
+            dtype=torch.long, 
+            device=self.device
+        )
 
         if not self.is_reusable: self.init_encoder()
         if is_verbose: print("encoding text tokens")
         with torch.cuda.amp.autocast(dtype=self.dtype):
             encoder_state = self.encoder.forward(text_tokens)
         if not self.is_reusable: del self.encoder
-        if torch.cuda.is_available(): torch.cuda.empty_cache()
+        torch.cuda.empty_cache()
 
         if not self.is_reusable: self.init_decoder()
 
         with torch.cuda.amp.autocast(dtype=self.dtype):
-            encoder_state, attention_mask, attention_state, image_tokens = ( 
-                self.decoder.decode_initial(
-                    seed=seed, 
-                    image_count=image_count, 
-                    text_tokens=text_tokens, 
-                    encoder_state=encoder_state
-                )
+            expanded_indices = [0] * image_count + [1] * image_count
+            text_tokens = text_tokens[expanded_indices]
+            encoder_state = encoder_state[expanded_indices]
+            attention_mask = text_tokens.not_equal(1)
+            attention_state = torch.zeros(
+                size=(
+                    self.layer_count,
+                    image_count * 4,
+                    IMAGE_TOKEN_COUNT,
+                    self.embed_count
+                ), 
+                device=self.device
             )
+            image_tokens = torch.full(
+                (IMAGE_TOKEN_COUNT + 1, image_count), 
+                self.image_vocab_count,
+                dtype=torch.long,
+                device=self.device
+            )
+            
+            if seed > 0: torch.manual_seed(seed)
 
-        row_count = 16
-        for row_index in range(row_count):
-            if is_verbose: 
-                print('sampling row {} of {}'.format(row_index + 1, row_count))
+        token_indices = torch.arange(IMAGE_TOKEN_COUNT, device=self.device)
+        settings = torch.tensor(
+            [temperature, top_k, supercondition_factor], 
+            dtype=torch.float32,
+            device=self.device
+        )
+        for i in range(IMAGE_TOKEN_COUNT):                
             with torch.cuda.amp.autocast(dtype=self.dtype):
-                attention_state, image_tokens = self.decoder.decode_row(
-                    row_index,
-                    temperature=temperature,
-                    top_k=top_k,
-                    supercondition_factor=supercondition_factor,
-                    encoder_state=encoder_state,
+                image_tokens[i + 1], attention_state = self.decoder.forward(
+                    settings=settings,
                     attention_mask=attention_mask,
+                    encoder_state=encoder_state,
                     attention_state=attention_state,
-                    image_tokens_sequence=image_tokens
+                    prev_tokens=image_tokens[i],
+                    token_index=token_indices[[i]]
                 )
+
             with torch.cuda.amp.autocast(dtype=torch.float32):
-                if ((row_index + 1) * (2 ** log2_mid_count)) % row_count == 0:
-                    tokens = image_tokens[:, 1:]
-                    images = self.images_from_tokens(tokens, is_verbose)
-                    yield images
+                if ((i + 1) % 32 == 0 and progressive_outputs) or i + 1 == 256:
+                    yield self.images_from_tokens(
+                        image_tokens=image_tokens[1:].T, 
+                        is_verbose=is_verbose
+                    )
 
 
     def generate_image_stream(
@@ -241,7 +265,7 @@ class MinDalle:
         text: str, 
         seed: int,
         grid_size: int,
-        log2_mid_count: int,
+        progressive_outputs: bool = False,
         temperature: float = 1,
         top_k: int = 256,
         supercondition_factor: int = 16,
@@ -251,7 +275,7 @@ class MinDalle:
             text=text, 
             seed=seed,
             image_count=grid_size ** 2,
-            log2_mid_count=log2_mid_count,
+            progressive_outputs=progressive_outputs,
             temperature=temperature,
             top_k=top_k,
             supercondition_factor=supercondition_factor,
@@ -271,13 +295,12 @@ class MinDalle:
         supercondition_factor: int = 16,
         is_verbose: bool = False
     ) -> FloatTensor:
-        log2_mid_count = 0
         images_stream = self.generate_images_stream(
             text=text,
             seed=seed,
             image_count=image_count,
             temperature=temperature,
-            log2_mid_count=log2_mid_count,
+            progressive_outputs=False,
             top_k=top_k,
             supercondition_factor=supercondition_factor,
             is_verbose=is_verbose
@@ -295,12 +318,11 @@ class MinDalle:
         supercondition_factor: int = 16,
         is_verbose: bool = False
     ) -> Image.Image:
-        log2_mid_count = 0
         image_stream = self.generate_image_stream(
             text=text,
             seed=seed,
             grid_size=grid_size,
-            log2_mid_count=log2_mid_count,
+            progressive_outputs=False,
             temperature=temperature,
             top_k=top_k,
             supercondition_factor=supercondition_factor,

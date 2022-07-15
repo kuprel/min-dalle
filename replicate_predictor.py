@@ -39,12 +39,11 @@ class ReplicatePredictor(BasePredictor):
             description='Advanced Setting, see Readme below if interested.'
         )
     ) -> Iterator[Path]:
-        log2_mid_count = 3 if progressive_outputs else 0
         image_stream = self.model.generate_image_stream(
             text = text,
             seed = -1,
             grid_size = grid_size,
-            log2_mid_count = log2_mid_count,
+            progressive_outputs = progressive_outputs,
             temperature = eval(temperature),
             supercondition_factor = float(supercondition_factor),
             top_k = top_k,
@@ -55,7 +54,8 @@ class ReplicatePredictor(BasePredictor):
         path = Path(tempfile.mkdtemp())
         for image in image_stream:
             i += 1
-            ext = 'png' if i == 2 ** log2_mid_count and save_as_png else 'jpg'
+            is_final = i == 8 if progressive_outputs else True
+            ext = 'png' if is_final and save_as_png else 'jpg'
             image_path = path / 'min-dalle-iter-{}.{}'.format(i, ext)
             image.save(str(image_path))
             yield image_path
