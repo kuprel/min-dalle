@@ -11,7 +11,8 @@ class ReplicatePredictor(BasePredictor):
         self.model = MinDalle(
             is_mega=True, 
             is_reusable=True, 
-            dtype=torch.float32
+            dtype=torch.float32,
+            device='cuda'
         )
 
     def predict(
