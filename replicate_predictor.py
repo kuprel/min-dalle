@@ -20,6 +20,7 @@ class ReplicatePredictor(BasePredictor):
         text: str = Input(default='Dali painting of WALL·E'),
         save_as_png: bool = Input(default=False),
         progressive_outputs: bool = Input(default=True),
+        seamless: bool = Input(default=False),
         grid_size: int = Input(ge=1, le=9, default=5),
         temperature: str = Input(
             choices=(
@@ -45,6 +46,7 @@ class ReplicatePredictor(BasePredictor):
             seed = -1,
             grid_size = grid_size,
             progressive_outputs = progressive_outputs,
+            is_seamless=seamless,
             temperature = eval(temperature),
             supercondition_factor = float(supercondition_factor),
             top_k = top_k,

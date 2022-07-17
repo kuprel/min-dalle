@@ -101,7 +101,7 @@ def generate():
         label_image.update()
 
 def save():
-    final_image.save('out.png')
+    final_image.save('generated/out.png')
 
 frm = ttk.Frame(root, padding=16)
 frm.grid()
