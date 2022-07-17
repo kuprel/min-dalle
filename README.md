@@ -42,13 +42,14 @@ model = MinDalle(
 )
 ```
 
-The required models will be downloaded to `models_root` if they are not already there.  Set the `dtype` to `torch.float16` to save GPU memory.  If you have an Ampere architecture GPU you can use `torch.bfloat16`.  Set the `device` to either "cuda" or "cpu".  Once everything has finished initializing, call `generate_image` with some text as many times as you want.  Use a positive `seed` for reproducible results.  Higher values for `supercondition_factor` result in better agreement with the text but a narrower variety of generated images.  Every image token is sampled from the `top_k` most probable tokens.  The largest logit is subtracted from the logits to avoid infs.  The logits are then divided by the `temperature`.  
+The required models will be downloaded to `models_root` if they are not already there.  Set the `dtype` to `torch.float16` to save GPU memory.  If you have an Ampere architecture GPU you can use `torch.bfloat16`.  Set the `device` to either "cuda" or "cpu".  Once everything has finished initializing, call `generate_image` with some text as many times as you want.  Use a positive `seed` for reproducible results.  Higher values for `supercondition_factor` result in better agreement with the text but a narrower variety of generated images.  Every image token is sampled from the `top_k` most probable tokens.  The largest logit is subtracted from the logits to avoid infs.  The logits are then divided by the `temperature`.  If `is_seamless` is true, the images grid will be tiled in token space not pixel space.
 
 ```python
 image = model.generate_image(
     text='Nuclear explosion broccoli',
     seed=-1,
     grid_size=4,
+    is_seamless=False,
     temperature=1,
     top_k=256,
     supercondition_factor=32,
@@ -69,7 +70,8 @@ The images can also be generated as a `FloatTensor` in case you want to process 
 images = model.generate_images(
     text='Nuclear explosion broccoli',
     seed=-1,
-    image_count=7,
+    grid_size=3,
+    is_seamless=False,
     temperature=1,
     top_k=256,
     supercondition_factor=16,
@@ -96,7 +98,8 @@ image_stream = model.generate_image_stream(
     text='Dali painting of WALL·E',
     seed=-1,
     grid_size=3,
-    log2_mid_count=3,
+    progressive_outputs=True,
+    is_seamless=False,
     temperature=1,
     top_k=256,
     supercondition_factor=16,
