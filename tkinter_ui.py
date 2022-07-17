@@ -57,6 +57,7 @@ sv_prompt = tkinter.StringVar(value="artificial intelligence")
 sv_temperature = tkinter.StringVar(value="1")
 sv_topk = tkinter.StringVar(value="128")
 sv_supercond = tkinter.StringVar(value="16")
+bv_seamless = tkinter.BooleanVar(value=False)
 
 def generate():
     # check fields
@@ -75,6 +76,10 @@ def generate():
     except:
         sv_supercond.set("ERROR")
         return
+    try:
+        is_seamless = bool(bv_seamless.get())
+    except:
+        return
     # and continue
     global label_image_content
     image_stream = model.generate_image_stream(
@@ -82,15 +87,21 @@ def generate():
         grid_size=2,
         seed=-1,
         progressive_outputs=True,
+        is_seamless=is_seamless,
         temperature=temperature,
         top_k=topk,
         supercondition_factor=supercond,
         is_verbose=True
     )
     for image in image_stream:
+        global final_image
+        final_image = image
         label_image_content = PIL.ImageTk.PhotoImage(image)
         label_image.configure(image=label_image_content)
         label_image.update()
+
+def save():
+    final_image.save('out.png')
 
 frm = ttk.Frame(root, padding=16)
 frm.grid()
@@ -124,8 +135,14 @@ ttk.Label(props, text="Supercondition Factor:").grid(column=0, row=6)
 ttk.Entry(props, textvariable=sv_supercond).grid(column=1, row=6)
 #
 ttk.Label(props, image=padding_image).grid(column=0, row=7)
+# seamless
+ttk.Label(props, text="Seamless:").grid(column=0, row=8)
+ttk.Checkbutton(props, variable=bv_seamless).grid(column=1, row=8)
+#
+ttk.Label(props, image=padding_image).grid(column=0, row=9)
 # buttons
-ttk.Button(props, text="Generate", command=generate).grid(column=0, row=8)
-ttk.Button(props, text="Quit", command=root.destroy).grid(column=1, row=8)
+ttk.Button(props, text="Generate", command=generate).grid(column=0, row=10)
+ttk.Button(props, text="Quit", command=root.destroy).grid(column=1, row=10)
+ttk.Button(props, text="Save", command=save).grid(column=2, row=10)
 
 root.mainloop()

@@ -62,7 +62,7 @@ display(image)
 Credit to [@hardmaru](https://twitter.com/hardmaru) for the [example](https://twitter.com/hardmaru/status/1544354119527596034)
 
 
-### Saving Individual Images
+<!-- ### Saving Individual Images
 The images can also be generated as a `FloatTensor` in case you want to process them manually.
 
 ```python
@@ -85,7 +85,7 @@ Then image $i$ can be coverted to a PIL.Image and saved
 ```python
 image = Image.fromarray(images[i])
 image.save('image_{}.png'.format(i))
-```
+``` -->
 
 ### Progressive Outputs
 

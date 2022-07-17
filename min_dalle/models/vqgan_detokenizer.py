@@ -1,19 +1,20 @@
 import torch
+from torch import nn
 from torch import FloatTensor, LongTensor
-from torch.nn import Module, ModuleList, GroupNorm, Conv2d, Embedding
+from math import sqrt
 
 
-class ResnetBlock(Module):
+class ResnetBlock(nn.Module):
     def __init__(self, log2_count_in: int, log2_count_out: int):
         super().__init__()
         m, n = 2 ** log2_count_in, 2 ** log2_count_out
         self.is_middle = m == n
-        self.norm1 = GroupNorm(2 ** 5, m)
-        self.conv1 = Conv2d(m, n, 3, padding=1)
-        self.norm2 = GroupNorm(2 ** 5, n)
-        self.conv2 = Conv2d(n, n, 3, padding=1)
+        self.norm1 = nn.GroupNorm(2 ** 5, m)
+        self.conv1 = nn.Conv2d(m, n, 3, padding=1)
+        self.norm2 = nn.GroupNorm(2 ** 5, n)
+        self.conv2 = nn.Conv2d(n, n, 3, padding=1)
         if not self.is_middle:
-            self.nin_shortcut = Conv2d(m, n, 1)
+            self.nin_shortcut = nn.Conv2d(m, n, 1)
 
     def forward(self, x: FloatTensor) -> FloatTensor:
         h = x
@@ -28,38 +29,39 @@ class ResnetBlock(Module):
         return x + h
 
 
-class AttentionBlock(Module):
+class AttentionBlock(nn.Module):
     def __init__(self):
         super().__init__()
         n = 2 ** 9
-        self.norm = GroupNorm(2 ** 5, n)
-        self.q = Conv2d(n, n, 1)
-        self.k = Conv2d(n, n, 1)
-        self.v = Conv2d(n, n, 1)
-        self.proj_out = Conv2d(n, n, 1)
+        self.norm = nn.GroupNorm(2 ** 5, n)
+        self.q = nn.Conv2d(n, n, 1)
+        self.k = nn.Conv2d(n, n, 1)
+        self.v = nn.Conv2d(n, n, 1)
+        self.proj_out = nn.Conv2d(n, n, 1)
 
     def forward(self, x: FloatTensor) -> FloatTensor:
         n, m = 2 ** 9, x.shape[0]
         h = x
         h = self.norm(h)
-        q = self.q.forward(h)
         k = self.k.forward(h)
         v = self.v.forward(h)
-        q = q.reshape(m, n, 2 ** 8)
+        q = self.q.forward(h)
+        k = k.reshape(m, n, -1)
+        v = v.reshape(m, n, -1)
+        q = q.reshape(m, n, -1)
         q = q.permute(0, 2, 1)
-        k = k.reshape(m, n, 2 ** 8)
         w = torch.bmm(q, k)
         w /= n ** 0.5
         w = torch.softmax(w, dim=2)
-        v = v.reshape(m, n, 2 ** 8)
         w = w.permute(0, 2, 1)
         h = torch.bmm(v, w)
-        h = h.reshape(m, n, 2 ** 4, 2 ** 4)
+        token_count = int(sqrt(h.shape[-1]))
+        h = h.reshape(m, n, token_count, token_count)
         h = self.proj_out.forward(h)
         return x + h
 
 
-class MiddleLayer(Module):
+class MiddleLayer(nn.Module):
     def __init__(self):
         super().__init__()
         self.block_1 = ResnetBlock(9, 9)
@@ -73,12 +75,12 @@ class MiddleLayer(Module):
         return h
 
 
-class Upsample(Module):
+class Upsample(nn.Module):
     def __init__(self, log2_count):
         super().__init__()
         n = 2 ** log2_count
         self.upsample = torch.nn.UpsamplingNearest2d(scale_factor=2)
-        self.conv = Conv2d(n, n, 3, padding=1)
+        self.conv = nn.Conv2d(n, n, 3, padding=1)
 
     def forward(self, x: FloatTensor) -> FloatTensor:
         x = self.upsample.forward(x.to(torch.float32))
@@ -86,7 +88,7 @@ class Upsample(Module):
         return x
 
 
-class UpsampleBlock(Module):
+class UpsampleBlock(nn.Module):
     def __init__(
         self, 
         log2_count_in: int, 
@@ -97,19 +99,19 @@ class UpsampleBlock(Module):
         super().__init__()
         self.has_attention = has_attention
         self.has_upsample = has_upsample
-        self.block = ModuleList([
+        
+        self.block = nn.ModuleList([
             ResnetBlock(log2_count_in, log2_count_out),
             ResnetBlock(log2_count_out, log2_count_out),
             ResnetBlock(log2_count_out, log2_count_out)
         ])
+
         if has_attention:
-            self.attn = ModuleList([
+            self.attn = nn.ModuleList([
                 AttentionBlock(),
                 AttentionBlock(),
                 AttentionBlock()
             ])
-        else:
-            self.attn = ModuleList()
 
         if has_upsample:
             self.upsample = Upsample(log2_count_out)
@@ -125,14 +127,14 @@ class UpsampleBlock(Module):
         return h
 
 
-class Decoder(Module):
+class Decoder(nn.Module):
     def __init__(self):
         super().__init__()
 
-        self.conv_in = Conv2d(2 ** 8, 2 ** 9, 3, padding=1)
+        self.conv_in = nn.Conv2d(2 ** 8, 2 ** 9, 3, padding=1)
         self.mid = MiddleLayer()
 
-        self.up = ModuleList([
+        self.up = nn.ModuleList([
             UpsampleBlock(7, 7, False, False),
             UpsampleBlock(8, 7, False, True),
             UpsampleBlock(8, 8, False, True),
@@ -140,8 +142,8 @@ class Decoder(Module):
             UpsampleBlock(9, 9, True, True)
         ])
 
-        self.norm_out = GroupNorm(2 ** 5, 2 ** 7)
-        self.conv_out = Conv2d(2 ** 7, 3, 3, padding=1)
+        self.norm_out = nn.GroupNorm(2 ** 5, 2 ** 7)
+        self.conv_out = nn.Conv2d(2 ** 7, 3, 3, padding=1)
 
     def forward(self, z: FloatTensor) -> FloatTensor:
         z = self.conv_in.forward(z)
@@ -156,22 +158,40 @@ class Decoder(Module):
         return z
 
 
-class VQGanDetokenizer(Module):
+class VQGanDetokenizer(nn.Module):
     def __init__(self):
         super().__init__()
         vocab_count, embed_count = 2 ** 14, 2 ** 8
         self.vocab_count = vocab_count
-        self.embedding = Embedding(vocab_count, embed_count)
-        self.post_quant_conv = Conv2d(embed_count, embed_count, 1)
+        self.embedding = nn.Embedding(vocab_count, embed_count)
+        self.post_quant_conv = nn.Conv2d(embed_count, embed_count, 1)
         self.decoder = Decoder()
 
-    def forward(self, z: LongTensor) -> FloatTensor:
+    def forward(self, is_seamless: bool, z: LongTensor) -> FloatTensor:
         z.clamp_(0, self.vocab_count - 1)
-        z = self.embedding.forward(z)
-        z = z.view((z.shape[0], 2 ** 4, 2 ** 4, 2 ** 8))
+        grid_size = int(sqrt(z.shape[0]))
+        token_count = grid_size * 2 ** 4
+        
+        if is_seamless:
+            z = z.view([grid_size, grid_size, 2 ** 4, 2 ** 4])
+            z = z.flatten(1, 2).transpose(1, 0).flatten(1, 2)
+            z = z.flatten().unsqueeze(1)
+            z = self.embedding.forward(z)
+            z = z.view((1, token_count, token_count, 2 ** 8))
+        else:
+            z = self.embedding.forward(z)
+            z = z.view((z.shape[0], 2 ** 4, 2 ** 4, 2 ** 8))
+
         z = z.permute(0, 3, 1, 2).contiguous()
         z = self.post_quant_conv.forward(z)
         z = self.decoder.forward(z)
         z = z.permute(0, 2, 3, 1)
         z = z.clip(0.0, 1.0) * 255
+
+        if is_seamless:
+            z = z[0]
+        else:
+            z = z.view([grid_size, grid_size, 2 ** 8, 2 ** 8, 3])
+            z = z.flatten(1, 2).transpose(1, 0).flatten(1, 2)
+
         return z

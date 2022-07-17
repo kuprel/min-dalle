@@ -156,39 +156,34 @@ class MinDalle:
         self.detokenizer = self.detokenizer.to(device=self.device)
 
 
-    def images_from_tokens(
+    def image_grid_from_tokens(
         self,
         image_tokens: LongTensor,
+        is_seamless: bool,
         is_verbose: bool = False
     ) -> FloatTensor:
         if not self.is_reusable: del self.decoder
         torch.cuda.empty_cache()
         if not self.is_reusable: self.init_detokenizer()
         if is_verbose: print("detokenizing image")
-        images = self.detokenizer.forward(image_tokens).to(torch.uint8)
+        images = self.detokenizer.forward(is_seamless, image_tokens)
         if not self.is_reusable: del self.detokenizer
         return images
 
 
-    def grid_from_images(self, images: FloatTensor) -> Image.Image:
-        grid_size = int(sqrt(images.shape[0]))
-        images = images.reshape([grid_size] * 2 + list(images.shape[1:]))
-        image = images.flatten(1, 2).transpose(0, 1).flatten(1, 2)
-        image = Image.fromarray(image.to('cpu').numpy())
-        return image
-
-
-    def generate_images_stream(
+    def generate_image_stream(
         self, 
         text: str, 
         seed: int,
-        image_count: int,
+        grid_size: int,
         progressive_outputs: bool = False,
+        is_seamless: bool = False,
         temperature: float = 1,
         top_k: int = 256,
         supercondition_factor: int = 16,
         is_verbose: bool = False
-    ) -> Iterator[FloatTensor]:
+    ) -> Iterator[Image.Image]:
+        image_count = grid_size ** 2
         if is_verbose: print("tokenizing text")
         tokens = self.tokenizer.tokenize(text, is_verbose=is_verbose)
         if len(tokens) > self.text_token_count: 
@@ -254,58 +249,13 @@ class MinDalle:
 
             with torch.cuda.amp.autocast(dtype=torch.float32):
                 if ((i + 1) % 32 == 0 and progressive_outputs) or i + 1 == 256:
-                    yield self.images_from_tokens(
-                        image_tokens=image_tokens[1:].T, 
+                    image = self.image_grid_from_tokens(
+                        image_tokens=image_tokens[1:].T,
+                        is_seamless=is_seamless,
                         is_verbose=is_verbose
                     )
-
-
-    def generate_image_stream(
-        self, 
-        text: str, 
-        seed: int,
-        grid_size: int,
-        progressive_outputs: bool = False,
-        temperature: float = 1,
-        top_k: int = 256,
-        supercondition_factor: int = 16,
-        is_verbose: bool = False
-    ) -> Iterator[Image.Image]:
-        images_stream = self.generate_images_stream(
-            text=text, 
-            seed=seed,
-            image_count=grid_size ** 2,
-            progressive_outputs=progressive_outputs,
-            temperature=temperature,
-            top_k=top_k,
-            supercondition_factor=supercondition_factor,
-            is_verbose=is_verbose
-        )
-        for images in images_stream:
-            yield self.grid_from_images(images)
-
-
-    def generate_images(
-        self, 
-        text: str,
-        seed: int = -1,
-        image_count: int = 1,
-        temperature: float = 1,
-        top_k: int = 1024,
-        supercondition_factor: int = 16,
-        is_verbose: bool = False
-    ) -> FloatTensor:
-        images_stream = self.generate_images_stream(
-            text=text,
-            seed=seed,
-            image_count=image_count,
-            temperature=temperature,
-            progressive_outputs=False,
-            top_k=top_k,
-            supercondition_factor=supercondition_factor,
-            is_verbose=is_verbose
-        )
-        return next(images_stream)
+                    image = image.to(torch.uint8).to('cpu').numpy()
+                    yield Image.fromarray(image)
 
 
     def generate_image(
@@ -329,3 +279,54 @@ class MinDalle:
             is_verbose=is_verbose
         )
         return next(image_stream)
+
+
+    # def images_from_image(image: Image.Image) -> FloatTensor:
+    #     pass
+
+    # def generate_images_stream(
+    #     self, 
+    #     text: str, 
+    #     seed: int,
+    #     grid_size: int,
+    #     progressive_outputs: bool = False,
+    #     temperature: float = 1,
+    #     top_k: int = 256,
+    #     supercondition_factor: int = 16,
+    #     is_verbose: bool = False
+    # ) -> Iterator[FloatTensor]:
+    #     image_stream = self.generate_image_stream(
+    #         text=text, 
+    #         seed=seed,
+    #         image_count=grid_size ** 2,
+    #         progressive_outputs=progressive_outputs,
+    #         is_seamless=False,
+    #         temperature=temperature,
+    #         top_k=top_k,
+    #         supercondition_factor=supercondition_factor,
+    #         is_verbose=is_verbose
+    #     )
+    #     for image in image_stream:
+    #         yield self.images_from_image(image)
+
+    # def generate_images(
+    #     self, 
+    #     text: str,
+    #     seed: int = -1,
+    #     image_count: int = 1,
+    #     temperature: float = 1,
+    #     top_k: int = 1024,
+    #     supercondition_factor: int = 16,
+    #     is_verbose: bool = False
+    # ) -> FloatTensor:
+    #     images_stream = self.generate_images_stream(
+    #         text=text,
+    #         seed=seed,
+    #         image_count=image_count,
+    #         temperature=temperature,
+    #         progressive_outputs=False,
+    #         top_k=top_k,
+    #         supercondition_factor=supercondition_factor,
+    #         is_verbose=is_verbose
+    #     )
+    #     return next(images_stream)
