@@ -1,17 +1,17 @@
 from typing import List
 import torch
 from torch import nn, BoolTensor, FloatTensor, LongTensor
-
+import colossalai.nn as col_nn
 
 class GLU(nn.Module):
     def __init__(self, count_in_out: int, count_middle: int):
         super().__init__()
         self.gelu = nn.GELU()
-        self.ln0 = nn.LayerNorm(count_in_out)
-        self.ln1 = nn.LayerNorm(count_middle)
-        self.fc0 = nn.Linear(count_in_out, count_middle, bias=False)
-        self.fc1 = nn.Linear(count_in_out, count_middle, bias=False)
-        self.fc2 = nn.Linear(count_middle, count_in_out, bias=False)
+        self.ln0 = col_nn.LayerNorm(count_in_out)
+        self.ln1 = col_nn.LayerNorm(count_middle)
+        self.fc0 = col_nn.Linear(count_in_out, count_middle, bias=False)
+        self.fc1 = col_nn.Linear(count_in_out, count_middle, bias=False)
+        self.fc2 = col_nn.Linear(count_middle, count_in_out, bias=False)
     
     def forward(self, z: FloatTensor) -> FloatTensor:
         z = self.ln0.forward(z)
@@ -29,10 +29,10 @@ class AttentionBase(nn.Module):
         self.head_count = head_count
         self.embed_count = embed_count
 
-        self.k_proj = nn.Linear(embed_count, embed_count, bias=False)
-        self.v_proj = nn.Linear(embed_count, embed_count, bias=False)
-        self.q_proj = nn.Linear(embed_count, embed_count, bias=False)
-        self.out_proj = nn.Linear(embed_count, embed_count, bias=False)
+        self.k_proj = col_nn.Linear(embed_count, embed_count, bias=False)
+        self.v_proj = col_nn.Linear(embed_count, embed_count, bias=False)
+        self.q_proj = col_nn.Linear(embed_count, embed_count, bias=False)
+        self.out_proj = col_nn.Linear(embed_count, embed_count, bias=False)
     
     def forward(
         self,
@@ -80,9 +80,9 @@ class EncoderSelfAttention(AttentionBase):
 class EncoderLayer(nn.Module):
     def __init__(self, embed_count: int, head_count: int, glu_embed_count: int):
         super().__init__()
-        self.pre_self_attn_layer_norm = nn.LayerNorm(embed_count)
+        self.pre_self_attn_layer_norm = col_nn.LayerNorm(embed_count)
         self.self_attn = EncoderSelfAttention(head_count, embed_count)
-        self.self_attn_layer_norm = nn.LayerNorm(embed_count)
+        self.self_attn_layer_norm = col_nn.LayerNorm(embed_count)
         self.glu = GLU(embed_count, glu_embed_count)
     
     def forward(
@@ -114,8 +114,8 @@ class DalleBartEncoder(nn.Module):
     ):
         super().__init__()
         self.text_vocab_count = text_vocab_count
-        self.embed_tokens = nn.Embedding(text_vocab_count, embed_count)
-        self.embed_positions = nn.Embedding(text_token_count, embed_count)
+        self.embed_tokens = col_nn.Embedding(text_vocab_count, embed_count)
+        self.embed_positions = col_nn.Embedding(text_token_count, embed_count)
         self.layers: List[EncoderLayer] = nn.ModuleList([
             EncoderLayer(
                 embed_count = embed_count,
@@ -124,8 +124,8 @@ class DalleBartEncoder(nn.Module):
             ) 
             for _ in range(layer_count)
         ])
-        self.layernorm_embedding = nn.LayerNorm(embed_count)
-        self.final_ln = nn.LayerNorm(embed_count)
+        self.layernorm_embedding = col_nn.LayerNorm(embed_count)
+        self.final_ln = col_nn.LayerNorm(embed_count)
         token_indices = torch.arange(text_token_count, device=device)
         self.pose_tokens = torch.stack([token_indices] * 2)
 
