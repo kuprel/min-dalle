@@ -2,3 +2,4 @@ min-dalle
 numpy==1.23.0
 pillow==9.2.0
 requests==2.28.1
+colossalai==0.1.8+torch1.11cu11.3 -f https://release.colossalai.org
