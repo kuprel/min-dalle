@@ -2,6 +2,7 @@ from typing import Tuple, List
 import torch
 from torch import nn, LongTensor, FloatTensor, BoolTensor
 from .dalle_bart_encoder import GLU, AttentionBase
+import colossalai.nn as col_nn
 
 IMAGE_TOKEN_COUNT = 256
 
@@ -52,12 +53,12 @@ class DecoderLayer(nn.Module):
         device: str
     ):
         super().__init__()
-        self.pre_self_attn_layer_norm = nn.LayerNorm(embed_count)
+        self.pre_self_attn_layer_norm = col_nn.LayerNorm(embed_count)
         self.self_attn = DecoderSelfAttention(head_count, embed_count)
-        self.self_attn_layer_norm = nn.LayerNorm(embed_count)
-        self.pre_encoder_attn_layer_norm = nn.LayerNorm(embed_count)
+        self.self_attn_layer_norm = col_nn.LayerNorm(embed_count)
+        self.pre_encoder_attn_layer_norm = col_nn.LayerNorm(embed_count)
         self.encoder_attn = DecoderCrossAttention(head_count, embed_count)
-        self.encoder_attn_layer_norm = nn.LayerNorm(embed_count)
+        self.encoder_attn_layer_norm = col_nn.LayerNorm(embed_count)
         self.glu = GLU(embed_count, glu_embed_count)
         self.token_indices = torch.arange(IMAGE_TOKEN_COUNT, device=device)
 
@@ -128,9 +129,9 @@ class DalleBartDecoder(nn.Module):
             ) 
             for _ in range(layer_count)
         ])
-        self.layernorm_embedding = nn.LayerNorm(embed_count)
-        self.final_ln = nn.LayerNorm(embed_count)
-        self.lm_head = nn.Linear(embed_count, image_vocab_count + 1, bias=False)
+        self.layernorm_embedding = col_nn.LayerNorm(embed_count)
+        self.final_ln = col_nn.LayerNorm(embed_count)
+        self.lm_head = col_nn.Linear(embed_count, image_vocab_count + 1, bias=False)
         self.token_indices = torch.arange(IMAGE_TOKEN_COUNT, device=device)
 
 
