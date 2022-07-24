@@ -1,11 +1,23 @@
 
 from min_dalle import MinDalle
 import tempfile
-import torch, torch.backends.cudnn
+import string
+import torch, torch.backends.cudnn, torch.backends.cuda
 from typing import Iterator
 from cog import BasePredictor, Path, Input
 
 torch.backends.cudnn.deterministic = False
+torch.backends.cudnn.benchmark = True
+torch.backends.cuda.matmul.allow_tf32 = True
+torch.backends.cuda.matmul.allow_fp16_reduced_precision_reduction = True
+
+def filename_from_text(text: str) -> str:
+    text = text.lower().encode("ascii", errors="ignore").decode()
+    allowed_chars = string.ascii_lowercase + ' '
+    text = ''.join(i for i in text.lower() if i in allowed_chars)
+    text = text[:64]
+    text = '-'.join(text.strip().split())
+    return text
 
 class ReplicatePredictor(BasePredictor):
     def setup(self):
@@ -57,6 +69,8 @@ class ReplicatePredictor(BasePredictor):
             i += 1
             is_final = i == 8 if progressive_outputs else True
             ext = 'png' if is_final and save_as_png else 'jpg'
-            image_path = path / 'min-dalle-iter-{}.{}'.format(i, ext)
+            filename = filename_from_text(text)
+            filename += '' if is_final else '-iter-{}'.format(i)
+            image_path = path / '{}.{}'.format(filename, ext)
             image.save(str(image_path))
             yield image_path

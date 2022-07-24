@@ -2,7 +2,6 @@ import os
 from PIL import Image
 import numpy
 from torch import LongTensor, FloatTensor
-from math import sqrt
 import torch
 import torch.backends.cudnn, torch.backends.cuda
 import json
@@ -15,9 +14,6 @@ torch.set_grad_enabled(False)
 torch.set_num_threads(os.cpu_count())
 torch.backends.cudnn.enabled = True
 torch.backends.cudnn.allow_tf32 = True
-torch.backends.cudnn.benchmark = True
-torch.backends.cuda.matmul.allow_tf32 = True
-torch.backends.cuda.matmul.allow_fp16_reduced_precision_reduction = True
 
 MIN_DALLE_REPO = 'https://huggingface.co/kuprel/min-dalle/resolve/main/'
 IMAGE_TOKEN_COUNT = 256
@@ -236,7 +232,8 @@ class MinDalle:
             dtype=torch.float32,
             device=self.device
         )
-        for i in range(IMAGE_TOKEN_COUNT):                
+        for i in range(IMAGE_TOKEN_COUNT):
+            torch.cuda.empty_cache()                
             with torch.cuda.amp.autocast(dtype=self.dtype):
                 image_tokens[i + 1], attention_state = self.decoder.forward(
                     settings=settings,
