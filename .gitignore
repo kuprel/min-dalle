@@ -7,10 +7,12 @@
 **/*.ckpt
 .vscode
 **/.ipynb_checkpoints
+generated.png
 **/generated
 **/pretrained
 **/*.msgpack
 *.egg-info/
+.idea/
 *.egg
 dist
 build
