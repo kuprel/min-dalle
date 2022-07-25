@@ -1,9 +1,9 @@
-
 from min_dalle import MinDalle
 import tempfile
 import string
 import torch, torch.backends.cudnn, torch.backends.cuda
 from typing import Iterator
+from emoji import demojize
 from cog import BasePredictor, Path, Input
 
 torch.backends.cudnn.deterministic = False
@@ -12,11 +12,13 @@ torch.backends.cuda.matmul.allow_tf32 = True
 torch.backends.cuda.matmul.allow_fp16_reduced_precision_reduction = True
 
 def filename_from_text(text: str) -> str:
+    text = demojize(text, delimiters=['', ''])
     text = text.lower().encode("ascii", errors="ignore").decode()
     allowed_chars = string.ascii_lowercase + ' '
     text = ''.join(i for i in text.lower() if i in allowed_chars)
     text = text[:64]
     text = '-'.join(text.strip().split())
+    if len(text) == 0: text = 'blank'
     return text
 
 class ReplicatePredictor(BasePredictor):

@@ -15,5 +15,5 @@
 dist
 build
 README
-.cog
-cog
+**/.cog
+**/cog
