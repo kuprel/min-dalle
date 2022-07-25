@@ -66,6 +66,7 @@ class MinDalle:
     def download_tokenizer(self):
         if self.is_verbose: print("downloading tokenizer params")
         suffix = '' if self.is_mega else '_mini'
+        _ = requests.get(MIN_DALLE_REPO + 'config.json') # trigger HF download
         vocab = requests.get(MIN_DALLE_REPO + 'vocab{}.json'.format(suffix))
         merges = requests.get(MIN_DALLE_REPO + 'merges{}.txt'.format(suffix))
         with open(self.vocab_path, 'wb') as f: f.write(vocab.content)
