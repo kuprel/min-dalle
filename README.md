@@ -8,7 +8,7 @@
 &nbsp;
 [![Discord](https://img.shields.io/discord/823813159592001537?color=5865F2&logo=discord&logoColor=white)](https://discord.com/channels/823813159592001537/912729332311556136)
 
-[YouTube Walkthrough](https://youtu.be/x_8uHX5KngE) by The AI Ephiphany
+[YouTube Walk-through](https://youtu.be/x_8uHX5KngE) by The AI Epiphany
 
 This is a fast, minimal port of Boris Dayma's [DALL·E Mini](https://github.com/borisdayma/dalle-mini) (with mega weights).  It has been stripped down for inference and converted to PyTorch.  The only third party dependencies are numpy, requests, pillow and torch.
 
