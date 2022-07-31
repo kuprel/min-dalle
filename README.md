@@ -2,6 +2,8 @@
 
 [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/kuprel/min-dalle/blob/main/min_dalle.ipynb)
 &nbsp;
+[![Lightning](https://img.shields.io/badge/Lightning.AI-Launch%20Demo-blueviolet)](https://01g7k49cp0v7cdygnm7pbt37fa.litng-ai-03.litng.ai/view/Poster)
+&nbsp;
 [![Replicate](https://replicate.com/kuprel/min-dalle/badge)](https://replicate.com/kuprel/min-dalle)
 &nbsp;
 [![Hugging Face Spaces](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Spaces%20Demo-blue)](https://huggingface.co/spaces/kuprel/min-dalle)
