@@ -54,7 +54,7 @@ class AttentionBase(nn.Module):
         )
         if attention_bias.ndim == 3:
             attention_bias = attention_bias[:, None, :attention_weights.shape[-2], :attention_weights.shape[-1]]
-        else:
+        elif attention_bias.ndim == 2:
             attention_bias = attention_bias[:, None, None, :attention_weights.shape[-1]]
         attention_weights += attention_bias
         attention_weights = torch.softmax(attention_weights, -1)

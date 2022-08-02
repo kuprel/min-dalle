@@ -74,11 +74,10 @@ class DecoderLayer(nn.Module):
         token_index: LongTensor
     ) -> Tuple[FloatTensor, FloatTensor]:
         # Self Attention
-        if len(token_index) == 1:
-            self_attn_mask = self.token_indices < token_index + 1
+        if token_index.shape[1] == 1:
+            self_attn_mask = self.token_indices <= token_index
         else:
-            self_attn_mask = self.token_indices[:len(token_index)][None, :] < (token_index + 1)[:, None]
-        self_attn_mask = self_attn_mask[None][[0] * decoder_state.shape[0]]
+            self_attn_mask = self.token_indices[:token_index.shape[1]][None, None, :] <= token_index[:, :, None]
         residual = decoder_state
         decoder_state = self.pre_self_attn_layer_norm.forward(decoder_state)
         decoder_state, attention_state = self.self_attn.forward(
@@ -151,7 +150,9 @@ class DalleBartDecoder(nn.Module):
         return_logits: bool = False
     ) -> Union[Tuple[LongTensor, FloatTensor], FloatTensor]:
         image_count = encoder_state.shape[0] // 2
-        token_index_batched = token_index[None, :][list(range(image_count)) * 2]
+        if token_index.ndim == 1:
+            token_index = token_index.unsqueeze(0).repeat(image_count * 2, 1)
+        token_index_batched = token_index[list(range(image_count)) * 2]
         if prev_tokens.ndim == 1:
             prev_tokens = prev_tokens.unsqueeze(0)
         prev_tokens = prev_tokens.T[list(range(image_count)) * 2]
