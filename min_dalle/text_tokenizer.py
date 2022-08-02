@@ -1,5 +1,6 @@
 from math import inf
 from typing import List, Tuple
+from emoji import demojize
 
 class TextTokenizer:
     def __init__(self, vocab: dict, merges: List[str]):
@@ -11,6 +12,7 @@ class TextTokenizer:
         sep_token = self.token_from_subword['</s>']
         cls_token = self.token_from_subword['<s>']
         unk_token = self.token_from_subword['<unk>']
+        text = demojize(text, delimiters=['', ''])
         text = text.lower().encode("ascii", errors="ignore").decode()
         tokens = [
             self.token_from_subword.get(subword, unk_token)
