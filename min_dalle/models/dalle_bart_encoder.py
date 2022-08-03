@@ -51,8 +51,6 @@ class AttentionBase(nn.Module):
             queries, 
             keys
         )
-        while attention_bias.ndim < 4: 
-            attention_bias = attention_bias.unsqueeze(1)
         attention_weights += attention_bias
         attention_weights = torch.softmax(attention_weights, -1)
         attention_output: FloatTensor = torch.einsum(
@@ -131,7 +129,7 @@ class DalleBartEncoder(nn.Module):
         self.pose_tokens = torch.stack([token_indices] * 2)
 
     def forward(self, text_tokens: LongTensor) -> FloatTensor:
-        attention_mask = text_tokens.not_equal(1)
+        attention_mask = text_tokens.not_equal(1)[:, None, None, :]
         encoder_state = (
             self.embed_tokens.forward(text_tokens) +
             self.embed_positions.forward(self.pose_tokens)

@@ -208,7 +208,7 @@ class MinDalle:
             expanded_indices = [0] * image_count + [1] * image_count
             text_tokens = text_tokens[expanded_indices]
             encoder_state = encoder_state[expanded_indices]
-            attention_mask = text_tokens.not_equal(1)
+            attention_mask = text_tokens.not_equal(1)[:, None, None, :]
             attention_state = torch.zeros(
                 size=(
                     self.layer_count,
