@@ -236,13 +236,15 @@ class MinDalle:
         for i in range(IMAGE_TOKEN_COUNT):
             torch.cuda.empty_cache()                
             with torch.cuda.amp.autocast(dtype=self.dtype):
-                image_tokens[i + 1], attention_state = self.decoder.forward(
+                image_tokens[i + 1], attention_state = self.decoder.sample_tokens(
                     settings=settings,
                     attention_mask=attention_mask,
                     encoder_state=encoder_state,
                     attention_state=attention_state,
-                    prev_tokens=image_tokens[i],
-                    token_index=token_indices[[i]]
+                    prev_tokens=image_tokens[:i+1],
+                    token_index=token_indices[:i+1]
+                    # prev_tokens=image_tokens[i],
+                    # token_index=token_indices[[i]]
                 )
 
             with torch.cuda.amp.autocast(dtype=torch.float32):

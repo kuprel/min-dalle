@@ -1,4 +1,4 @@
-from typing import Tuple, List, Optional, Union
+from typing import Tuple, List
 import torch
 from torch import nn, LongTensor, FloatTensor, BoolTensor
 from .dalle_bart_encoder import GLU, AttentionBase
@@ -23,7 +23,6 @@ class DecoderSelfAttention(AttentionBase):
     def __init__(self, head_count: int, embed_count: int):
         super().__init__(head_count, embed_count)
 
-
     def forward(
         self, 
         decoder_state: FloatTensor,
@@ -34,14 +33,14 @@ class DecoderSelfAttention(AttentionBase):
         keys = self.k_proj.forward(decoder_state)
         values = self.v_proj.forward(decoder_state)
         queries = self.q_proj.forward(decoder_state)
-        attn_state_new = torch.cat([keys, values])
-        if attention_state is None:
-            attention_state = attn_state_new
-        else:
-            attention_state[:, token_index[0]] = attn_state_new.to(attention_state.dtype)
-        batch_count = decoder_state.shape[0]
-        keys = attention_state[:batch_count]
-        values = attention_state[batch_count:]
+        
+        if attn_mask.ndim < 3:
+            batch_count = decoder_state.shape[0]
+            attn_state_new = torch.cat([keys, values]).to(attention_state.dtype)
+            attention_state[:, token_index[0]] = attn_state_new
+            keys = attention_state[:batch_count]
+            values = attention_state[batch_count:]
+
         decoder_state = super().forward(keys, values, queries, attn_mask)
         return decoder_state, attention_state
 
@@ -69,7 +68,7 @@ class DecoderLayer(nn.Module):
         self,
         decoder_state: FloatTensor,
         encoder_state: FloatTensor,
-        attention_state: Optional[FloatTensor],
+        attention_state: FloatTensor,
         attention_mask: BoolTensor,
         token_index: LongTensor
     ) -> Tuple[FloatTensor, FloatTensor]:
@@ -77,7 +76,9 @@ class DecoderLayer(nn.Module):
         if token_index.shape[1] == 1:
             self_attn_mask = self.token_indices <= token_index
         else:
-            self_attn_mask = self.token_indices[:token_index.shape[1]][None, None, :] <= token_index[:, :, None]
+            token_indices = self.token_indices[:token_index.shape[1]]
+            self_attn_mask = token_indices[None, None, :] <= token_index[:, :, None]
+        
         residual = decoder_state
         decoder_state = self.pre_self_attn_layer_norm.forward(decoder_state)
         decoder_state, attention_state = self.self_attn.forward(
@@ -141,14 +142,12 @@ class DalleBartDecoder(nn.Module):
 
     def forward(
         self,
-        settings: FloatTensor,
         attention_mask: BoolTensor,
         encoder_state: FloatTensor,
-        attention_state: Optional[FloatTensor],
+        attention_state: FloatTensor,
         prev_tokens: LongTensor,
-        token_index: LongTensor,
-        return_logits: bool = False
-    ) -> Union[Tuple[LongTensor, FloatTensor], FloatTensor]:
+        token_index: LongTensor
+    ) -> Tuple[FloatTensor, FloatTensor]:
         image_count = encoder_state.shape[0] // 2
         if token_index.ndim == 1:
             token_index = token_index.unsqueeze(0).repeat(image_count * 2, 1)
@@ -161,9 +160,7 @@ class DalleBartDecoder(nn.Module):
         decoder_state += self.embed_positions.forward(token_index_batched)
         decoder_state = self.layernorm_embedding.forward(decoder_state)
         if decoder_state.ndim < 3:
-            decoder_state = decoder_state[:, None]
-        if attention_state is None:
-            attention_state = [None] * self.layer_count
+            decoder_state = decoder_state.unsqueeze(1)
         for i in range(self.layer_count):
             decoder_state, attention_state[i] = self.layers[i].forward(
                 decoder_state,
@@ -174,6 +171,12 @@ class DalleBartDecoder(nn.Module):
             )
         decoder_state = self.final_ln(decoder_state)
         logits = self.lm_head(decoder_state)
+        return logits, attention_state
+    
+
+    def sample_tokens(self, settings, **kwargs) -> Tuple[LongTensor, FloatTensor]:
+        logits, attention_state = self.forward(**kwargs)
+        image_count = logits.shape[0] // 2
         temperature = settings[[0]]
         top_k = settings[[1]].to(torch.long)
         supercondition_factor = settings[[2]]
@@ -182,8 +185,6 @@ class DalleBartDecoder(nn.Module):
             logits[:image_count] * (1 - supercondition_factor) + 
             logits[image_count:] * supercondition_factor
         )
-        if return_logits:
-            return logits
         logits_sorted, _ = logits.sort(descending=True)
         is_kept = logits >= logits_sorted[:, top_k - 1]
         logits -= logits_sorted[:, [0]]
