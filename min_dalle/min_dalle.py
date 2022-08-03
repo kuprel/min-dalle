@@ -94,6 +94,7 @@ class MinDalle:
 
 
     def init_tokenizer(self):
+        _ = requests.get(MIN_DALLE_REPO + 'config.json') # trigger HF download
         is_downloaded = os.path.exists(self.vocab_path)
         is_downloaded &= os.path.exists(self.merges_path)
         if not is_downloaded: self.download_tokenizer()
@@ -220,7 +221,7 @@ class MinDalle:
             )
             image_tokens = torch.full(
                 (image_count, IMAGE_TOKEN_COUNT + 1), 
-                self.image_vocab_count,
+                2 ** 14 - 1,
                 dtype=torch.long,
                 device=self.device
             )
