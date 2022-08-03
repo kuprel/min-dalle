@@ -34,7 +34,8 @@ class DecoderSelfAttention(AttentionBase):
         values = self.v_proj.forward(decoder_state)
         queries = self.q_proj.forward(decoder_state)
         
-        if token_index.shape[1] == 1:
+        token_count = token_index.shape[1]
+        if token_count == 1:
             batch_count = decoder_state.shape[0]
             attn_state_new = torch.cat([keys, values]).to(attention_state.dtype)
             attention_state[:, token_index[0]] = attn_state_new
@@ -154,11 +155,8 @@ class DalleBartDecoder(nn.Module):
         token_index: LongTensor
     ) -> Tuple[FloatTensor, FloatTensor]:
         image_count = encoder_state.shape[0] // 2
-        if prev_tokens.ndim == 1:
-            prev_tokens = prev_tokens.unsqueeze(0)
-        if token_index.ndim == 1:
-            token_index = token_index.unsqueeze(0).repeat(image_count * 2, 1)
-        prev_tokens = prev_tokens.T.repeat(2, 1)
+        token_index = token_index.unsqueeze(0).repeat(image_count * 2, 1)
+        prev_tokens = prev_tokens.repeat(2, 1)
         decoder_state = self.embed_tokens.forward(prev_tokens)
         decoder_state += self.embed_positions.forward(token_index)
         decoder_state = self.layernorm_embedding.forward(decoder_state)

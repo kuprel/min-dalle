@@ -219,7 +219,7 @@ class MinDalle:
                 device=self.device
             )
             image_tokens = torch.full(
-                (IMAGE_TOKEN_COUNT + 1, image_count), 
+                (image_count, IMAGE_TOKEN_COUNT + 1), 
                 self.image_vocab_count,
                 dtype=torch.long,
                 device=self.device
@@ -236,21 +236,21 @@ class MinDalle:
         for i in range(IMAGE_TOKEN_COUNT):
             torch.cuda.empty_cache()                
             with torch.cuda.amp.autocast(dtype=self.dtype):
-                image_tokens[i + 1], attention_state = self.decoder.sample_tokens(
+                image_tokens[:, i + 1], attention_state = self.decoder.sample_tokens(
                     settings=settings,
                     attention_mask=attention_mask,
                     encoder_state=encoder_state,
                     attention_state=attention_state,
-                    # prev_tokens=image_tokens[:i+1],
+                    # prev_tokens=image_tokens[:, :i+1],
                     # token_index=token_indices[:i+1]
-                    prev_tokens=image_tokens[i],
+                    prev_tokens=image_tokens[:, [i]],
                     token_index=token_indices[[i]]
                 )
 
             with torch.cuda.amp.autocast(dtype=torch.float32):
                 if ((i + 1) % 32 == 0 and progressive_outputs) or i + 1 == 256:
                     yield self.image_grid_from_tokens(
-                        image_tokens=image_tokens[1:].T,
+                        image_tokens=image_tokens[:, 1:],
                         is_seamless=is_seamless,
                         is_verbose=is_verbose
                     )
