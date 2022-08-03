@@ -149,18 +149,14 @@ class DalleBartDecoder(nn.Module):
         token_index: LongTensor
     ) -> Tuple[FloatTensor, FloatTensor]:
         image_count = encoder_state.shape[0] // 2
-        if token_index.ndim == 1:
-            token_index = token_index.unsqueeze(0).repeat(image_count * 2, 1)
-        token_index_batched = token_index[list(range(image_count)) * 2]
         if prev_tokens.ndim == 1:
             prev_tokens = prev_tokens.unsqueeze(0)
+        if token_index.ndim == 1:
+            token_index = token_index.unsqueeze(0).repeat(image_count * 2, 1)
         prev_tokens = prev_tokens.T[list(range(image_count)) * 2]
-        prev_tokens.clamp_(0, self.image_vocab_count)
         decoder_state = self.embed_tokens.forward(prev_tokens)
-        decoder_state += self.embed_positions.forward(token_index_batched)
+        decoder_state += self.embed_positions.forward(token_index)
         decoder_state = self.layernorm_embedding.forward(decoder_state)
-        if decoder_state.ndim < 3:
-            decoder_state = decoder_state.unsqueeze(1)
         for i in range(self.layer_count):
             decoder_state, attention_state[i] = self.layers[i].forward(
                 decoder_state,

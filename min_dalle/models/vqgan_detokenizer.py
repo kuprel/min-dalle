@@ -168,7 +168,6 @@ class VQGanDetokenizer(nn.Module):
         self.decoder = Decoder()
 
     def forward(self, is_seamless: bool, z: LongTensor) -> FloatTensor:
-        z.clamp_(0, self.vocab_count - 1)
         grid_size = int(sqrt(z.shape[0]))
         token_count = grid_size * 2 ** 4
         
