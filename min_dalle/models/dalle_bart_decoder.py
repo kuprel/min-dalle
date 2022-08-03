@@ -38,7 +38,7 @@ class DecoderSelfAttention(AttentionBase):
         if attention_state is None:
             attention_state = attn_state_new
         else:
-            attention_state[:, token_index] = attn_state_new.to(attention_state.dtype)
+            attention_state[:, token_index[0]] = attn_state_new.to(attention_state.dtype)
         batch_count = decoder_state.shape[0]
         keys = attention_state[:batch_count]
         values = attention_state[batch_count:]
