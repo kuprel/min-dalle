@@ -241,10 +241,10 @@ class MinDalle:
                     attention_mask=attention_mask,
                     encoder_state=encoder_state,
                     attention_state=attention_state,
-                    prev_tokens=image_tokens[:i+1],
-                    token_index=token_indices[:i+1]
-                    # prev_tokens=image_tokens[i],
-                    # token_index=token_indices[[i]]
+                    # prev_tokens=image_tokens[:i+1],
+                    # token_index=token_indices[:i+1]
+                    prev_tokens=image_tokens[i],
+                    token_index=token_indices[[i]]
                 )
 
             with torch.cuda.amp.autocast(dtype=torch.float32):
