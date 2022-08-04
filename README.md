@@ -2,9 +2,9 @@
 
 [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/kuprel/min-dalle/blob/main/min_dalle.ipynb)
 &nbsp;
-[![Replicate](https://replicate.com/kuprel/min-dalle/badge)](https://replicate.com/kuprel/min-dalle)
-&nbsp;
 [![Hugging Face Spaces](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Spaces%20Demo-blue)](https://huggingface.co/spaces/kuprel/min-dalle)
+&nbsp;
+[![Replicate](https://replicate.com/kuprel/min-dalle/badge)](https://replicate.com/kuprel/min-dalle)
 &nbsp;
 [![Discord](https://img.shields.io/discord/823813159592001537?color=5865F2&logo=discord&logoColor=white)](https://discord.com/channels/823813159592001537/912729332311556136)
 
@@ -12,10 +12,10 @@
 
 This is a fast, minimal port of Boris Dayma's [DALL·E Mini](https://github.com/borisdayma/dalle-mini) (with mega weights).  It has been stripped down for inference and converted to PyTorch.  The only third party dependencies are numpy, requests, pillow and torch.
 
-To generate a 4x4 grid of DALL·E Mega images it takes:
-- 89 sec with a T4 in Colab
-- 48 sec with a P100 in Colab
-- 13 sec with an A100 on Replicate
+To generate a 3x3 grid of DALL·E Mega images it takes:
+- 55 sec with a T4 in Colab
+- 33 sec with a P100 in Colab
+- 15 sec with an A10G on Hugging Face
 
 Here's a more detailed breakdown of performance on an A100. Credit to [@technobird22](https://github.com/technobird22) and his [NeoGen](https://github.com/technobird22/NeoGen) discord bot for the graph.
 <br />
